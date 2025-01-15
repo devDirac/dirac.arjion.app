@@ -1,0 +1,79 @@
+@font-face {
+    font-family: 'Korolev Bold Italic';
+    src: url('../../assets/Fonts/Korolev_Bold_Italic.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Korolev Bold';
+    src: url('../../assets/Fonts/Korolev_Bold.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Korolev Heavy';
+    src: url('../../assets/Fonts/Korolev_Heavy.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Korolev Heavy Italic';
+    src: url('../../assets/Fonts/Korolev_Heavy_Italic.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Korolev Light';
+    src: url('../../assets/Fonts/Korolev_Light.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Korolev Light Italic';
+    src: url('../../assets/Fonts/Korolev_Light_Italic.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Korolev Medium';
+    src: url('../../assets/Fonts/Korolev_Medium.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+
+  @font-face {
+    font-family: 'Korolev Medium Italic';
+    src: url('../../assets/Fonts/Korolev_Medium_Italic.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Korolev Thin';
+    src: url('../../assets/Fonts/Korolev_Thin.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  .inicio-new-dashboard-titulo{
+    font-family: 'Korolev Bold', sans-serif;
+  }
+
+  
+  .inicio-new-dashboard-sub-titulo{
+    font-family: 'Korolev Medium', sans-serif;
+    font-size: 18px;
+  }
+
+  .inicio-new-dashboard-titulo-acordeon{
+    font-family: 'Korolev Light', sans-serif;
+    font-size: 22px;
+    margin-bottom: 0;
+  }

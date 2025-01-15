@@ -1,0 +1,712 @@
+import axios from 'axios';
+import env from "react-dotenv";
+export const SET_INFO_NEW_DASHBOARD_ALERTAS = "@SET_INFO_NEW_DASHBOARD_ALERTAS";
+
+export const setInfoNewDashboardAlertas = (value: any, seccion: string) => {
+    return {
+        type: SET_INFO_NEW_DASHBOARD_ALERTAS,
+        value,
+        dashboardSeccion: seccion
+    };
+};
+
+export const getTotalContratadoPresupuestoHTTP  = async (id_obra_principal: any,contratos = ''): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getTotalContratadoPresupuesto-info"}?id_obra_principal=${id_obra_principal}&contratosIds=${contratos}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getInfoGeneralHTTP  = async (id_obra_principal: any): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getInfoGeneral-info"}?id_obra_principal=${id_obra_principal}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getTotalContratadoResumenHTTP  = async (id_obra_principal: any,contratos = ''): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getTotalContratadoResumen-info"}?id_obra_principal=${id_obra_principal}&contratosIds=${contratos}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getTotalContratadoAvanceHTTP  = async (id_obra_principal: any,contratos = ''): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getTotalContratadoAvance-info"}?id_obra_principal=${id_obra_principal}&contratosIds=${contratos}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getTotalContratadoListaContratosHTTP  = async (id_obra_principal: any,contratos = ''): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getTotalContratadoListaContratos-info"}?id_obra_principal=${id_obra_principal}&contratosIds=${contratos}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getTotalContratadoTotalImportePorTipoMonedaHTTP  = async (id_obra_principal: any,contratos = ''): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getTotalContratadoTotalImportePorTipoMoneda-info"}?id_obra_principal=${id_obra_principal}&contratosIds=${contratos}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+
+
+/* Por responsabl3e */
+
+export const getTotalContratadoResumenResponsableHTTP  = async (id_obra_principal: any, responsable:any,contratos=''): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getTotalContratadoResumen-info-Responsable"}?id_obra_principal=${id_obra_principal}&responsable=${responsable}&contratosIds=${contratos}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getTotalContratadoAvanceResponsableHTTP  = async (id_obra_principal: any, responsable:any,contratos=''): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getTotalContratadoAvance-info-Responsable"}?id_obra_principal=${id_obra_principal}&responsable=${responsable}&contratosIds=${contratos}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getTotalContratadoListaContratosResponsableHTTP  = async (id_obra_principal: any, responsable:any, contratos=''): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getTotalContratadoListaContratos-info-Responsable"}?id_obra_principal=${id_obra_principal}&responsable=${responsable}&contratosIds=${contratos}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getTotalContratadoTotalImportePorTipoMonedaResponsableHTTP  = async (id_obra_principal: any, responsable:any, contratos=''): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getTotalContratadoTotalImportePorTipoMoneda-info-Responsable"}?id_obra_principal=${id_obra_principal}&responsable=${responsable}&contratosIds=${contratos}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+/* Fin responsables */
+
+
+export const getTotalContratadohttp = async (id_obra_principal: any): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getTotalContratado-info"}?id_obra_principal=${id_obra_principal}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getTotalContratadoUsuriohttp = async (id_obra_principal: any, usuario: any, contrato:string): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getTotalContratadoUsurio-info"}?id_obra_principal=${id_obra_principal}&usuario=${usuario}&id_contrato=${contrato}`
+        const response: any = await axios.get(
+            url,
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getResumenFinancieroHTTP = async (): Promise<any> => {
+    try {
+        const response: any = await axios.get(
+            `${env.API_URL}${"/getResumenFinanciero-info"}`,
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getDashboardAvanceFisicoGraficaHTTP = async (id_obra_principal:any, fecha_inicio:string,fecha_fin:string,contratos=''): Promise<any> => {
+    try {
+        const response: any = await axios.get(
+            `${env.API_URL}${"/getDashboardAvanceFisicoGrafica-info"}?id_obra_principal=${id_obra_principal}&fecha_inicio=${fecha_inicio}&fecha_fin=${fecha_fin}&contratosIds=${contratos}`,
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getDashboardAvanceFisicoTablaHTTP = async (id_obra_principal:any, fecha_inicio:string,fecha_fin:string,contratos=''): Promise<any> => {
+    try {
+        const response: any = await axios.get(
+            `${env.API_URL}${"/getDashboardAvanceFisicoTabla-info"}?id_obra_principal=${id_obra_principal}&fecha_inicio=${fecha_inicio}&fecha_fin=${fecha_fin}&contratosIds=${contratos}`,
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getDashboardAvanceFisicoHTTP = async (id_obra_principal:string): Promise<any> => {
+    try {
+        const response: any = await axios.get(
+            `${env.API_URL}${"/getDashboardAvanceFisico-info"}?id_obra_principal=${id_obra_principal}`,
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const relacionContratosAPMHTTP = async (id_obra_principal:string,contratos=''): Promise<any> => {
+    try {
+        const response: any = await axios.get(
+            `${env.API_URL}${"/relacionContratosAPM-info"}?id_obra_principal=${id_obra_principal}&contratosIds=${contratos}`,
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const relacionContratosHTTP = async (id_obra_principal:string,contratos=''): Promise<any> => {
+    try {
+        const response: any = await axios.get(
+            `${env.API_URL}${"/relacionContratos-info"}?id_obra_principal=${id_obra_principal}&contratosIds=${contratos}`,
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const vencimientoContratosHTTP = async (fecha_inicio: string, fecha_fin: string, obra: any,contratos=''): Promise<any> => {
+    try {
+        const response: any = await axios.get(
+            `${env.API_URL}${"/vencimientoContratos-info"}?fecha_inicio=${fecha_inicio}&fecha_fin=${fecha_fin}&obra=${obra}&contratosIds=${contratos}`,
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const consultaCronoFinancieraContratosHTTP = async (id_obra_principal:string,contratos=''): Promise<any> => {
+    try {
+        const response: any = await axios.get(
+            `${env.API_URL}${"/consultaCronoFinancieraContratos-info"}?id_obra_principal=${id_obra_principal}&contratosIds=${contratos}`,
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getDataFiltrosBitacoraEstimacionesHTTP = async (id_obra_principal:string): Promise<any> => {
+    try {
+        const response: any = await axios.get(
+            `${env.API_URL}${"/getDataFiltrosBitacoraEstimaciones-info"}?id_obra_principal=${id_obra_principal}`,
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getDataConsultaEstimacionesBitacoraHTTP = async (url: string): Promise<any> => {
+    try {
+        const response: any = await axios.get(
+            `${env.API_URL}${"/getDataConsultaEstimacionesBitacora-info"}${url}`,
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getEstimacionesTiempoHTTP = async (url: string): Promise<any> => {
+    try {
+        const response: any = await axios.get(
+            `${env.API_URL}${"/getEstimacionesTiempo-info"}${url}`,
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getActividadesCalendarioHTTP = async (data: any): Promise<any> => {
+    try {
+        const response: any = await axios.post(
+            `${env.API_URL}${"/getActividadesCalendario-info"}`, data
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getContratosTiempoFiltroHTTP = async (usuario:string): Promise<any> => {
+    try {
+        const response: any = await axios.get(
+            `${env.API_URL}${"/getContratosTiempoFiltro-info"}?usuario=${usuario}`,
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getDatosPlanMaestroHTTP = async (id_contrato:string): Promise<any> => {
+    try {
+        const response: any = await axios.get(
+            `${env.API_URL}${"/getDatosPlanMaestro-info"}?id_contrato=${id_contrato}`,
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getPlanMaestroHTTP = async (data: any): Promise<any> => {
+    try {
+        const response: any = await axios.post(
+            `${env.API_URL}${"/getPlanMaestro-info"}`, data
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getUsuariosProyectoHTTP = async (id_obra_principal:string,contratos = ''): Promise<any> => {
+    try {
+        const response: any = await axios.get(
+            `${env.API_URL}${"/getUsuariosProyecto-info"}?id_obra_principal=${id_obra_principal}&contratosIds=${contratos}`,
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+export const getActualizacionesSapHTTP = async (id_obra_principal:string): Promise<any> => {
+    try {
+        const response: any = await axios.get(
+            `${env.API_URL}${"/getActualizacionesSap-info"}?id_obra_principal=${id_obra_principal}`,
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+
+export const getAlertasDashboardHTTP = async (id_obra_principal:string,contratos = ''): Promise<any> => {
+    try {
+        const response: any = await axios.get(
+            `${env.API_URL}${"/getAlertasDashboard-info"}?id_obra_principal=${id_obra_principal}&contratosIds=${contratos}`,
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getBalanaceHTTP = async (data:any): Promise<any> => {
+    try {
+        const response: any = await axios.post(
+            `${env.API_URL}${"/getBalanace-info"}`,data
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getBalanaceDosHTTP = async (data:any): Promise<any> => {
+    try {
+        const response: any = await axios.post(
+            `${env.API_URL}${"/getBalanaceDos-info"}`,data
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+
+export const getBalanaceTresHTTP = async (data:any): Promise<any> => {
+    try {
+        const response: any = await axios.post(
+            `${env.API_URL}${"/getBalanaceTres-info"}`,data
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getCPOInicialHTP = async (id_obra_principal: any,contratos = ''): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getCPOInicial-info"}?id_obra_principal=${id_obra_principal}&contratosIds=${contratos}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getCPOProgramaFinancieroPorClasificacionHTTP = async (anio:string,id_obra_principal:string,contratos = ''): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getCPOProgramaFinancieroPorClasificacion-info"}?anio=${anio}&id_obra_principal=${id_obra_principal}&contratosIds=${contratos}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getPromedioAvanceHTTP = async (data:any,contratos=''): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getPromedioAvance-info"}?contratista=${data?.contratista || 0}&fechaInicio=${data?.fechaInicio}&fechaFin=${data?.fechaFin}&id_obra_principal=${data?.id_obra_principal}&contratosIds=${contratos}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getPromedioValidacionHTTP = async (data:any,contratos=''): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getPromedioValidacion-info"}?contratista=${data?.contratista || 0}&fechaInicio=${data?.fechaInicio}&fechaFin=${data?.fechaFin}&id_obra_principal=${data?.id_obra_principal}&contratosIds=${contratos}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+
+export const reclasificacionesHTP = async (id_obra_principal: any): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/reclasificaciones-info"}?id_obra_principal=${id_obra_principal}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getOrdenCompraHTTP = async (id_obra_principal: any): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getOrdenCompra-info"}?id_obra_principal=${id_obra_principal}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getAhorroHTTP = async (id_obra_principal: any,contratos=''): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getAhorro-info"}?id_obra_principal=${id_obra_principal}&contratosIds=${contratos}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getAnticiposHTTP = async (id_obra_principal: any,contratos=''): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getAnticipos-info"}?id_obra_principal=${id_obra_principal}&contratosIds=${contratos}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getDeductivasHTTP = async (id_obra_principal: any,contratos=''): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getDeductivas-info"}?id_obra_principal=${id_obra_principal}&contratosIds=${contratos}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getFondoGarantiaHTTP = async (id_obra_principal: any,contratos=''): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getFondoGarantia-info"}?id_obra_principal=${id_obra_principal}&contratosIds=${contratos}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getEstimacionesProcesoHTTP = async (id_obra_principal: any,contratos=''): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getEstimacionesProceso-info"}?id_obra_principal=${id_obra_principal}&contratosIds=${contratos}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getPendientesContabilizarHTTP = async (id_obra_principal: any,contratos=''): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getPendientesContabilizar-info"}?id_obra_principal=${id_obra_principal}&contratosIds=${contratos}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+
+export const getOENEHTTP = async (id_obra_principal: any, apm_usuario:any,contratos=''): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getOENE-info"}?id_obra_principal=${id_obra_principal}&apm_usuario=${apm_usuario}&contratosIds=${contratos}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getContratosClasificacionesHTTP = async (id_clasificacion: any): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getContratosClasificaciones-info"}?id_clasificacion=${id_clasificacion}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getAnticiposResponsablesHTTP = async (id_obra_principal:any,usuario: any,contratos=''): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getAnticiposResponsables-info"}?usuario=${usuario}&id_obra_principal=${id_obra_principal}&contratosIds=${contratos}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getFondoGarantiaResponsablesHTTP = async (id_obra_principal:any,usuario: any,contratos=''): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getFondoGarantiaResponsables-info"}?usuario=${usuario}&id_obra_principal=${id_obra_principal}&contratosIds=${contratos}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+
+export const getEstimacionesProcesoResponsablesHTTP = async (id_obra_principal:any,usuario: any,contratos=''): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getEstimacionesProcesoResponsables-info"}?usuario=${usuario}&id_obra_principal=${id_obra_principal}&contratosIds=${contratos}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getPendientesContabilizarResponsablesHTTP = async (id_obra_principal:any,usuario: any,contratos=''): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getPendientesContabilizarResponsables-info"}?usuario=${usuario}&id_obra_principal=${id_obra_principal}&contratosIds=${contratos}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+
+export const getBitacoraEstimacionesHTTP = async (id_estimacion: any): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getBitacoraEstimaciones-info"}?id_estimacion=${id_estimacion}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const procesando360HTTP = async (id: any, estatus:any): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/procesando360-info"}?id=${id}&estatus=${estatus}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getDetalleDeductivasHTTP = async (id: any): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getDetalleDeductivas-info"}?id=${id}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getDetalleFondoGarantiaHTTP = async (id: any): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getDetalleFondoGarantia-info"}?id=${id}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getDetallePendienteContabilizarHTTP = async (id: any): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getDetallePendienteContabilizar-info"}?id=${id}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const getDetalleOENEHTTP = async (id_contrato: any): Promise<any> => {
+    try {
+        let url = '';
+        url = `${env.API_URL}${"/getDetalleOENE-info"}?id_contrato=${id_contrato}`
+        const response: any = await axios.get( url,);
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+
+

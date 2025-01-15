@@ -1,0 +1,121 @@
+@font-face {
+  font-family: 'Korolev Bold Italic';
+  src: url('../../assets/Fonts/Korolev_Bold_Italic.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Korolev Bold';
+  src: url('../../assets/Fonts/Korolev_Bold.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Korolev Heavy';
+  src: url('../../assets/Fonts/Korolev_Heavy.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Korolev Heavy Italic';
+  src: url('../../assets/Fonts/Korolev_Heavy_Italic.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Korolev Light';
+  src: url('../../assets/Fonts/Korolev_Light.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Korolev Light Italic';
+  src: url('../../assets/Fonts/Korolev_Light_Italic.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Korolev Medium';
+  src: url('../../assets/Fonts/Korolev_Medium.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+@font-face {
+  font-family: 'Korolev Medium Italic';
+  src: url('../../assets/Fonts/Korolev_Medium_Italic.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Korolev Thin';
+  src: url('../../assets/Fonts/Korolev_Thin.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.ITEMS-MENU-BOLD{
+  font-family: 'Korolev Bold', sans-serif;
+  margin-bottom: 0;
+  font-size: 16px;
+}
+
+
+.ITEMS-MENU{
+  font-family: 'Korolev Medium', sans-serif;
+  margin-bottom: 0;
+  font-size: 14px;
+}
+
+::-webkit-scrollbar {
+    width: 25px;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: white; 
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #28334a;     
+    border-radius: 0;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #28334a; 
+  }
+
+  .degradado{
+    background: radial-gradient(circle, #9ba6b1 20%, #374666 100%);
+    padding: 10;
+    text-align: center;
+    color:#fff;
+    min-height: 40px;
+    display: flex;
+    justify-content: center;  /* Horizontally centers the h4 */
+    align-items: center; 
+    font-size: 19px;
+
+  }
+
+  .elementoMenu {
+    border-bottom: solid 2px #e9eef1;
+    margin-bottom: 1; 
+    cursor:pointer;
+    color:#28334a;
+  }
+
+  .activo{
+    background-color: #576e85 !important;
+    color:white !important;
+  }

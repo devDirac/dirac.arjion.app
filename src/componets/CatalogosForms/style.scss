@@ -1,0 +1,10 @@
+@use '../../App.scss';
+
+.rebote{
+    position: relative;
+    animation:botar 3s 250ms normal;
+    -webkit-animation:botar 3s 250ms normal;
+    -moz-animation:botar 3s 250ms normal;
+    -ms-animation:botar 3s 250ms normal;
+    -o-animation:botar 3s 250ms normal;
+    }

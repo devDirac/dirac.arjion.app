@@ -1,0 +1,11 @@
+@use '../../App.scss';
+
+  .chart-container {
+    display: block;
+    position: relative;
+    width: 100%;
+    max-width: 100%; /* Asegura que no tenga un límite de ancho */
+    //height: 400px; /* Puedes ajustarlo según tus necesidades */
+
+    //overflow: hidden;
+  }

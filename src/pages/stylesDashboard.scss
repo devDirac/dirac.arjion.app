@@ -1,0 +1,100 @@
+@import "~bootstrap/scss/bootstrap";
+
+@font-face {
+  font-family: 'Korolev Bold Italic';
+  src: url('../assets/Fonts/Korolev_Bold_Italic.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Korolev Bold';
+  src: url('../assets/Fonts/Korolev_Bold.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Korolev Heavy';
+  src: url('../assets/Fonts/Korolev_Heavy.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Korolev Heavy Italic';
+  src: url('../assets/Fonts/Korolev_Heavy_Italic.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Korolev Light';
+  src: url('../assets/Fonts/Korolev_Light.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Korolev Light Italic';
+  src: url('../assets/Fonts/Korolev_Light_Italic.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Korolev Medium';
+  src: url('../assets/Fonts/Korolev_Medium.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+@font-face {
+  font-family: 'Korolev Medium Italic';
+  src: url('../assets/Fonts/Korolev_Medium_Italic.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Korolev Thin';
+  src: url('../assets/Fonts/Korolev_Thin.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.new-dashboard-titulo-principal{
+  font-family: 'Korolev Bold', sans-serif;
+}
+body {
+  font-family: 'MiFuente', sans-serif;
+}
+
+::-webkit-scrollbar {
+    width: 25px;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: white; 
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #28334a;     
+    border-radius: 0;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #28334a; 
+  }
+
+  .main-container {
+    background-color: #e9eef1; 
+    flex: 1; 
+    min-height: 100vh; 
+    position: relative; 
+    top: 75;
+  }

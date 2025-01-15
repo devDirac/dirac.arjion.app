@@ -1,0 +1,69 @@
+export interface DetalleConceptoTypes {
+    id:number
+    inciso:string
+    num_convenio:string
+    detalleToEdit:any
+    estatusNumero?:any
+    id_contrato:number
+    id_frente:number
+    concepto:string
+    descripcion:string
+    unidad:string
+    cantidad:string
+    pu:string
+    fecha_inicio:string
+    fecha_fin:string
+    linea_base:string
+    tipo_concepto:number
+    estatus:number
+    homologado:number
+    id_usuario:number
+    fecha_hoy:string
+    cerrado:number
+    plaza:number
+    tarea:number
+    acumulado:number
+    avance:number
+    avance_fisico:number
+    avance_por_confirmar:number
+    avance_financiero_estimado:number
+    obra_ejecutada_no_estimada:number
+    movimientos_avance?:any
+    notas?:any
+    fotos?:any
+    videos?:any
+    audio?:any
+    audios?:any
+    documentos?:any
+    responsables?:any
+}
+
+export interface DetalleConceptoProps {
+    concepto:DetalleConceptoTypes
+    darkMode?:boolean
+    espacio:any
+    contrato:any
+    frente:any
+    navigate:any
+    enAvance?:boolean
+    esConfirmarAvance?:boolean
+    id_avance?:number
+    esInfo?:boolean
+    esCatalogoConcepto?:boolean
+    enAccion?:(accion:string,elemento:any)=>void
+}
+
+export interface DetalleConceptoCatalogoProps {
+    concepto:DetalleConceptoTypes
+    darkMode?:boolean
+    espacio?:any
+    contrato?:any
+    frente?:any
+    navigate?:any
+    enAvance?:boolean
+    esConfirmarAvance?:boolean
+    id_avance?:number
+    esInfo?:boolean
+    esCatalogoConcepto?:boolean
+    enAccion?:(accion:string,elemento:any)=>void
+}
