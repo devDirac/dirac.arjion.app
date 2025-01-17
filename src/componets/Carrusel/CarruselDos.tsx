@@ -46,7 +46,12 @@ const CarruselDos: React.FC<CarruselDosProps> = (props: CarruselDosProps) => {
                 
                     src={` ${env.API_URL_DOCUMENTOS === 'https://diracapm.qubi.com.mx/' ? env.API_URL_DOCUMENTOS+(currentItem.ruta_media || "").replaceAll('storage/app/', '') :env.API_URL_DOCUMENTOS+ currentItem.ruta_media}`}
                     alt={`Slide ${currentIndex}`}
-                    style={{ width: "95vw", height: "75vh", objectFit: "cover" }}
+                    style={{
+                        width: "95vw", // Ancho máximo
+                        height: "75vh", // Alto máximo
+                        objectFit: "contain", // Ajustar sin recortar
+                        objectPosition: "center", // Centrar contenido
+                    }}
                 />
             ) : (
                 <video

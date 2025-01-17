@@ -1,4 +1,4 @@
-import { Backdrop, CircularProgress, Grid } from "@mui/material";
+import { Backdrop, Chip, CircularProgress, Grid } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import NewsTicker from "react-advanced-news-ticker";
 import CarruselDos from "../componets/Carrusel/CarruselDos";
@@ -51,7 +51,7 @@ const CarruselPage: React.FC = () => {
 
     return (
         <Grid container style={{ backgroundColor: 'rgb(32 47 80)', height: '100vh' }}>
-            <Grid xs={12} style={{ padding: 0, textAlign: 'center', paddingTop:15 }} >
+            <Grid xs={12} style={{ padding: 0, textAlign: 'center', paddingTop: 15 }} >
                 {mediaItems?.length ? <CarruselDos mediaItems={mediaItems} /> : procesando ? '' : <p style={{ position: 'relative', top: 250, color: '#fff', fontWeight: '400', fontSize: 20 }}></p>}
             </Grid>
             <Grid xs={12}>
@@ -59,15 +59,16 @@ const CarruselPage: React.FC = () => {
                     {
                         news?.map((r: any, key: any) => {
                             return (
-                                <div style={{
+                                <Chip label={r?.texto || ''} key={key} style={{
                                     boxShadow: '-1px 0px 17px -3px rgba(0,0,0,0.75)',
                                     border: 'solid 1px grey',
                                     backgroundColor: '#ffff',
                                     paddingLeft: 5,
-                                    fontSize: 25,
+                                    height: 50,
+                                    fontSize: 30,
                                     fontWeight: 'bold',
-                                    paddingRight: 5
-                                }} key={key}>{r?.texto}</div>
+                                    marginRight: 15
+                                }} />
                             )
                         })
                     }
