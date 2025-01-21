@@ -119,7 +119,8 @@
       "not op_mini all",
       "> 0.5%",
       "last 2 versions",
-      "samsung 4"
+      "samsung 4",
+      "ie 11"
     ],
     "development": [
       "last 1 chrome version",
@@ -128,12 +129,12 @@
       "> 0.5%",
       "last 2 versions",
       "samsung 4",
-      "not dead"
+      "not dead",
+      "ie 11"
     ]
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@babel/preset-env": "^7.26.0",
     "@types/file-saver": "^2.0.7",
     "@types/lodash": "^4.17.7",
     "@types/react-google-recaptcha": "^2.1.9",
