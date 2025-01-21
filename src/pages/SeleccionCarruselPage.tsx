@@ -12,7 +12,7 @@ import SearchFiltro from "../componets/SearchFiltro/SearchFiltro";
 import _ from "lodash";
 
 const SeleccionCarruselPage: React.FC = () => {
-    const intl = useIntl();
+    /* const intl = useIntl();
     const navigate = useNavigate();
     const [procesando, setProcesando] = useState(false);
     const [playList, setPlayList] = useState([]);
@@ -57,11 +57,11 @@ const SeleccionCarruselPage: React.FC = () => {
             )
         );
     };
-
+ */
 
     return (
         <>
-            <AppAppBarC />
+            {/* <AppAppBarC />
             <Grid
                 container
                 style={{ backgroundColor: '#fff', position: 'relative', top: 20 }}
@@ -128,7 +128,8 @@ const SeleccionCarruselPage: React.FC = () => {
                         </Grid>
                     </Grid>
                 </ModalComponent>
-            </Grid >
+            </Grid > */}
+            <p>Texto </p>
         </>
     );
 };
