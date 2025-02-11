@@ -614,7 +614,7 @@ const CrudCarruselPage: React.FC = () => {
                                                             <React.Fragment>
                                                                 {r?.texto ? r?.texto : <Link
                                                                     target="_blank"
-                                                                    href={`${env.API_URL_DOCUMENTOS === 'https://diracapm.qubi.com.mx/' ? env.API_URL_DOCUMENTOS + (r?.ruta_media || "").replaceAll('storage/app/', '') : env.API_URL_DOCUMENTOS + r?.ruta_media}`}
+                                                                    href={`${env.API_URL_DOCUMENTOS === 'https://dirac.api.arjion.com/' ? env.API_URL_DOCUMENTOS + (r?.ruta_media || "").replaceAll('storage/app/', '') : env.API_URL_DOCUMENTOS + r?.ruta_media}`}
                                                                 >
                                                                     <PreviewIcon color='primary' />
                                                                 </Link>}

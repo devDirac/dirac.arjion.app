@@ -44,7 +44,7 @@ const CarruselDos: React.FC<CarruselDosProps> = (props: CarruselDosProps) => {
             {currentItem.type === "image" ? (
                 <img
                 
-                    src={` ${env.API_URL_DOCUMENTOS === 'https://diracapm.qubi.com.mx/' ? env.API_URL_DOCUMENTOS+(currentItem.ruta_media || "").replaceAll('storage/app/', '') :env.API_URL_DOCUMENTOS+ currentItem.ruta_media}`}
+                    src={` ${env.API_URL_DOCUMENTOS === 'https://dirac.api.arjion.com/' ? env.API_URL_DOCUMENTOS+(currentItem.ruta_media || "").replaceAll('storage/app/', '') :env.API_URL_DOCUMENTOS+ currentItem.ruta_media}`}
                     alt={`Slide ${currentIndex}`}
                     style={{
                         width: "95vw", // Ancho máximo
@@ -56,7 +56,7 @@ const CarruselDos: React.FC<CarruselDosProps> = (props: CarruselDosProps) => {
             ) : (
                 <video
                     ref={videoRef}
-                    src={`${env.API_URL_DOCUMENTOS === 'https://diracapm.qubi.com.mx/' ? env.API_URL_DOCUMENTOS+(currentItem.ruta_media || "").replaceAll('storage/app/', '') : env.API_URL_DOCUMENTOS+currentItem.ruta_media} `}
+                    src={`${env.API_URL_DOCUMENTOS === 'https://dirac.api.arjion.com/' ? env.API_URL_DOCUMENTOS+(currentItem.ruta_media || "").replaceAll('storage/app/', '') : env.API_URL_DOCUMENTOS+currentItem.ruta_media} `}
                     muted
                     style={{ width: "100vw", height: "75vh", }}
                 />
