@@ -618,7 +618,7 @@ const useDinamicTableMejorada = (props: DinamicTableMejoradaProps) => {
     const ruta = (row_: any) => {
         const row = row_?.data;
         const x = row_?.colDef?.field;
-        const r = env.API_URL_DOCUMENTOS === 'https://diracapm.qubi.com.mx/' ? `${(row?.[x] || "").replaceAll('storage/app/', '')} ` : row?.[x] || "";
+        const r = env.API_URL_DOCUMENTOS === 'https://dirac.api.arjion.com/' ? `${(row?.[x] || "").replaceAll('storage/app/', '')} ` : row?.[x] || "";
         return (
             <>
                {row?.[x] ? <Link

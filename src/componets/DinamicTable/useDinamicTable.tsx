@@ -531,7 +531,7 @@ export const useAccionesTable = (props: DinamicTableProps) => {
   }
 
   const ruta = (row: any, x: any) => {
-    const r = env.API_URL_DOCUMENTOS === 'https://diracapm.qubi.com.mx/' ? `${(row?.[x] || "").replaceAll('storage/app/', '')} ` : row?.[x] || "";
+    const r = env.API_URL_DOCUMENTOS === 'https://dirac.api.arjion.com/' ? `${(row?.[x] || "").replaceAll('storage/app/', '')} ` : row?.[x] || "";
 
     return (
       <Link
