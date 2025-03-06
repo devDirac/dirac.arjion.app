@@ -81,6 +81,7 @@ const GacStepperForm: React.FC<GacStepperFormProps> = ({
                     }
                     {
                         activeStep === 1 ?
+                        
                             <SolicitudPrestamo
                                 tipoCambio={perfil?.tipoCambio}
                                 monedas={perfil?.monedas}
