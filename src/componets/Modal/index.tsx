@@ -17,6 +17,7 @@ const Transition = React.forwardRef(function Transition(
 });
 
 
+
 const ModalComponent: React.FC<ModalProps> = (props: ModalProps) => {
     const [controller] = useMaterialUIController();
     const { darkMode } = controller;
@@ -38,17 +39,17 @@ const ModalComponent: React.FC<ModalProps> = (props: ModalProps) => {
                     },
                 }}
             >
-                <DialogTitle id="alert-dialog-title" sx={{...{color:'#ffff', backgroundColor:'#344767' }, ...props?.esError ? {borderBottom: 'solid 4px red'} : {}}}>
-                    <InfoIcon fontSize='large' style={{color:'#ffff'}}/>
+                <DialogTitle id="alert-dialog-title" sx={{ ...{ color: '#ffff', backgroundColor: 'rgb(32, 47, 80)' }, ...props?.esError ? { borderBottom: 'solid 4px red' } : {} }}>
+                    {!props?.esFullScreen ? <InfoIcon fontSize='large' style={{ color: '#ffff' }} /> : 'Dirac'}
                 </DialogTitle>
-                {props?.title ? <DialogTitle id="alert-dialog-title" sx={{ color: darkMode ? 'white' : '#344767' }}>
+                {props?.title ? <DialogTitle id="alert-dialog-title" sx={{ color: darkMode ? 'white' : 'rgb(32, 47, 80)' }}>
                     {props?.title}
                 </DialogTitle> : null}
                 <DialogContent style={{ color: darkMode ? 'white' : 'black' }}>
                     {props?.children}
                 </DialogContent>
-                <DialogActions style={{...{ color: '#344767'/* , backgroundColor:'#344767' */ },...props?.esError ? {borderTop: 'solid 4px red'} : {}}}>
-                    <Button onClick={props?.handleClose} autoFocus style={{ color: '#344767'  }}>
+                <DialogActions style={{ ...{ color: 'rgb(32, 47, 80)'/* , backgroundColor:'rgb(32, 47, 80)' */ }, ...props?.esError ? { borderTop: 'solid 4px red' } : {} }}>
+                    <Button onClick={props?.handleClose} autoFocus style={{ color: 'rgb(32, 47, 80)' }}>
                         {props?.titleBoton ? props?.titleBoton : 'Minimizar'}
                     </Button>
                 </DialogActions>

@@ -1,4 +1,3 @@
-import { LoginAction } from "../componets/LoginForm/types";
 
 export interface HttpResponse {
     success: boolean,
@@ -19,7 +18,7 @@ export interface GeneralHttpResponse {
 
 
 export interface AppType {
-    user: LoginAction,
+    user: any,
     employees: any
     upload: string[]
     idioma:string

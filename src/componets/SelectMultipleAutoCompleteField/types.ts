@@ -10,10 +10,15 @@ export interface SelectMultipleAutoCompleteFieldProps {
     disabled?: boolean
     onInput?: (e: any) => void
     onChange?: (e: any) => void
+    onBlur?: () => void
     InputProps?: any
     formik?:any
     options:any
     btnPlus?:boolean
     onAdd?:()=>void
+    onRefresh?:()=>void
     defaultValue:any
+    EsMultiple?:boolean
+    
+    btnActualiza?:boolean
 }

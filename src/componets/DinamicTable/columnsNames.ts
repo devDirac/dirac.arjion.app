@@ -309,4 +309,5 @@ export const columnsNames = [
     {id:'creador', value: 'Creador'},
     {id:'total', value: 'Total'},
     {id:'retencion', value: 'Retención'},
+    {id:'esMiTurno', value:'Requiere de mi atención'}
 ];

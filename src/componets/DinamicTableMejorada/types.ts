@@ -64,4 +64,8 @@ export interface DinamicTableMejoradaProps {
     esUsuariosGeocerca?:boolean
     esEdicionConceptos?:boolean
     esGenerarPaquete?:boolean
+
+
+
+    esGastoSolicitante?:boolean
 }

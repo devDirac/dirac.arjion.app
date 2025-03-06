@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { saveAs } from 'file-saver';
 import CloudIcon from '@mui/icons-material/Cloud';
@@ -13,7 +13,6 @@ import env from "react-dotenv";
 import SettingsIcon from '@mui/icons-material/Settings';
 import CommentIcon from '@mui/icons-material/Comment';
 import { GoogleMap, Marker } from "@react-google-maps/api";
-import DashboardIcon from '@mui/icons-material/Dashboard';
 import InfoIcon from '@mui/icons-material/Info';
 import CheckIcon from '@mui/icons-material/Check';
 import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
@@ -31,6 +30,7 @@ import Volumen from '../DinamicTable/Volumen';
 import VolumenDeducir from '../DinamicTable/VolumenDeducir';
 import OpcionesRepo from '../DinamicTable/OpcionesRepo';
 import AccionesTable from '../DinamicTable/AccionesTable';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
 const useDinamicTableMejorada = (props: DinamicTableMejoradaProps) => {
 
@@ -113,12 +113,34 @@ const useDinamicTableMejorada = (props: DinamicTableMejoradaProps) => {
                                                                             props?.onValueVolumen && dta === 'comentarios' ? verComentarios(row) :
                                                                                 (props?.onValueVolumen && (dta === 'precio_unitario')) || (props?.onValueVolumen && (dta === 'importe_acumulado')) || (props?.onValueVolumen && (dta === 'importe')) || (props?.onValueVolumen && (dta === 'importeAcumuladoActual')) || (props?.onValueVolumen && (dta === 'importeAcumuladoAnterior')) || (props?.onValueVolumen && (dta === 'precio')) ?
                                                                                     setFormatoMoneda(row) :
-                                                                                    (props?.onValueVolumen && (dta === 'cantidad_ejecutada')) || (props?.onValueVolumen && (dta === 'pendiente_estimar')) || (props?.onValueVolumen && (dta === 'cantidad_acumulada')) ?
-                                                                                        setFormatoUnidad(row) :
-                                                                                        dta === "volumen_estimar" ? volumen(row) : dta === "volumen_deducir" ? volumenDeducir(row) : dta === "ir" || dta === 'path' ? ruta(row) : dta === "ruta" ? ruta(row) : dta === "Permisos" ? permiso(row) : dta === "foto" ? foto(row) : dta === "id_tipo_usuario" ? tipoUsuario(row) : dta === "usuarios_asignados" ? usuariosAsignados(row) : dta === 'usuariosAsignadosProyecto' ? usuariosAsignadosProyecto(row) : dta === 'direccion' ? mapa(row) : tool(row)
+                                                                                    (props?.esGastoSolicitante && (dta === 'esMiTurno')) ?
+                                                                                        esMiTurno(row) :
+                                                                                        (props?.onValueVolumen && (dta === 'cantidad_ejecutada')) || (props?.onValueVolumen && (dta === 'pendiente_estimar')) || (props?.onValueVolumen && (dta === 'cantidad_acumulada')) ?
+                                                                                            setFormatoUnidad(row) :
+                                                                                            dta === "volumen_estimar" ? volumen(row) : dta === "volumen_deducir" ? volumenDeducir(row) : dta === "ir" || dta === 'path' ? ruta(row) : dta === "ruta" ? ruta(row) : dta === "Permisos" ? permiso(row) : dta === "foto" ? foto(row) : dta === "id_tipo_usuario" ? tipoUsuario(row) : dta === "usuarios_asignados" ? usuariosAsignados(row) : dta === 'usuariosAsignadosProyecto' ? usuariosAsignadosProyecto(row) : dta === 'direccion' ? mapa(row) : tool(row)
 
 
     };
+
+
+    const esMiTurno = (row_: any) => {
+        const row = row_?.data;
+        const x = row_?.colDef?.field;
+        const text = row?.[x];
+        return (
+            <Grid container>
+                <Grid item xs={12}>
+                    
+                        {text !== '' && text !== undefined ? <Tooltip title="La solicitud está esperando que usted emita su juicio"><p style={{ fontWeight: 'bold' }}>
+                            <InfoIcon className='pulsante' fontSize='medium' color='info' />
+                        </p></Tooltip> : <Tooltip title="La solicitud no requiere de su atención"><p style={{ fontWeight: 'bold' }}>
+                            <HighlightOffIcon  fontSize='medium' color='error' />
+                        </p></Tooltip>}
+                    
+                </Grid>
+            </Grid>
+        );
+    }
 
     const esNumero = (valor: any) => {
         const valorLimpio = (valor + '').replace(/[%$,\s]/g, '');
@@ -205,10 +227,7 @@ const useDinamicTableMejorada = (props: DinamicTableMejoradaProps) => {
     }
 
     const printAvanceOene = (row_: any) => {
-
         const row = row_?.data;
-        const x = row_?.colDef?.field;
-
         return (
             <Grid container style={{ textAlign: 'left', padding: 0, margin: 0, height: '250px', overflow: 'scroll' }}>
                 <Grid item xs={12} style={{ padding: 0, margin: 0, }}>
@@ -247,7 +266,6 @@ const useDinamicTableMejorada = (props: DinamicTableMejoradaProps) => {
 
     const printPendienteContabilizar = (row_: any) => {
         const row = row_?.data;
-        const x = row_?.colDef?.field;
         return (
             <Grid container style={{ textAlign: 'left', padding: 0, margin: 0, }}>
                 {row?.pendiente_contabilizar_data?.Uno ? <Grid item xs={12} style={{ padding: 0, margin: 0, }}>
@@ -289,7 +307,6 @@ const useDinamicTableMejorada = (props: DinamicTableMejoradaProps) => {
 
     const creaDetalleAvance = (row_: any) => {
         const row = row_?.data;
-        const x = row_?.colDef?.field;
         return (
             <Grid container spacing={0} style={{ textAlign: 'center', padding: 0, margin: 0, }}>
                 <Grid item lg={4} md={4} sm={12} xl={4} xs={12} style={{ textAlign: 'center', paddingTop: 40, paddingBottom: 40, margin: 0 }}>
@@ -332,8 +349,6 @@ const useDinamicTableMejorada = (props: DinamicTableMejoradaProps) => {
 
     const printDisponibles = (row_: any) => {
         const row = row_?.data;
-        const x = row_?.colDef?.field;
-
         const disponible = row?.disponible;
         const reorden = row?.reorden;
         return (<p style={{ fontWeight: 'bold', color: disponible <= reorden && disponible > 0 ? 'red' : 'black' }}>{disponible}</p>);
@@ -400,7 +415,6 @@ const useDinamicTableMejorada = (props: DinamicTableMejoradaProps) => {
 
     const printConcepto = (row_: any) => {
         const row = row_?.data;
-        const x = row_?.colDef?.field;
         return (<p style={{ color: '#fb8c00', fontWeight: 'bold' }}>{row?.concepto},<strong style={{ color: '#1A73E8' }}>{` (frente:${row?.frentes?.[0]?.frente || ''}) ${row?.subfrentes?.[0]?.frente ? ', (subfrente:' + (row?.subfrentes?.[0]?.frente || '') + ')' : ''}`}</strong></p>);
     }
 
@@ -435,7 +449,6 @@ const useDinamicTableMejorada = (props: DinamicTableMejoradaProps) => {
 
     const mapa = (row_: any) => {
         const row = row_?.data;
-        const x = row_?.colDef?.field;
         const location = (isNaN(+row?.latitud) || isNaN(+row?.longitud)) ? null : { lat: +row?.latitud, lng: +row?.longitud }
         const defaultProps = {
             center: location || {
@@ -471,7 +484,6 @@ const useDinamicTableMejorada = (props: DinamicTableMejoradaProps) => {
 
     const verComentarios = (row_: any) => {
         const row = row_?.data;
-        const x = row_?.colDef?.field;
         return (
             <div key={row?.id}>
                 <Button
@@ -489,7 +501,6 @@ const useDinamicTableMejorada = (props: DinamicTableMejoradaProps) => {
 
     const verCntratosClasificacion = (row_: any) => {
         const row = row_?.data;
-        const x = row_?.colDef?.field;
         return (
             <div key={row?.id}>
                 {_.isArray(row?.detalle) && row?.detalle?.length ? <Button
@@ -507,7 +518,6 @@ const useDinamicTableMejorada = (props: DinamicTableMejoradaProps) => {
 
     const verUsuariosAsignacion = (row_: any) => {
         const row = row_?.data;
-        const x = row_?.colDef?.field;
         return (
             <div key={row?.id}>
                 <Button
@@ -526,7 +536,6 @@ const useDinamicTableMejorada = (props: DinamicTableMejoradaProps) => {
 
     const verPepAsignadas = (row_: any) => {
         const row = row_?.data;
-        const x = row_?.colDef?.field;
         return (
             <div key={row?.id}>
                 <Button
@@ -545,7 +554,6 @@ const useDinamicTableMejorada = (props: DinamicTableMejoradaProps) => {
 
     const usuariosAsignadosProyecto = (row_: any) => {
         const row = row_?.data;
-        const x = row_?.colDef?.field;
         return (
             <div key={row?.id}>
                 <Button
@@ -563,7 +571,6 @@ const useDinamicTableMejorada = (props: DinamicTableMejoradaProps) => {
 
     const usuariosAsignados = (row_: any) => {
         const row = row_?.data;
-        const x = row_?.colDef?.field;
         return (
             <div key={row?.id}>
                 <Button
@@ -621,12 +628,12 @@ const useDinamicTableMejorada = (props: DinamicTableMejoradaProps) => {
         const r = env.API_URL_DOCUMENTOS === 'https://dirac.api.arjion.com/' ? `${(row?.[x] || "").replaceAll('storage/app/', '')} ` : row?.[x] || "";
         return (
             <>
-               {row?.[x] ? <Link
+                {row?.[x] ? <Link
                     target="_blank"
                     href={`${env.API_URL_DOCUMENTOS}/${r}`}
                 >
                     {!props?.opcionesRepo ? <CloudIcon color="primary" /> : <PreviewIcon color='primary' />}
-                </Link>: 'Sin documento'}
+                </Link> : 'Sin documento'}
             </>
         );
     };
@@ -638,7 +645,6 @@ const useDinamicTableMejorada = (props: DinamicTableMejoradaProps) => {
 
     const permiso = (row_: any) => {
         const row = row_?.data;
-        const x = row_?.colDef?.field;
         const newRow = JSON.parse(row?.Permisos);
         const icons = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }];
         return (
@@ -704,6 +710,7 @@ const useDinamicTableMejorada = (props: DinamicTableMejoradaProps) => {
                 esMatriz={props?.esMatriz}
                 titulo={props?.titulo === "Herramientas"}
                 tit={props?.titulo}
+                esGastoSolicitante={props?.esGastoSolicitante}
                 esContrato={props?.esContrato}
                 esAvancePorConfirmar={props?.esAvancePorConfirmar}
                 accioesBitacoraEstimaciones={props?.accioesBitacoraEstimaciones}
@@ -741,6 +748,7 @@ const useDinamicTableMejorada = (props: DinamicTableMejoradaProps) => {
                 row={row}
                 enAccion={(accion) => props?.enAccion && props?.enAccion(accion, row)}
                 esUsuariosGeocerca={props?.esUsuariosGeocerca}
+                esGastoSolicitante={props?.esGastoSolicitante}
             />
         )
     };

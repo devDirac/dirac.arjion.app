@@ -56,13 +56,16 @@ function TimelineItem({ color, icon, title, dateTime, dateTime2, dateTime3, desc
           React.cloneElement(icon, { fontSize: "large" })
         )}
       </MDBox>
+      
       <MDBox ml={5.75} pt={description ? 0.7 : 0.5} lineHeight={0} maxWidth="30rem">
         <MDTypography variant="button" fontWeight="medium" color={isDark ? "white" : "dark"}>
           {title}
         </MDTypography>
-        {subtitle ? <MDTypography variant="button" fontWeight="light" color={isDark ? "white" : "dark"}>
+       
+        {subtitle ?  <MDBox mt={0.5}><MDTypography variant="button" fontWeight="light" color={isDark ? "white" : "dark"}>
           {subtitle}
-        </MDTypography> : null}
+        </MDTypography> </MDBox> : null}
+       
         <MDBox mt={0.5}>
           <MDTypography variant="caption" color={isDark ? "secondary" : "text"}>
             {dateTime}
