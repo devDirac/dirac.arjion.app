@@ -3,7 +3,6 @@ import * as Yup from "yup";
 import React, { useEffect, useState } from 'react'
 import { Grid } from '@mui/material';
 import { Button, Form } from 'react-bootstrap';
-import SelectMultipleField from '../SelectMultipleField/SelectMultipleField';
 import { useIntl } from 'react-intl';
 import SelectMultipleAutoCompleteField from '../SelectMultipleAutoCompleteField/SelectMultipleAutoCompleteField';
 
@@ -28,7 +27,7 @@ const InfoWindowMark = (props: InfoWindowMarkProps) => {
         },
         onSubmit: async (values) => { },
         validationSchema: Yup.object({
-            //contrato: Yup.array()//.min(1, intl.formatMessage({ id: "input_validation_requerido" })).required(intl.formatMessage({ id: "input_validation_requerido" }))
+            //contrato: Yup.array().min(1, intl.formatMessage({ id: "input_validation_requerido" })).required(intl.formatMessage({ id: "input_validation_requerido" }))
         }),
     });
 

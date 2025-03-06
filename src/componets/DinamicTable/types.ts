@@ -43,6 +43,7 @@ interface DataRow {
     esEdicionConceptos?:boolean
     esGenerarPaquete?:boolean
     esInfoCarrusel?:boolean
+    esGastoSolicitante?:boolean
   }
   
 

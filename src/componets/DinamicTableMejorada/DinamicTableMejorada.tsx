@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useRef } from 'react'
 import { Grid, IconButton, Tooltip } from "@mui/material";
 import { AgGridReact } from 'ag-grid-react';
 import "ag-grid-community/styles/ag-grid.css";
@@ -25,6 +25,7 @@ const DinamicTableMejorada: React.FC<DinamicTableMejoradaProps> = (props: Dinami
         localeText,
         data
     } = useDinamicTableMejorada(props);
+    const gridApiRef = useRef(null);
 
     const CustomFooter = () => {
         const sumaImporte = (props?.data || []).reduce((a: any, c: any) => { return a + (+c?.importe.replaceAll('$', '').replaceAll(',', '')) }, 0);
@@ -70,7 +71,6 @@ const DinamicTableMejorada: React.FC<DinamicTableMejoradaProps> = (props: Dinami
             return { background: '#68aad4' };
         }
     };
-
 
     return (
         <Grid container spacing={2}>

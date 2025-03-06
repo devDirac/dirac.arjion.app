@@ -58,7 +58,7 @@ const DinamicTable: React.FC<DinamicTableProps> = (props: DinamicTableProps) => 
             </Tooltip>
           </Grid> : null}
           <Grid item xs={12} md={4} style={{ textAlign: 'center', padding: '24px' }}>
-            {useMemo(() => (!props?.sinFiltro ? <SearchFiltro onFiltro={(w: string) => { handleFiltro(w) }} /> : null), [])}
+            {useMemo(() => (!props?.sinFiltro ? <SearchFiltro onFiltro={(w: string) => { handleFiltro(w) }} /> : null) , [])}
           </Grid>
         </Grid>
         <Grid item xs={12} style={{ padding: "12px", border:'solid 1px rgb(223 223 223)' }}>

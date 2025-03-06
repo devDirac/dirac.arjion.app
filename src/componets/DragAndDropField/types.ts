@@ -3,4 +3,5 @@ export interface DragAndDropFieldProps {
     multiple:boolean
     muestraBoton:boolean
     acepted?:any
+    resultadosTabla?:boolean
 }

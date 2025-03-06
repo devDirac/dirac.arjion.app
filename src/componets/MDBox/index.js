@@ -31,26 +31,16 @@ const MDBox = forwardRef(
   )
 );
 
-// Setting default values for the props of MDBox
-MDBox.defaultProps = {
-  variant: "contained",
-  bgColor: "transparent",
-  color: "dark",
-  opacity: 1,
-  borderRadius: "none",
-  shadow: "none",
-  coloredShadow: "none",
-};
 
 // Typechecking props for the MDBox
 MDBox.propTypes = {
   children:PropTypes.any,
   variant: PropTypes.oneOf(["contained", "gradient"]),
-  bgColor: PropTypes.string,
-  color: PropTypes.string,
-  opacity: PropTypes.number,
-  borderRadius: PropTypes.string,
-  shadow: PropTypes.string,
+  bgColor: PropTypes.any,
+  color: PropTypes.any,
+  opacity: PropTypes.any,
+  borderRadius: PropTypes.any,
+  shadow: PropTypes.any,
   py:PropTypes.any,
   coloredShadow: PropTypes.oneOf([
     "primary",

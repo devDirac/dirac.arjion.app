@@ -7,11 +7,16 @@ import { useMaterialUIController } from "context";
 const useSelectMultipleAutoCompleteField = (props: SelectMultipleAutoCompleteFieldProps) => {
     const [field, meta] = useField(props);
     const [didFocus, setDidFocus] = useState(false);
-    const handleFocus = () => setDidFocus(true);
+    const handleFocus = () => {
+        setDidFocus(true)
+        
+
+    };
     const showFeedback = (!!didFocus && !(props?.value || []).length) || meta.touched;
+    const isTouched = meta.touched;
     const isValid = meta.error ? 'invalid' : 'valid';
     const errorMessage = meta.error ? meta.error : '';
-    const { formik,btnPlus } = props;
+    const { formik,btnPlus, btnActualiza } = props;
     const esError = formik?.touched && formik?.error;
     const [controller] = useMaterialUIController();
     const { darkMode } = controller;
@@ -29,8 +34,10 @@ const useSelectMultipleAutoCompleteField = (props: SelectMultipleAutoCompleteFie
         darkMode,
         esError,
         btnPlus,
+        btnActualiza,
         newPros,
-        theme
+        theme,
+        isTouched,
     }
 }
 

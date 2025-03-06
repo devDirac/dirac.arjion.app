@@ -1,24 +1,22 @@
-import { Backdrop, Box, Card, CardContent, CircularProgress, Divider, Grid, IconButton, Link, List, ListItem, ListItemText, Tab, Tabs, Typography } from "@mui/material";
+import { Backdrop, Box, CircularProgress, Divider, Grid, IconButton, Link, List, ListItem, ListItemText, Tab, Tabs, Typography } from "@mui/material";
 import PreviewIcon from '@mui/icons-material/Preview';
 import env from "react-dotenv";
 import AddBannerForm from "../componets/Carrusel/AddBannerForm";
 import React, { useCallback, useEffect, useState } from "react";
 import { Button, ButtonGroup } from "react-bootstrap";
 import AddCarruselForm from "../componets/Carrusel/AddCarruselForm";
-import { getErrorHttpMessage, sleep } from "../utils";
+import { getErrorHttpMessage } from "../utils";
 import { useIntl } from "react-intl";
 import { addPisoHttp, asignarContenidoHttp, deleteInfoBannerHttp, deletePisoHttp, editPisoHttp, getContenidoInformacionHttp, getContenidoParaAsignarHttp, getInfoBannerHttp, getPlayListHttp, setInfoBannerHttp, updateInfoBannerHttp } from "../actions/banner";
 import ModalComponent from "../componets/Modal";
 import DinamicTableMejorada from "../componets/DinamicTableMejorada/DinamicTableMejorada";
 import AppAppBarC from "../componets/Carrusel/AppAppBarC";
 import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
-import { AnyARecord } from "dns";
 import SearchFiltro from "../componets/SearchFiltro/SearchFiltro";
 import _ from "lodash";
 import ModalConfirm from "../componets/ModalConfirm/ModalConfirm";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import AddPisoForm from "../componets/Carrusel/AddPisoForm";
-import DinamicTable from "../componets/DinamicTable";
 import CampoSwitch from "../componets/CampoSwitch";
 
 interface TabPanelProps {

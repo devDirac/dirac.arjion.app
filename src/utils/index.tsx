@@ -1,4 +1,5 @@
 import _ from "lodash";
+import moment from "moment";
 import { numericFormatter } from "react-number-format";
 
 export const sleep = (ms: number) => {
@@ -332,18 +333,18 @@ export const formatNumericValues = (data: any) => {
 
 
 
-export const isImageOrVideo = (items:any) => {
+export const isImageOrVideo = (items: any) => {
   // Extensiones comunes para imágenes y videos
   const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
   const videoExtensions = ['mp4', 'avi', 'mov', 'mkv', 'flv', 'wmv', 'webm'];
 
-  return items.map((item:any) => {
+  return items.map((item: any) => {
     // Extraer la extensión del archivo
     const extension = item.ruta_media.split('.').pop().toLowerCase();
 
     // Determinar el tipo de archivo
     if (imageExtensions.includes(extension)) {
-      return { ...item, type: 'image', duration:30000 };
+      return { ...item, type: 'image', duration: 30000 };
     } else if (videoExtensions.includes(extension)) {
       return { ...item, type: 'video' };
     } else {
@@ -351,3 +352,34 @@ export const isImageOrVideo = (items:any) => {
     }
   });
 };
+
+export const getCurrentDate = () => moment().format("YYYY-MM-DD");
+
+
+export const groupByProperty = (data: any[], property: string) => {
+  return Object.values(
+    data.reduce((acc: any, item: any) => {
+      const key = item[property];
+      if (!acc[key]) {
+        acc[key] = {
+          [property]: key,
+          suma_importe: 0,
+          suma_importe_en_pesos: 0,
+          conteo_estatus: [],
+          registros: []
+        };
+      }
+      acc[key].suma_importe += parseFloat(item.importe);
+      acc[key].suma_importe_en_pesos += parseFloat(item.importe_pesos);
+      const estatus = item.estatus;
+      let estatusObj = acc[key].conteo_estatus.find((e:any) => e.estatus === estatus);
+      if (estatusObj) {
+        estatusObj.cuenta += 1;
+      } else {
+        acc[key].conteo_estatus.push({ estatus, cuenta: 1 });
+      }
+      acc[key].registros.push(item);
+      return acc;
+    }, {})
+  );
+}

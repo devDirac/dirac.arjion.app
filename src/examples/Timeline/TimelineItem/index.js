@@ -60,9 +60,11 @@ function TimelineItem({ color, icon, title, dateTime, dateTime2, dateTime3, desc
         <MDTypography variant="button" fontWeight="medium" color={isDark ? "white" : "dark"}>
           {title}
         </MDTypography>
-        {subtitle ? <MDTypography variant="button" fontWeight="light" color={isDark ? "white" : "dark"}>
+       
+        {subtitle ?  <MDBox mt={0.5}><MDTypography variant="button" fontWeight="light" color={isDark ? "white" : "dark"}>
           {subtitle}
-        </MDTypography> : null}
+        </MDTypography> </MDBox> : null}
+       
         <MDBox mt={0.5}>
           <MDTypography variant="caption" color={isDark ? "secondary" : "text"}>
             {dateTime}

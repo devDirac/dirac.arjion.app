@@ -9,10 +9,25 @@ import _ from "lodash";
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import AddIcon from '@mui/icons-material/Add';
 import { Theme } from '@mui/material/styles';
-import { Box, Chip, FormControl, Grid, MenuItem, OutlinedInput, /* Select */ } from "@mui/material";
+import { Box, Chip, FormControl, Grid, IconButton, MenuItem, OutlinedInput, /* Select */ } from "@mui/material";
 import useSelectMultipleAutoCompleteField from './useSelectMultipleAutoCompleteField'
-import Select, { MultiValue, components, GroupBase } from 'react-select';
+import Select, { MultiValue, components, GroupBase, OptionProps, DropdownIndicatorProps, ControlProps } from 'react-select';
 import makeAnimated from 'react-select/animated';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import RefreshIcon from '@mui/icons-material/Refresh';
+
+export const colourOptions: readonly any[] = [
+    { value: 'ocean', label: 'Ocean', color: '#00B8D9', isFixed: true },
+    { value: 'blue', label: 'Blue', color: '#0052CC', isDisabled: true },
+    { value: 'purple', label: 'Purple', color: '#5243AA' },
+    { value: 'red', label: 'Red', color: '#FF5630', isFixed: true },
+    { value: 'orange', label: 'Orange', color: '#FF8B00' },
+    { value: 'yellow', label: 'Yellow', color: '#FFC400' },
+    { value: 'green', label: 'Green', color: '#36B37E' },
+    { value: 'forest', label: 'Forest', color: '#00875A' },
+    { value: 'slate', label: 'Slate', color: '#253858' },
+    { value: 'silver', label: 'Silver', color: '#666666' },
+];
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -49,9 +64,47 @@ const SelectMultipleAutoCompleteField: React.FC<SelectMultipleAutoCompleteFieldP
         darkMode,
         esError,
         btnPlus,
+        btnActualiza,
         newPros,
-        theme
+        theme,
+        isTouched
     } = useSelectMultipleAutoCompleteField(props);
+
+    const DropdownIndicator = (
+        propss: DropdownIndicatorProps<any, true>
+    ) => {
+        return (
+            <components.DropdownIndicator {...propss}>
+                {
+                    btnPlus ? <IconButton onMouseDown={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        props?.onAdd && props?.onAdd()
+                    }} style={{ padding: 1 }} aria-label={''} size="small"><AddIcon color="info" /></IconButton> : null
+                }
+                {
+                    btnActualiza ? <IconButton onMouseDown={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        props?.onRefresh && props?.onRefresh()
+                    }} style={{ padding: 1 }} aria-label={''} size="small"><RefreshIcon color="info" /></IconButton> : null
+                }
+
+                {
+                    errorMessage !== '' && typeof (props?.defaultValue) === 'undefined' && showFeedback ? <IconButton style={{ padding: 1 }} aria-label={''} size="small"><ErrorOutlineIcon color="error" /></IconButton> : null
+                }
+                {
+                    errorMessage === '' && typeof (props?.defaultValue) === 'undefined' && !showFeedback ? <IconButton style={{ padding: 1 }} aria-label={''} size="small"><KeyboardArrowDownIcon color="info" /></IconButton> : null
+                }
+                {
+                    errorMessage !== '' && typeof (props?.defaultValue) === 'undefined' && !showFeedback ? <IconButton style={{ padding: 1 }} aria-label={''} size="small"><KeyboardArrowDownIcon color="info" /></IconButton> : null
+                }
+                {
+                    errorMessage === '' && typeof (props?.defaultValue) !== 'undefined' ? <IconButton style={{ padding: 1 }} aria-label={''} size="small"><CheckIcon color="info" /></IconButton> : null
+                }
+            </components.DropdownIndicator>
+        );
+    };
 
     const MAX_VISIBLE = 2;
     const MultiValueContainer = (props: any) => {
@@ -81,7 +134,6 @@ const SelectMultipleAutoCompleteField: React.FC<SelectMultipleAutoCompleteFieldP
         return null;
     };
 
-
     return (
         <div
             style={{ width: '100%' }}
@@ -89,49 +141,101 @@ const SelectMultipleAutoCompleteField: React.FC<SelectMultipleAutoCompleteFieldP
         >
             <FormControl sx={{ width: '100%' }} style={{ width: '100%' }} variant="filled" size="small">
                 {props?.label && <Form.Label style={darkMode ? { color: 'white', fontSize: 14 } : { fontSize: 14 }}>{props?.label}</Form.Label>}
-                <InputGroup className="mb-3" style={esError ? { border: 'solid 1px red', borderRadius: '8px', width: '100%' } : formik?.touched && !formik?.error && !_.isEmpty(formik?.value) ? { border: 'solid 1px #01db01', borderRadius: '8px', width: '100%' } : { borderRadius: '8px', width: '100%' }}>
+                <InputGroup className="mb-3" style={errorMessage !== '' && typeof (props?.defaultValue) === 'undefined' && showFeedback ?
+                    { border: 'solid 1px red', borderRadius: '8px', width: '100%' } : errorMessage === '' && typeof (props?.defaultValue) !== 'undefined' ? { border: 'solid 1px #01db01', borderRadius: '8px', width: '100%' } : { borderRadius: '8px', width: '100%' }}>
                     <Grid container  >
-                        <Grid item xs={10} md={10} >
-                            <Select<any, true, GroupBase<any>>
+                        <Grid item xs={12} md={12}>
+                            {!props?.EsMultiple ? <Select<any, true, GroupBase<any>>
                                 onFocus={handleFocus}
-                                className="form-control"
+                                key={props?.id}
                                 closeMenuOnSelect={false}
                                 formatGroupLabel={(data) => `${data.label} (${data.options.length})`}
                                 isMulti
+                                styles={{
+                                    option: (base) => ({
+                                        ...base,
+                                        zIndex: 999,
+                                        border: `1px dotted ${colourOptions[2].color}`,
+                                        height: '80%',
+                                        fontSize: 12,
+                                    }),
+                                    control: (provided) => ({
+                                        ...provided,
+                                        minHeight: "30px", // Reduce la altura del select
+                                        height: "30px",
+                                        fontSize: "14px", // Reduce el tamaño del texto
+                                      }),
+                                      valueContainer: (provided) => ({
+                                        ...provided,
+                                        height: "30px",
+                                        padding: "0 6px",
+                                      }),
+                                      input: (provided) => ({
+                                        ...provided,
+                                        margin: "0px",
+                                      }),
+                                      indicatorsContainer: (provided) => ({
+                                        ...provided,
+                                        height: "30px",
+                                      }),
+                                }}
+                                placeholder={props?.placeholder}
                                 {...newPros}
                                 {...field}
                                 components={{
                                     MultiValueContainer,
                                     MultiValue: CustomMultiValue,
+                                    DropdownIndicator
+                                }}
+                                //onBlur={() => alert()}
+                                onChange={(e) => {
+                                    props?.onInput && props?.onInput(e);
+                                }}
+                            /> : null}
+                            {props?.EsMultiple ? <Select<any, true, GroupBase<any>>
+                                onFocus={handleFocus}
+                                key={props?.id}
+                                placeholder={props?.placeholder}
+                                styles={{
+                                    option: (base) => ({
+                                        ...base,
+                                        zIndex: 999,
+                                        border: `1px dotted ${colourOptions[2].color}`,
+                                        height: '80%',
+                                        fontSize: 12,
+                                    }),
+                                    control: (provided) => ({
+                                        ...provided,
+                                        minHeight: "30px", // Reduce la altura del select
+                                        height: "30px",
+                                        fontSize: "14px", // Reduce el tamaño del texto
+                                      }),
+                                      valueContainer: (provided) => ({
+                                        ...provided,
+                                        height: "30px",
+                                        padding: "0 6px",
+                                      }),
+                                      input: (provided) => ({
+                                        ...provided,
+                                        margin: "0px",
+                                      }),
+                                      indicatorsContainer: (provided) => ({
+                                        ...provided,
+                                        height: "30px",
+                                      }),
+                                }}
+                                className="form-control"
+                                closeMenuOnSelect={false}
+                                formatGroupLabel={(data) => `${data.label} (${data.options.length})`}
+                                {...newPros}
+                                {...field}
+                                components={{
+                                    DropdownIndicator
                                 }}
                                 onChange={(e) => {
                                     props?.onInput && props?.onInput(e);
                                 }}
-                            />
-                        </Grid>
-                        <Grid item xs={2} md={2} style={{ borderRadius: '10px' }}>
-                            <ButtonGroup style={{ float: 'right' }} >
-                                {
-                                    btnPlus ?
-                                        <Button onClick={() => props?.onAdd && props?.onAdd()} variant="outline-secondary" style={{ border: '1px solid #fff', position: 'relative', top: 8, width: '50%', height: '100%', float: 'right' }} id="button-addon1">
-                                            <AddIcon color="info" />
-                                        </Button> :
-                                        null
-                                }
-                                {
-                                    esError || (formik?.touched && !formik?.error && !_.isEmpty(formik?.value)) ?
-                                        <Button variant="outline-secondary" style={{ border: '1px solid #fff', position: 'relative', top: 8, float: 'right', width: props?.btnPlus ? '50%' : '100%', height: '100%' }} id="button-addon2">
-                                            {
-                                                esError ?
-                                                    <ErrorOutlineIcon color="error" /> :
-                                                    formik?.touched && !formik?.error && !_.isEmpty(formik?.value) ?
-                                                        <CheckIcon color="success" /> :
-                                                        <CheckIcon style={{ color: 'transparent' }} />
-                                            }
-                                        </Button> :
-                                        null
-                                }
-                            </ButtonGroup>
+                            /> : null}
                         </Grid>
                     </Grid>
                 </InputGroup>

@@ -32,13 +32,11 @@ const CarruselPage: React.FC = () => {
             setProcesando(true);
             const response = await getInfoBannerHttp(playlist);
             const result = isImageOrVideo(response.filter((r: any) => !r?.texto));
-            console.log(result)
             setMediaItem(result)
             setNews(response.filter((r: any) => r?.texto))
             setProcesando(false);
         } catch (error) {
             setProcesando(false);
-            console.log(error)
             const message = getErrorHttpMessage(error);
             setMensajeAlert(message || intl.formatMessage({ id: 'get_elementos_error' }));
             handleisAlertOpen();

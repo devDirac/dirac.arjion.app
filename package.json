@@ -5,6 +5,7 @@
   "dependencies": {
     "@ag-grid-community/client-side-row-model": "^32.3.3",
     "@ag-grid-community/core": "^32.3.3",
+    "@amcharts/amcharts4": "^4.10.39",
     "@amcharts/amcharts5": "^5.10.10",
     "@asseinfo/react-kanban": "2.2.0",
     "@emotion/cache": "11.7.1",
@@ -89,7 +90,7 @@
     "react-use-websocket": "^3.0.0",
     "read-excel-file": "^5.8.0",
     "redux": "^4.2.1",
-    "rsuite": "^5.75.0",
+    "rsuite": "^5.78.0",
     "styled-components": "^6.1.8",
     "stylis": "4.1.1",
     "stylis-plugin-rtl": "^2.0.2",

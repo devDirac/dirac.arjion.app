@@ -626,7 +626,22 @@ const textosMx = {
    'input_piso':'Piso',
    'input_play_list':'Lista de reproducción',
    'input_play_list_descripcion':'Elija las listas de reproducción a las que desea incluir el elmento',
-   'input_dispositivo':'Dispositivo'
+   'input_dispositivo':'Dispositivo',
+   'general_cargar_documentos':'Cargar documentos',
+   'input_beneficiario':'Beneficiario', 
+   'input_proyecto_sr':'Otro proyecto',
+   'input_proyecto_sr_descripcion':'Ingrese el nombre del otro proyecto',
+   'input_concepto_gac':'Concepto',
+   'input_proveedor':'Proveedor',
+   'input_proveedor_descripcion':'Ingrese el nombre del proveedor',
+   'input_beneficiario_otro':'Otro beneficiario',
+   'input_beneficiario_otro_descripcion':'Ingrese el nombre del otro beneficiario',
+   'input_forma_pago':'Forma de pago', 
+   'input_banco':'Banco',
+   'input_banco_descripcion':'Ingrese el nombre del banco',
+   'input_clabe':'Clabe',
+   'input_clabe_descripcion':'Ingrese el nombre de la clabe'
+
 };
 
 export default textosMx;
