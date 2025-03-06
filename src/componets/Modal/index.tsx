@@ -17,6 +17,7 @@ const Transition = React.forwardRef(function Transition(
 });
 
 
+
 const ModalComponent: React.FC<ModalProps> = (props: ModalProps) => {
     const [controller] = useMaterialUIController();
     const { darkMode } = controller;
