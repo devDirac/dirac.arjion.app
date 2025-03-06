@@ -12,3 +12,4 @@ const GacAdminSolicitudes: React.FC<any> = () => {
 };
 
 export default GacAdminSolicitudes;
+

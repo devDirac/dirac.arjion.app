@@ -36,6 +36,7 @@ const TransferList: React.FC<TransferListProps> = ({ enguardar, left_, right_ })
         setFrom(newFrom);
         setTo(newTo);
     };
+    
 
     return (
         <div>

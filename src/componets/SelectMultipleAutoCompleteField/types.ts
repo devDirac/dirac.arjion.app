@@ -19,5 +19,6 @@ export interface SelectMultipleAutoCompleteFieldProps {
     onRefresh?:()=>void
     defaultValue:any
     EsMultiple?:boolean
+    
     btnActualiza?:boolean
 }

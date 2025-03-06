@@ -13,6 +13,7 @@ interface RecuperaFirmaFormProps {
     procesando: boolean
 }
 
+
 const RecuperaFirmaForm: React.FC<RecuperaFirmaFormProps> = (props: RecuperaFirmaFormProps) => {
     const intl = useIntl();
 

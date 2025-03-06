@@ -85,6 +85,7 @@ const TablaDocumentos: React.FC<TablaDocumentosProps> = (props: TablaDocumentosP
         setOriginalData(JSON.parse(JSON.stringify(props?.initialData)));
     }, [props?.initialData]);
 
+    
     const [isAlertOpen, setIsAlertOpen] = useState(false);
     const [mensajeAlert, setMensajeAlert] = useState('');
     const handleisAlertOpen = () => setIsAlertOpen(true);

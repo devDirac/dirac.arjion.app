@@ -20,6 +20,7 @@ export interface InfoWindowMarkProps {
 const InfoWindowMark = (props: InfoWindowMarkProps) => {
     const intl = useIntl();
 
+    
     const [contrato, setContrato] = useState<any>([]);
     const formik = useFormik({
         initialValues: {

@@ -21,6 +21,7 @@ import MDBoxRoot from "./MDBoxRoot";
 
 // Custom styles for MDBox
 
+
 const MDBox = forwardRef(
   ({ variant, bgColor, color, opacity, borderRadius, shadow, coloredShadow, ...rest }, ref) => (
     <MDBoxRoot

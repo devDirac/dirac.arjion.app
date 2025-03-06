@@ -64,6 +64,7 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                     expandIcon={<ExpandMoreIcon />}
                                     aria-controls="panel1-content"
                                     id="panel1-header"
+                                    
                                 >
                                     <Typography component="span" style={{ fontSize: 12 }}>Todas las interacciones de los usuarios con la solicitud {
                                         props?.estaEnMiCancha ? <Tooltip title="La solicitud está esperando que usted emita su juicio"><InfoIcon className='pulsante' fontSize='medium' color='info' /></Tooltip> : null

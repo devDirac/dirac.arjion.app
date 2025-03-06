@@ -23,6 +23,7 @@ export const useDragAndDropField = (props: DragAndDropFieldProps) => {
       await files.reduce(async (_: any, cat: any) => {
         try {
           await _;
+          
           const data1 = new FormData();
           data1.append("file", cat);
           const response = await gacAddMediaHttp(data1)

@@ -19,6 +19,7 @@ const SeleccionTipoSolicitudApple: React.FC<SeleccionTipoSolicitudAppleProps> = 
                             whileTap={{ scale: 0.95 }}
                             transition={{ duration: 0.3 }}
                         >
+                            
                             <Card
                                 sx={{
                                     borderRadius: 3,

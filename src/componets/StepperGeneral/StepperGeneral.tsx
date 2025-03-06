@@ -32,6 +32,7 @@ const StepperGeneral: React.FC<StepperGeneralProps> = (props: StepperGeneralProp
             // Aquí podrías agregar lógica para ajustar el contenedor si es necesario
             
         });
+        
 
         if (stepperRef.current) {
             observer.observe(stepperRef.current);

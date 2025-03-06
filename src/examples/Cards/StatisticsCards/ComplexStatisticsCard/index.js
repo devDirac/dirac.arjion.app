@@ -63,6 +63,7 @@ function ComplexStatisticsCard({ color, title, count, percentage, percentageCerr
         </MDBox>
       </MDBox>
       <Divider />
+      
       <Grid container p={2}>
         {
           datas?.map((r,k) => (

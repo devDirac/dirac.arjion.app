@@ -13,6 +13,7 @@ const AddFirmaForm: React.FC<AddFirmaFormProps> = (props: AddFirmaFormProps) => 
     const {
         intl,
         formik,
+        
         firma,
         setFirma,
         foto,

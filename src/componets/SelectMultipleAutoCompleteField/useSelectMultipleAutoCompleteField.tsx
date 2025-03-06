@@ -20,6 +20,7 @@ const useSelectMultipleAutoCompleteField = (props: SelectMultipleAutoCompleteFie
     const esError = formik?.touched && formik?.error;
     const [controller] = useMaterialUIController();
     const { darkMode } = controller;
+    
     const newPros = Object.assign({}, props);
     delete newPros.btnPlus;
     delete newPros.onAdd;

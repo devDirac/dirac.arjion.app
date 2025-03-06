@@ -34,6 +34,7 @@ const SeleccionTipoSoliciud: React.FC<SeleccionTipoSoliciudProps> = (props: Sele
                                 props?.seleccion(type)
                             }}
                         >
+                            
                             <CardActionArea>
                                 <CardContent>
                                     <Typography variant="h6" fontWeight="bold">

@@ -14,6 +14,7 @@ interface AddConceptosProps {
     procesando: boolean
     enAction: (data: any) => void
     categorias: any
+    
 }
 
 const AddConceptos: React.FC<AddConceptosProps> = (props: AddConceptosProps) => {

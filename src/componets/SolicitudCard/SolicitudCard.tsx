@@ -18,6 +18,7 @@ interface Solicitud {
     descripcion: string;
     fecha: string;
     estatus: number;
+    
     documentos: Documento[];
 }
 

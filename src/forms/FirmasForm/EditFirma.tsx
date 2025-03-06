@@ -14,6 +14,7 @@ interface Item {
   imagen: string
 }
 
+
 interface EditFirmaProps {
   item: Item
   darkMode: boolean

@@ -14,6 +14,7 @@ interface AddFormaPagoProps {
     enAction: (data: any) => void
 }
 
+
 const AddFormaPago: React.FC<AddFormaPagoProps> = (props: AddFormaPagoProps) => {
     const intl = useIntl();
 

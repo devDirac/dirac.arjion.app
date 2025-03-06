@@ -14,6 +14,7 @@ interface AddTipoSolicitudProps {
     enAction: (data: any) => void
 }
 
+
 const AddTipoSolicitud: React.FC<AddTipoSolicitudProps> = (props: AddTipoSolicitudProps) => {
     const intl = useIntl();
 
