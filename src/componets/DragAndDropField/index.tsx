@@ -62,6 +62,8 @@ const DragAndDropField: React.FC<DragAndDropFieldProps> = (props: DragAndDropFie
             return {
               path: r?.path,
               importe: r?.importe || 0,
+              rfc: r?.rfc || '',
+              fiscal_folio: r?.fiscal_folio || '',
               nombre: r?.path,
               descripcion: r?.descripcion || 'Ingrese una descripción del documento',
               flex: 1,

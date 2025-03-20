@@ -12,6 +12,7 @@ import { Grid } from '@mui/material';
 import { FormikProvider } from 'formik';
 import { Form } from 'react-bootstrap';
 import InputField from '../../componets/InputField';
+import DragAndDropField from '../../componets/DragAndDropField';
 
 const ModalConfirm: React.FC<ModalConfirmProps> = (props: ModalConfirmProps) => {
 
@@ -21,7 +22,9 @@ const ModalConfirm: React.FC<ModalConfirmProps> = (props: ModalConfirmProps) => 
         darkMode,
         formik,
         comentarios,
-        setComentarios
+        setComentarios,
+        file, 
+        setFile
     } = useModalConfirm();
 
     return (
@@ -74,6 +77,21 @@ const ModalConfirm: React.FC<ModalConfirmProps> = (props: ModalConfirmProps) => 
                             </Grid>
                             : null
                     }
+                    {
+                        props?.esDocumentoAdjunto ? <Grid container spacing={2}>
+                            <Grid item xs={12} >
+                                <Grid item xs={12} className='bordersContainers' style={darkMode ? { backgroundColor: '#1f283e', padding: '10px' } : { backgroundColor: '#fff', padding: '10px' }}>
+                                    <DragAndDropField acepted={{
+                                         "image/jpeg": [],
+                                         "image/jpg": [],
+                                         "image/png": [],
+                                         "application/pdf": [],
+                                        
+                                    }} multiple={false} muestraBoton={false} onAction={(files: any) => setFile(files)} />
+                                </Grid>
+                            </Grid>
+                        </Grid> : null
+                    }
                 </DialogContent>
                 <DialogActions>
                     <Button color='error' autoFocus onClick={props?.onCancel} style={{ color: darkMode ? '#c14747' : '#c14747' }}>
@@ -82,7 +100,7 @@ const ModalConfirm: React.FC<ModalConfirmProps> = (props: ModalConfirmProps) => 
                     <Button
                         disabled={props?.esCambioEstatusEstimacion && comentarios === ''}
                         onClick={() => {
-                            props?.onAcept(comentarios)
+                            props?.onAcept(comentarios, file)
                         }} autoFocus style={{ color: darkMode ? '#1A73E8' : '#1A73E8' }}>
                         {intl.formatMessage({ id: 'login_form_component_acceder' })}
                     </Button>

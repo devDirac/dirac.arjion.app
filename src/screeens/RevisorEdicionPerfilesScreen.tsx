@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { getGacCatPerfilesHttp } from '../actions/catalogos';
 import TransferList from '../componets/TransferList/TransferList';
 import { sleep } from '../utils';
-import { getGetUsuariosAdministradoresHttp, getGetUsuariosPerfilesSolicitudHttp, setPerfilSolicitudHttp } from '../actions/user';
+import { getGetUsuariosAdministradoresHttp, getGetUsuariosNominaHttp, getGetUsuariosPerfilesSolicitudHttp, setPerfilSolicitudHttp, setPerfilSolicitudNominaHttp } from '../actions/user';
 
 
 const RevisorEdicionPerfilesScreen: React.FC = () => {
@@ -13,6 +13,7 @@ const RevisorEdicionPerfilesScreen: React.FC = () => {
     const [usuariosPerfil, setUsuariosPerfil] = useState<any>([]);
     const [admins, setAdmins] = useState<any>([]);
     const [perfilesData, setPerfilesData] = useState<any>(null);
+    const [nomina, setNomina] = useState<any>(null);
     const [procesando, setProcesando] = useState<any>(false);
 
     const [muestraVista, setMuestraVista] = useState<any>('Revisor fiscal');
@@ -28,10 +29,18 @@ const RevisorEdicionPerfilesScreen: React.FC = () => {
             setProcesando(true);
             const response = await getGacCatPerfilesHttp();
             setPerfilesData(response);
+            
             const usuariosAdministradores = await getGetUsuariosAdministradoresHttp();
             setAdmins(usuariosAdministradores);
+
+
             const usuariosPerfilesSolicitud = await getGetUsuariosPerfilesSolicitudHttp();
             setUsuariosPerfil(usuariosPerfilesSolicitud);
+
+            const usuariosNomina = await getGetUsuariosNominaHttp();
+            setNomina(usuariosNomina)
+
+
             setProcesando(false);
         } catch (error) {
             setProcesando(false);
@@ -48,14 +57,14 @@ const RevisorEdicionPerfilesScreen: React.FC = () => {
     /* Para guardar los revisores fiscales */
     const handleGuardarRevisores = async (l: any, r: any) => {
         try {
-            if(!r?.length){
+            if (!r?.length) {
                 setProcesando(false);
                 setMensajeAlert('No hay usuarios para asignar como revisores fiscales');
                 handleisAlertOpen();
-                return false;    
+                return false;
             }
             setProcesando(true);
-            await setPerfilSolicitudHttp({right : r});
+            await setPerfilSolicitudHttp({ right: r });
             getData();
             setProcesando(false);
             setMensajeAlert('Exito al guardar la configuración de los revisores fiscales');
@@ -67,10 +76,33 @@ const RevisorEdicionPerfilesScreen: React.FC = () => {
         }
     }
 
+    /* Para guardar los usuarios de nomina */
+    const handleGuardarNomina = async (l: any, r: any) => {
+        try {
+            if (!r?.length) {
+                setProcesando(false);
+                setMensajeAlert('No hay usuarios para asignar para el perfil de nomina');
+                handleisAlertOpen();
+                return false;
+            }
+            setProcesando(true);
+            console.log({ right: r })
+            await setPerfilSolicitudNominaHttp({ right: r });
+            getData();
+            setProcesando(false);
+            setMensajeAlert('Exito al guardar la configuración para el perfil de nomina');
+            handleisAlertOpen();
+        } catch (error) {
+            setProcesando(false);
+            setMensajeAlert('error al guardar la configuración para el perfil de nomina');
+            handleisAlertOpen();
+        }
+    }
+
     return (
         <>
-            <AppAppBarC />
-            <Grid container style={{ backgroundColor: '#fff', position: 'relative', top: 15, height: 'calc(100vh - 85px)' }} justifyContent="center">
+            <AppAppBarC esGastos />
+            <Grid container style={{ backgroundColor: '#fff' }} justifyContent="center">
                 <Grid item xs={12} style={{ textAlign: 'center', marginBottom: 15, paddingTop: 15, padding: 25 }}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} md={12} style={{ textAlign: 'center' }}>
@@ -87,28 +119,38 @@ const RevisorEdicionPerfilesScreen: React.FC = () => {
                             </Button>
                             <Button onClick={() => {
                                 setMuestraVista('Autorizador')
-                            }} size="small" variant="outlined" style={{ color: muestraVista === 'Autorizador' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: muestraVista === 'Autorizador' ? '#1A73E8' : '#fff' }}> Autorizador </Button>
+                            }} size="small" variant="outlined" style={{ color: muestraVista === 'Autorizador' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: muestraVista === 'Autorizador' ? '#1A73E8' : '#fff' }}>
+                                Autorizador
+                            </Button>
                             <Button onClick={() => {
                                 setMuestraVista('Pagador')
-                            }} size="small" variant="outlined" style={{ color: muestraVista === 'Pagador' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: muestraVista === 'Pagador' ? '#1A73E8' : '#fff' }}> Pagador </Button>
+                            }} size="small" variant="outlined" style={{ color: muestraVista === 'Pagador' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: muestraVista === 'Pagador' ? '#1A73E8' : '#fff' }}>
+                                Pagador
+                            </Button>
+                            <Button onClick={() => {
+                                setMuestraVista('Nomina')
+                            }} size="small" variant="outlined" style={{ color: muestraVista === 'Nomina' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: muestraVista === 'Nomina' ? '#1A73E8' : '#fff' }}>
+                                Nomina
+                            </Button>
                         </Grid>
                         {
 
                             muestraVista === 'Revisor fiscal' ? <Grid item xs={12} md={12} style={{ textAlign: 'center', marginTop: 100 }}>
                                 <TransferList
+                                    key='revisores'
                                     enguardar={(l, r) => handleGuardarRevisores(l, r)}
-                                    left_={admins.filter((r:any)=> !usuariosPerfil.map((r:any)=>r?.id_usuario).includes(r.id_usuario) && r?.nivel !== 'A').map((r:any) => {
+                                    left_={admins.filter((r: any) => !usuariosPerfil.map((r: any) => r?.id_usuario).includes(r.id_usuario) && r?.nivel !== 'A').map((r: any) => {
                                         return {
-                                            id:r?.id_usuario, 
+                                            id: r?.id_usuario,
                                             nombre: r?.nombre + ' ' + r?.apellidos
                                         }
-                                    }) }
-                                    right_={admins.filter((r:any)=> usuariosPerfil.map((r:any)=>r?.id_usuario).includes(r.id_usuario) && r?.nivel !== 'A').map((r:any) => {
+                                    })}
+                                    right_={admins.filter((r: any) => usuariosPerfil.map((r: any) => r?.id_usuario).includes(r.id_usuario) && r?.nivel !== 'A').map((r: any) => {
                                         return {
-                                            id:r?.id_usuario, 
+                                            id: r?.id_usuario,
                                             nombre: r?.nombre + ' ' + r?.apellidos
                                         }
-                                    }) }
+                                    })}
                                 /></Grid> : null
                         }
                         {
@@ -126,6 +168,29 @@ const RevisorEdicionPerfilesScreen: React.FC = () => {
                                 <p style={{ color: 'rgb(68, 94, 150)' }}>  {admins.find((r: any) => r?.nivel === 'A')?.nombre} {admins.find((r: any) => r?.nivel === 'A')?.apellidos} </p>
                             </Grid> : null
                         }
+
+                        {
+                            muestraVista === 'Nomina' ? <Grid item xs={12} md={12} style={{ textAlign: 'center', marginTop: 100 }}>
+                                <TransferList
+                                    key='nomina'
+                                    enguardar={(l, r) => handleGuardarNomina(l, r)}
+                                    left_={nomina.filter((r: any) => !usuariosPerfil.map((r: any) => r?.id_usuario).includes(r.id_usuario) && r?.nivel !== 'A').map((r: any) => {
+                                        return {
+                                            id: r?.id_usuario,
+                                            nombre: r?.nombre + ' ' + r?.apellidos
+                                        }
+                                    })}
+                                    right_={nomina.filter((r: any) => usuariosPerfil.map((r: any) => r?.id_usuario).includes(r.id_usuario) && r?.nivel !== 'A').map((r: any) => {
+                                        return {
+                                            id: r?.id_usuario,
+                                            nombre: r?.nombre + ' ' + r?.apellidos
+                                        }
+                                    })}
+                                />
+                            </Grid> : null
+                        }
+
+
                     </Grid>
                 </Grid>
                 <Backdrop className='BackdropClass' open={procesando}>

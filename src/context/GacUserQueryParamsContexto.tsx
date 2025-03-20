@@ -1,11 +1,31 @@
-import { Backdrop, CircularProgress, Grid } from '@mui/material';
-import ModalComponent from '../componets/Modal';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { 
+    Backdrop, 
+    CircularProgress, 
+    Grid 
+} from '@mui/material';
+import ModalComponent from '../componets/Modal';
 import { useSearchParams } from 'react-router-dom';
-import { getErrorHttpMessage, sleep } from '../utils';
-import { gacGetSolicitudesAdminsHttp, gacGetSolicitudesJefesAreaHttp, gacGetUserDataHttp, getGetUsuariosAdministradoresHttp, getGetUsuariosPerfilesSolicitudHttp } from '../actions/user';
-import { getAllTiposSolicitudesHttp, getGacBeneficiariosHttp, getGacCatConceptosHttp, getGacCatFormaPagoHttp, getGacCatPerfilesHttp, getGacEmpresasHttp, getGacEquivalenciaMonedaExtDolHttp, getGacProyectosSgiHttp, getGacTipoCambioDolarHttp, getGactodosLosUsuariosHTTP } from '../actions/catalogos';
+import { getErrorHttpMessage } from '../utils';
+import { 
+    gacGetSolicitudesJefesAreaHttp, 
+    gacGetUserDataHttp, 
+    getGetUsuariosAdministradoresHttp, 
+    getGetUsuariosPerfilesSolicitudHttp, 
+    getUserIdHashHttp 
+} from '../actions/user';
+import { 
+    getAllTiposSolicitudesHttp, 
+    getGacBeneficiariosHttp, 
+    getGacCatConceptosHttp, 
+    getGacCatFormaPagoHttp, 
+    getGacEmpresasHttp, 
+    getGacEquivalenciaMonedaExtDolHttp, 
+    getGacProveedoresHttp, 
+    getGacProyectosSgiHttp, 
+    getGacTipoCambioDolarHttp, 
+    getGactodosLosUsuariosHTTP 
+} from '../actions/catalogos';
 
 export const GacUserQueryParamsContext = React.createContext<any>(null);
 
@@ -22,6 +42,7 @@ export const ProviderContextUserComponent: any = ({ children }: any) => {
     const [monedas, setMonedas] = useState([]);
     const [formasPago, setFormasPago] = useState([]);
     const [conceptos, setConceptos] = useState([]);
+    const [proveedores, setProveedores] = useState([]);
     const [tipoCambio, setTipoCambio] = useState<any>(null);
     const [usuariosPerfil, setUsuariosPerfil] = useState<any>(null);
     const [admins, setAdmins] = useState<any>(null);
@@ -56,7 +77,13 @@ export const ProviderContextUserComponent: any = ({ children }: any) => {
                 setMensajeAlert('El id del usuario es requerido, el sistema no reconoce esta sesión y la pagina se cerrara al confirmar este mensaje');
                 handleisAlertOpen();
             }
-            const responseUser = await gacGetUserDataHttp(idUsuario);
+            const idHash = await getUserIdHashHttp(idUsuario);
+            console.log('aqui esta decodificado', idHash)
+            const usuariosPerfilesSolicitud = await getGetUsuariosPerfilesSolicitudHttp();
+            const esRevisor = (usuariosPerfilesSolicitud || []).filter((r: any) => +r?.id_usuario === +idHash && +r?.id_perfil === 1)
+            const esAutorizador = (usuariosPerfilesSolicitud || []).filter((r: any) => +r?.id_usuario === +idHash && +r?.id_perfil === 2)
+            const esPagador = (usuariosPerfilesSolicitud || []).filter((r: any) => +r?.id_usuario === +idHash && +r?.id_perfil === 3)
+            const responseUser = await gacGetUserDataHttp(idHash,(esRevisor?.length || esAutorizador?.length || esPagador?.length) ? 'admin' : 'noAdmin' );
             const responseProyectosSgi = await getGacProyectosSgiHttp();
             const responseBeneficiarios = await getGacBeneficiariosHttp(responseUser?.id_director_area);
             const responseTodosUsuarios = await getGactodosLosUsuariosHTTP();
@@ -67,49 +94,38 @@ export const ProviderContextUserComponent: any = ({ children }: any) => {
             const responseCatConceptos = await getGacCatConceptosHttp();
             const responseTipoCambioDolar = await getGacTipoCambioDolarHttp();
             const usuariosAdministradores = await getGetUsuariosAdministradoresHttp();
-            const usuariosPerfilesSolicitud = await getGetUsuariosPerfilesSolicitudHttp();
-
-            const esRevisor = (usuariosPerfilesSolicitud || []).filter((r: any) => +r?.id_usuario === +responseUser?.id_usuario && +r?.id_perfil === 1)
-            const esAutorizador = (usuariosPerfilesSolicitud || []).filter((r: any) => +r?.id_usuario === +responseUser?.id_usuario && +r?.id_perfil === 2)
-            const esPagador = (usuariosPerfilesSolicitud || []).filter((r: any) => +r?.id_usuario === +responseUser?.id_usuario && +r?.id_perfil === 3)
-
-            console.log(esRevisor , esAutorizador , esPagador)
+            const comProveedores = await getGacProveedoresHttp();
             if(esRevisor?.length || esAutorizador?.length || esPagador?.length){
-                const resultSolicitudes = await gacGetSolicitudesAdminsHttp(responseUser?.id_usuario);
-                setMisSolicitudes(resultSolicitudes)
+                /* const resultSolicitudes = await gacGetSolicitudesAdminsHttp(responseUser?.id_usuario);
+                setMisSolicitudes(resultSolicitudes) */
             }else{
                 const resultSolicitudes = await gacGetSolicitudesJefesAreaHttp(responseUser?.id_usuario);
                 setMisSolicitudes(resultSolicitudes)
                 setEsJefe(true)
             }
-
-            
-
-            setUser(responseUser)
+            setUser(responseUser);
             setProyectos(responseProyectosSgi.concat([{ id: 0, nombre: 'Otro' }]));
-            setBeneficiarios(responseBeneficiarios.concat([{ id_usuario: 0, correo: 'Otro' }]));
+            setBeneficiarios(responseBeneficiarios.concat([{ id_usuario: 0, correo: 'Otro' }]).filter((r:any)=>  !responseUser?.jerarquiaJefes?.map((a:any)=> a?.id_usuario)?.includes(r?.id_usuario)  ));
             setUsuariosTodos(responseTodosUsuarios);
             setEmpresas(responseEmpresas);
             setTipoSolicitud(response);
-            setMonedas(responseMonedas)
-            setFormasPago(responseFormasPago)
+            setMonedas(responseMonedas);
+            setFormasPago(responseFormasPago);
             setConceptos(responseCatConceptos);
             setTipoCambio(responseTipoCambioDolar);
             setAdmins(usuariosAdministradores);
-            setUsuariosPerfil(usuariosPerfilesSolicitud)
-
-            
-            
+            setUsuariosPerfil(usuariosPerfilesSolicitud);
+            setProveedores(comProveedores);
             setEsRevisor(esRevisor?.length ? true : false);
             setEsAutorizador(esAutorizador?.length ? true : false);
             setEsPagador(esPagador?.length   ? true : false);
             setProcesando(false);
         } catch (error) {
-            const mensajeerror = getErrorHttpMessage(error)
+            const mensajeerror = getErrorHttpMessage(error);
             setProcesando(true);
             setMensajeAlert(mensajeerror || 'Error al obtener la información del usuario');
             handleisAlertOpen();
-            setEsError(true)
+            setEsError(true);
         }
     }, []);
 
@@ -128,6 +144,8 @@ export const ProviderContextUserComponent: any = ({ children }: any) => {
             },
             id_director_area: user?.id_director_area,
             idUsuario: user?.id_usuario,
+            idHash:user?.id_hash,
+            bancos: user?.bancos,
             nombre: user?.nombre + ' ' + user?.apellidos,
             solicitudes: (user?.solicitudesCreadas || []).map((r: any) => {
                 const solicitaName = beneficiarios.find((w: any) => w?.id_usuario === r?.solicita)?.nombre + ' ' + beneficiarios.find((w: any) => w?.id_usuario === r?.solicita)?.apellidos;
@@ -144,6 +162,7 @@ export const ProviderContextUserComponent: any = ({ children }: any) => {
                     }
                 }
             }),
+
             organigrama: user?.jerarquiaJefes,
             beneficiarios,
             proyectos,
@@ -161,12 +180,13 @@ export const ProviderContextUserComponent: any = ({ children }: any) => {
             esAutorizador,
             esPagador,
             misSolicitudes,
-            esJefe
+            esJefe,
+            proveedores
         }}>
             <>
                 {children}
                 {/* Modal mensajes en general */}
-                <ModalComponent handleClose={handleisAlerClose} isOpen={isAlertOpen} key={'alerta____________'}>
+                <ModalComponent handleClose={handleisAlerClose} isOpen={isAlertOpen} key={'alerta____________.'}>
                     <Grid container spacing={2} style={{ textAlign: 'center' }}>
                         <Grid item xs={12}>
                             <br />

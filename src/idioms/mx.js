@@ -640,8 +640,10 @@ const textosMx = {
    'input_banco':'Banco',
    'input_banco_descripcion':'Ingrese el nombre del banco',
    'input_clabe':'Clabe',
-   'input_clabe_descripcion':'Ingrese el nombre de la clabe'
-
+   'input_clabe_descripcion':'Ingrese el nombre de la clabe',
+   'input_fechaPago':'Fecha limite para realizar el pago',
+   'input_dias_notifica_pago':'Dias para notificar sobre el pago',
+   'input_dias_notifica_pago_descripcion':'Ingrese el número de dias para notificar sobre el pago'
 };
 
 export default textosMx;

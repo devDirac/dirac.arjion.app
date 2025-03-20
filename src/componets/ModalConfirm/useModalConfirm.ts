@@ -13,6 +13,7 @@ const useModalConfirm = () => {
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
   const [comentarios, setComentarios] = useState<string>('');
+  const [file, setFile] = useState<any>(null);
   const formik = useFormik({
     initialValues: {
       comentarios: ""
@@ -32,7 +33,9 @@ const useModalConfirm = () => {
     darkMode,
     formik,
     comentarios,
-    setComentarios
+    setComentarios,
+    file,
+    setFile
   }
 }
 export default useModalConfirm

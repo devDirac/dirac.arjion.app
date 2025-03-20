@@ -1,6 +1,7 @@
 interface DataRow {
     id?: any
     id_estatus?:any
+    requiere_documentos?:any
     estatus_1?:any
     estatus?:any
     estatusNumero?:any
@@ -44,6 +45,7 @@ interface DataRow {
     esGenerarPaquete?:boolean
     esInfoCarrusel?:boolean
     esGastoSolicitante?:boolean
+    esVistaSolicitante?:boolean
   }
   
 

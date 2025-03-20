@@ -277,3 +277,29 @@ export const getGacCatPerfilesHttp = async (): Promise<any> => {
     }
 };
 
+export const getGacProveedoresHttp = async (): Promise<any> => {
+    try {
+        const response: any = await axios.get(
+            `${env.API_URL}${"/getGacProveedores"}`
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+
+
+
+export const setProveedorHttp = async (data:any): Promise<any> => {
+    try {
+        const response: any = await axios.post(
+            `${env.API_URL}${"/setProveedor"}`, data
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};

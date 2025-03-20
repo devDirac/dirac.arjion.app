@@ -4,16 +4,18 @@ import ModalComponent from '../componets/Modal';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import GacSolicitudDetalle from '../componets/GacSolicitudDetalle/GacSolicitudDetalle';
 import { useSearchParams } from 'react-router-dom';
-import { apruebaSolicitudJefeDirectoHttp, cambioEnSolicitudAutorizadorHttp, cambioEnSolicitudPagadorHttp, cambioEnSolicitudRevisorHttp, generarZipSolicitudHttp, getDetalleSolicitudHttp, handleDocumentosRevisorRevisaHttp, notificaRevisoresFiscalesHttp, setDocumentoSolicitudHttp, solicitaAprobacionDireccionGeneralHttp } from '../actions/solicitud';
+import { actualizaIdConceptoHttp, apruebaSolicitudJefeDirectoHttp, atualizaTipoSolicitudHttp, cambioEnSolicitudAutorizadorHttp, cambioEnSolicitudPagadorHttp, cambioEnSolicitudRevisorHttp, generarZipSolicitudHttp, getDetalleSolicitudHttp, handleDocumentosRevisorRevisaHttp, notificaNominaHttp, notificaRevisoresFiscalesAutorizadorHttp, notificaRevisoresFiscalesHttp, setDocumentoSolicitudHttp, solicitaAprobacionDireccionGeneralHttp, solicitaCargaDocumentalHttp } from '../actions/solicitud';
 import { GacUserQueryParamsContext } from '../context/GacUserQueryParamsContexto';
 import env from "react-dotenv";
 import ModalConfirm from '../componets/ModalConfirm/ModalConfirm';
+import { deleteDocumentHttp, getCritscoAnalisisHttp } from '../actions/documentos';
+import { sleep } from '../utils';
 
 
 const GacSolicitudDetalleScreen: React.FC = () => {
-
     /* Para saber si el usuario que esta consultando la solicitud es el que esta en turno de interactuar con ella osea si esta en su "lado de la cancha" */
     const [estaEnMiCancha, setEstaEnMiCancha] = useState<any>(null);
+
     /* Extraemos el id del usuario de la url   */
     const perfil = React.useContext(GacUserQueryParamsContext);
     const [queryParameters] = useSearchParams();
@@ -23,6 +25,10 @@ const GacSolicitudDetalleScreen: React.FC = () => {
     const [procesando, setProcesando] = useState<any>(false);
     const [documentosCargadosMuestra, setDocumentosCargadosMuestra] = useState<any>(false);
     const [documentosCargados, setDocumentosCargados] = useState<any>(false);
+
+    /* para la modal de la pregunta si desea eliminar el archivo  */
+    const [openPreguntaDocumentoDelete, setOpenPreguntaDocumentoDelete] = useState<any>(false);
+    const [documentoDelete, setDoocumentoDelete] = useState<any>(null);
 
     const [muestraConfirmAprobarJefe, setMuestraConfirmAprobarJefe] = useState<any>(false);
     const [txtAprobarJefe, setTxtAprobarJefe] = useState<any>(false);
@@ -37,6 +43,7 @@ const GacSolicitudDetalleScreen: React.FC = () => {
     const [esPagador, setEsPagador] = useState<any>(false);
     const [solicitudDetalle, setSolicitudDetalle] = useState<any>(null);
     const [documentosSolicitudDetalle, setDocumentosSolicitudDetalle] = useState<any>(null);
+
     /* Modal mensajes generales */
     const [mensajeAlert, setMensajeAlert] = useState('');
     const [isAlertOpen, setIsAlertOpen] = useState(false);
@@ -46,7 +53,7 @@ const GacSolicitudDetalleScreen: React.FC = () => {
         if (documentosCargadosMuestra && solicitudDocumentos?.length) {
             setDocumentosCargados(true)
         }
-        if (documentosCargadosMuestra && !solicitudDocumentos?.length && solicitud?.[0]?.id_usuario_autorizador) {
+        if (documentosCargadosMuestra && !solicitudDocumentos?.length) {
             handleNotificaJefes()
             setDocumentosCargados(false);
         }
@@ -72,19 +79,24 @@ const GacSolicitudDetalleScreen: React.FC = () => {
     const getData = useCallback(async () => {
         try {
             setProcesando(true);
-            const res = await getDetalleSolicitudHttp(idSolicitud, perfil?.idUsuario);
+            const res = await getDetalleSolicitudHttp(idSolicitud, perfil?.idHash);
             setSolicitud(res.map((r: any) => {
                 const solicitaName = perfil?.usuariosTodos.find((w: any) => w?.id_usuario === r?.solicita)?.nombre + ' ' + perfil?.usuariosTodos.find((w: any) => w?.id_usuario === r?.solicita)?.apellidos;
-                const beneficiarioName = perfil?.usuariosTodos.find((w: any) => w?.id_usuario === r?.beneficiario)?.nombre + ' ' + perfil?.usuariosTodos.find((w: any) => w?.id_usuario === r?.beneficiario)?.apellidos;
+
+                const beneficiarioName = r?.beneficiario === 0 ? 'Otro beneficiario' : perfil?.usuariosTodos.find((w: any) => w?.id_usuario === r?.beneficiario)?.nombre + ' ' + perfil?.usuariosTodos.find((w: any) => w?.id_usuario === r?.beneficiario)?.apellidos;
+
                 const proyecto = perfil?.proyectos.find((w: any) => w?.id === r?.id_proyecto)?.nombre;
                 const empresa = perfil?.empresas.find((w: any) => w?.id === r?.id_empresa)?.nombre;
+                const proveedor = perfil?.proveedores.find((w: any) => w?.id === +r?.proveedor)?.nombre;
+
                 return {
                     ...r,
                     ...{
                         solicitaName,
                         beneficiarioName,
                         proyecto,
-                        empresa
+                        empresa,
+                        proveedor
                     }
                 }
             }));
@@ -158,16 +170,18 @@ const GacSolicitudDetalleScreen: React.FC = () => {
                 }
             }
         } catch (error) {
+            console.log(error, perfil?.idHash)
             setProcesando(false);
-            setMensajeAlert('Error al obtener la información de la solicitud');
-            handleisAlertOpen();
+            if (perfil?.idHash) {
+                setMensajeAlert('Error al obtener la información de la solicitud');
+                handleisAlertOpen();
+            }
         }
-    }, [idSolicitud, perfil, perfil?.idUsuario]);
+    }, [idSolicitud, perfil, perfil?.idHash]);
 
     useEffect(() => {
         getData()
     }, [getData]);
-
 
     const handleAddDocumentos = async (solicitud: any, documentos: any[]) => {
         try {
@@ -176,8 +190,19 @@ const GacSolicitudDetalleScreen: React.FC = () => {
             await documentos.reduce(async (_: any, cat: any) => {
                 try {
                     await _;
+                    let crist = null;
+                    if (cat?.documento_valido === "si" && cat?.rfc && cat?.fiscal_folio && cat?.importe) {
+                        crist = await getCritscoAnalisisHttp({
+                            user_rfc: 'DIR7610279E5',
+                            recive_rfc: cat?.rfc,
+                            fiscal_folio: cat?.fiscal_folio,
+                            monto: cat?.importe
+                        })
+                    }
                     const data1: any = new FormData();
                     data1.append("importe", cat?.importe);
+                    data1.append("fiscal_folio", cat?.fiscal_folio || '-');
+                    data1.append("rfc", cat?.rfc || '-');
                     data1.append("nombre_corto", cat?.nombre);
                     data1.append("descripcion", cat?.descripcion);
                     data1.append("tipo_moneda", cat?.moneda);
@@ -186,6 +211,7 @@ const GacSolicitudDetalleScreen: React.FC = () => {
                     data1.append("nombre_documento", cat?.path);
                     data1.append("id_solicitud", solicitud?.id);
                     data1.append("id_usuario", perfil?.idUsuario);
+                    data1.append("critsCoValidacion", JSON.stringify(crist));
                     data1.append("file", cat?.file);
                     await setDocumentoSolicitudHttp(data1);
                 } catch (error: any) {
@@ -204,7 +230,6 @@ const GacSolicitudDetalleScreen: React.FC = () => {
         }
     }
 
-
     const handleNotificaJefes = async () => {
         try {
             setProcesando(true);
@@ -213,16 +238,21 @@ const GacSolicitudDetalleScreen: React.FC = () => {
                 id_solicitud: solicitud?.[0]?.id
             }
             setDocumentosCargados(false);
-            await notificaRevisoresFiscalesHttp(data);
+            if (solicitud?.[0]?.requiere_aprobacion_revisor === 1) {
+                await notificaRevisoresFiscalesHttp(data);
+            }
+            if (solicitud?.[0]?.requiere_aprobacion_revisor === 0) {
+                await notificaRevisoresFiscalesAutorizadorHttp(data);
+            }
             setDocumentosCargadosMuestra(false)
             setProcesando(false);
-            setMensajeAlert('Se ha notificado a los revisores con exito');
+            setMensajeAlert(solicitud?.[0]?.requiere_aprobacion_revisor === 1 ? 'Se ha notificado a los revisores con exito' : 'Se ha notificado al autorizador con exito');
             handleisAlertOpen();
         } catch (error) {
             setDocumentosCargados(false);
             setDocumentosCargadosMuestra(false)
             setProcesando(true);
-            setMensajeAlert('Error al notificar a los revisores');
+            setMensajeAlert(solicitud?.[0]?.requiere_aprobacion_revisor === 1 ? 'Error al notificar a los revisores' : 'Error al notificar al autorizador');
             handleisAlertOpen();
         }
     }
@@ -289,7 +319,9 @@ const GacSolicitudDetalleScreen: React.FC = () => {
                 id_usuario: perfil?.idUsuario,
                 aprueba: true,
                 usuario_nombre: perfil?.nombre,
-                comentarios: coments
+                comentarios: coments,
+                requiere_doumentos: solicitud?.[0]?.requiere_documentos,
+                requiere_aprobacion_revisor: solicitud?.[0]?.requiere_aprobacion_revisor,
             }
             await cambioEnSolicitudAutorizadorHttp(body);
             getData();
@@ -314,7 +346,8 @@ const GacSolicitudDetalleScreen: React.FC = () => {
                 id_usuario: perfil?.idUsuario,
                 aprueba: false,
                 usuario_nombre: perfil?.nombre,
-                comentarios: coments
+                comentarios: coments,
+                requiere_doumentos: solicitud?.[0]?.requiere_documentos
             }
             await cambioEnSolicitudAutorizadorHttp(body);
             getData();
@@ -331,7 +364,6 @@ const GacSolicitudDetalleScreen: React.FC = () => {
         }
     }
 
-    
     const handleSolicitarAprobacionDireccionGeneral = async (sol: any) => {
         try {
             setProcesando(true);
@@ -351,15 +383,15 @@ const GacSolicitudDetalleScreen: React.FC = () => {
     }
 
     /* El revisor aprueba o rechaza los documentos que selecciono */
-    const handleDocumentosRevisorRevisa = async (apruebaOrechaza:any, coment:any) => {
+    const handleDocumentosRevisorRevisa = async (apruebaOrechaza: any, coment: any) => {
         try {
             setProcesando(true);
             const body = {
-                id_solicitud:solicitudDetalle?.id,
-                documentos:documentosSolicitudDetalle,
-                aprueba:apruebaOrechaza,
-                comentarios_supervisor : coment,
-                id_usuario:perfil?.idUsuario
+                id_solicitud: solicitudDetalle?.id,
+                documentos: documentosSolicitudDetalle,
+                aprueba: apruebaOrechaza,
+                comentarios_supervisor: coment,
+                id_usuario: perfil?.idUsuario
             }
             await handleDocumentosRevisorRevisaHttp(body);
             setDocumentosSolicitudDetalle(null)
@@ -367,7 +399,7 @@ const GacSolicitudDetalleScreen: React.FC = () => {
             setConfirmDocumentosRevisorRevisa(false);
             getData();
             /* setProcesando(false); */
-            const txt = 'Se han '+ (apruebaOrechaza ? 'aprobado' : 'rechazado')  +' los documentos seleccionados';
+            const txt = 'Se han ' + (apruebaOrechaza ? 'aprobado' : 'rechazado') + ' los documentos seleccionados';
             setMensajeAlert(txt);
             handleisAlertOpen();
         } catch (error) {
@@ -375,20 +407,19 @@ const GacSolicitudDetalleScreen: React.FC = () => {
             setSolicitudDetalle(null)
             setConfirmDocumentosRevisorRevisa(false);
             setProcesando(false);
-            const txt = 'Error al '+ (apruebaOrechaza ? 'aprobar' : 'rechazar')  +' los documentos seleccionados';
+            const txt = 'Error al ' + (apruebaOrechaza ? 'aprobar' : 'rechazar') + ' los documentos seleccionados';
             setMensajeAlert(txt);
             handleisAlertOpen();
         }
     }
 
-
     /*  para aprobar la solcitud como un revisor */
-    const handleApruebaSolicitudRevisor = async (comentarios:string) => {
+    const handleApruebaSolicitudRevisor = async (comentarios: string) => {
         try {
             setProcesando(true);
-            
+
             const body = {
-                id_solicitud : solicitudDetalle?.id,
+                id_solicitud: solicitudDetalle?.id,
                 id_usuario: perfil?.idUsuario,
                 aprueba: true,
                 usuario_nombre: perfil?.nombre,
@@ -409,11 +440,11 @@ const GacSolicitudDetalleScreen: React.FC = () => {
     }
 
     /*  para rechazar la solcitud como un revisor */
-    const handleRechazaSolicitudRevisor = async (comentarios:string) => {
+    const handleRechazaSolicitudRevisor = async (comentarios: string) => {
         try {
             setProcesando(true);
             const body = {
-                id_solicitud : solicitudDetalle?.id,
+                id_solicitud: solicitudDetalle?.id,
                 id_usuario: perfil?.idUsuario,
                 aprueba: false,
                 usuario_nombre: perfil?.nombre,
@@ -433,15 +464,15 @@ const GacSolicitudDetalleScreen: React.FC = () => {
         }
     }
 
-
-    const handleApruebaSolicitudPagador = async (d:any)=>{
+    /* Handle aprueba solicitud  perfil pagador */
+    const handleApruebaSolicitudPagador = async (d: any) => {
         try {
             setProcesando(true);
             const body = {
                 id_usuario: perfil?.idUsuario,
                 usuario_nombre: perfil?.nombre,
-                id_solicitud : d?.id,
-                comentarios:'El pagador se dio por enterado'
+                id_solicitud: d?.id,
+                comentarios: 'El pagador marco la solicitud como pagada'
             }
             await cambioEnSolicitudPagadorHttp(body)
             setProcesando(false);
@@ -455,95 +486,216 @@ const GacSolicitudDetalleScreen: React.FC = () => {
         }
     }
 
-
-    const handleDescargaZip = async (sol:any) => {
-            try {
-                setProcesando(true);
-                console.log(solicitudDetalle)
-                const resDocZip = await generarZipSolicitudHttp({ id_solicitud: sol?.id });
-                window.open(`${env.API_URL_DOCUMENTOS}${resDocZip }`);
-                setProcesando(false);
-                setMensajeAlert('Exito al descargar los documentos')
-                handleisAlertOpen()
-            } catch (error) {
-                setProcesando(false);
-                setMensajeAlert('Error al descargar los documentos')
-                handleisAlertOpen()
-            }
+    /* para descargar el zip de las solicitudes con estatus de pagada  */
+    const handleDescargaZip = async (sol: any) => {
+        try {
+            setProcesando(true);
+            const resDocZip = await generarZipSolicitudHttp({ id_solicitud: sol?.id });
+            window.open(`${env.API_URL_DOCUMENTOS}${resDocZip}`);
+            setProcesando(false);
+            setMensajeAlert('Exito al descargar los documentos')
+            handleisAlertOpen()
+        } catch (error) {
+            setProcesando(false);
+            setMensajeAlert('Error al descargar los documentos')
+            handleisAlertOpen()
         }
+    }
 
+    /* para cuanbdo alguno de los admins quiere cambiar el tipo de solicitud */
+    const handleActualizaTipoSolicitud = async (data: any) => {
+        try {
+            setProcesando(true);
+            const body = {
+                id_solicitud: solicitud?.[0]?.id,
+                id_tipo_solicitud: data?.[0]?.value
+            };
+            await atualizaTipoSolicitudHttp(body);
+            setProcesando(false);
+            setMensajeAlert('Exito al actualizar el tipo de solicitud')
+            getData();
+            handleisAlertOpen()
+        } catch (error) {
+            setProcesando(false);
+            setMensajeAlert('Error al actualizar el tipo de solicitud')
+            handleisAlertOpen()
+        }
+    }
+
+    /* para cuanbdo alguno de los admins quiere asignar el concepto */
+    const handleActualizaConcepto = async (data: any) => {
+        try {
+            setProcesando(true);
+            const body = {
+                id_solicitud: solicitud?.[0]?.id,
+                id_concepto: data?.[0]?.value
+            };
+            await actualizaIdConceptoHttp(body);
+            setProcesando(false);
+            setMensajeAlert('Exito al actualizar el concepto')
+            getData();
+            handleisAlertOpen()
+        } catch (error) {
+            setProcesando(false);
+            setMensajeAlert('Error al actualizar el concepto')
+            handleisAlertOpen()
+        }
+    }
+
+    /* para cuanbdo se quiere solicitar la carga documental por parte del solicitante */
+    const handleSolicitarCargaDocumental = async (data: any) => {
+        try {
+            setProcesando(true);
+            const body = {
+                id_solicitud: solicitud?.[0]?.id
+            };
+            await solicitaCargaDocumentalHttp(body);
+            setProcesando(false);
+            setMensajeAlert('Exito al solicitar la carga de documentos')
+            getData();
+            handleisAlertOpen()
+        } catch (error) {
+            setProcesando(false);
+            setMensajeAlert('Error al solicitar la carga de documentos')
+            handleisAlertOpen()
+        }
+    }
+
+    /* para cuando el solicitante quiere eliminar alguno de los documentos no revisados se le pregunta primero */
+    const handlePreguntaEliminaArchivo = (data: any) => {
+        setOpenPreguntaDocumentoDelete(true);
+        setDoocumentoDelete(data)
+    }
+
+    /* para cuando el solicitante quiere eliminar alguno de los documentos */
+    const handleDeleteFile = async () => {
+        try {
+            setProcesando(true);
+            await deleteDocumentHttp(documentoDelete?.id)
+            setProcesando(false);
+            setMensajeAlert('Exito al eliminar el documento')
+            getData();
+            handleisAlertOpen()
+        } catch (error) {
+            setProcesando(false);
+            setMensajeAlert('Error al eliminar el documento')
+            handleisAlertOpen()
+        }
+    }
+
+    /* para notificar a nomina que hay que hacer un descuento  */
+
+    const handleNotificaNomina = async (d:any,c:any) => {
+        try {
+            setProcesando(true);
+            await notificaNominaHttp({id_solicitud:d?.id, id_usuario_notifica:perfil?.idUsuario, importe:c});
+            setProcesando(false);
+            setMensajeAlert('Exito al notificar a nomina')
+            handleisAlertOpen()
+        } catch (error) {
+            setProcesando(false);
+            setMensajeAlert('Error al notificar a nomina')
+            handleisAlertOpen()
+        }
+    }
 
     return (
         <>
-            <AppAppBarC />
-            <Grid container style={{ backgroundColor: '#fff', position: 'relative', top: 15, height: 'auto' }} justifyContent="center">
+            <AppAppBarC esGastos />
+            <Grid container style={{ backgroundColor: '#fff' }} justifyContent="center">
                 <Grid item xs={12} style={{ textAlign: 'center', marginBottom: 15, paddingTop: 15, padding: 25 }}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} md={12} style={{ textAlign: 'center', paddingLeft: 40 }}>
                             {useMemo(() => <GacSolicitudDetalle
+                                tipoSolicitudes={perfil?.tipoSolicitud || []}
+                                handlePreguntaEliminaArchivo={(data) => handlePreguntaEliminaArchivo(data)}
+                                handleActualizaTipoSolicitud={(data) => handleActualizaTipoSolicitud(data)}
+                                handleActualizaConcepto={(data) => handleActualizaConcepto(data)}
                                 esPagador={esPagador}
                                 esAutorizador={esAutorizador}
                                 esRevisor={esRevisor}
+                                conceptos={perfil?.conceptos}
                                 estaEnMiCancha={estaEnMiCancha}
                                 idUsuario={perfil?.idUsuario}
                                 perfil={perfil}
-                                item={solicitud?.[0]} 
-                                procesando={procesando} 
+                                item={solicitud?.[0]}
+                                procesando={procesando}
                                 enAction={(d, a, c) => {
+                                    console.log(d,a,c)
+
+                                    if(a === 'notificar_nomina'){
+                                        handleNotificaNomina(d, c)
+                                    }
+
                                     if (a === 'documentos') {
                                         handleAddDocumentos(d, c)
                                     }
+
                                     if (a === 'aprobar') {
                                         setSolicitudDetalle(d)
                                         setJefe(c);
                                         setMuestraConfirmAprobarJefe(true)
                                         setTxtAprobarJefe('¿Desea aprobar esta solicitud?')
                                     }
+
                                     if (a === 'rechazar') {
                                         setSolicitudDetalle(d)
                                         setJefe(c);
                                         setMuestraConfirmAprobarJefe(true)
                                         setTxtAprobarJefe('¿Desea rechazar esta solicitud?')
                                     }
+
                                     if (a === 'aprobar_autorizador') {
                                         setMuestraConfirmAprobarJefe(true)
                                         setTxtAprobarJefe('¿Desea autorizar esta solicitud?')
                                     }
+
                                     if (a === 'rechazar_autorizador') {
                                         setMuestraConfirmAprobarJefe(true)
                                         setTxtAprobarJefe('¿Desea rechazar esta solicitud.?')
                                     }
+
                                     if (a === 'solicitar_apribacion_direccion_general') {
                                         handleSolicitarAprobacionDireccionGeneral(d)
                                     }
+
                                     if (a === 'aprobar_documentos_revisor') {
                                         setDocumentosSolicitudDetalle(c)
                                         setSolicitudDetalle(d)
                                         setConfirmDocumentosRevisorRevisa(true)
                                         setTxtConfirmDocumentosRevisorRevisa('¿Desea aprobar los documentos seleccionados?')
                                     }
+                                    
                                     if (a === 'rechazar_documentos_revisor') {
                                         setDocumentosSolicitudDetalle(c)
                                         setSolicitudDetalle(d)
                                         setConfirmDocumentosRevisorRevisa(true)
                                         setTxtConfirmDocumentosRevisorRevisa('¿Desea rechzar los documentos seleccionados?')
                                     }
+
                                     if (a === 'aprobar_revisor') {
                                         setSolicitudDetalle(d)
                                         setMuestraConfirmAprobarJefe(true)
                                         setTxtAprobarJefe('¿Desea revisar esta solicitud como correcta?')
                                     }
+
                                     if (a === 'rechazar_revisor') {
                                         setSolicitudDetalle(d)
                                         setMuestraConfirmAprobarJefe(true)
                                         setTxtAprobarJefe('¿Desea revisar esta solicitud como incorrecta?')
                                     }
-                                    if(a==='aprobar_pagador'){
+
+                                    if (a === 'aprobar_pagador') {
                                         handleApruebaSolicitudPagador(d)
                                     }
-                                    if(a === 'descargaZIP'){
+                                    if (a === 'descargaZIP') {
                                         handleDescargaZip(d);
                                     }
+
+                                    if (a === 'solicitar_carga_documental') {
+                                        handleSolicitarCargaDocumental(d)
+                                    }
+
                                 }} />, [estaEnMiCancha, esAutorizador, esRevisor, solicitud?.[0], procesando])}
                         </Grid>
                     </Grid>
@@ -569,7 +721,7 @@ const GacSolicitudDetalleScreen: React.FC = () => {
                     }} onCancel={() => {
                         setDocumentosCargados(false);
                         setDocumentosCargadosMuestra(false)
-                    }} open={documentosCargados} text={'¿Desea notificar a los revisores que se han cargado documentos?'} title={''} />
+                    }} open={documentosCargados} text={solicitud?.[0]?.requiere_aprobacion_revisor === 1 ? '¿Desea notificar a los revisores que se han cargado documentos?' : '¿Desea notificar al autorizador que se han cargado documentos?'} title={''} />
 
                 <ModalConfirm
                     esCambioEstatusEstimacion
@@ -599,17 +751,24 @@ const GacSolicitudDetalleScreen: React.FC = () => {
                         setJefe(null);
                     }} open={muestraConfirmAprobarJefe} text={txtAprobarJefe} title={''} />
 
-
                 <ModalConfirm
                     esCambioEstatusEstimacion
                     onAcept={(coment) => {
-                        handleDocumentosRevisorRevisa(txtConfirmDocumentosRevisorRevisa === '¿Desea aprobar los documentos seleccionados?' ? true : false , coment);
+                        handleDocumentosRevisorRevisa(txtConfirmDocumentosRevisorRevisa === '¿Desea aprobar los documentos seleccionados?' ? true : false, coment);
                     }} onCancel={() => {
                         setConfirmDocumentosRevisorRevisa(false);
                         setTxtConfirmDocumentosRevisorRevisa('')
 
                     }} open={confirmDocumentosRevisorRevisa} text={txtConfirmDocumentosRevisorRevisa} title={''} />
 
+                <ModalConfirm
+                    onAcept={() => {
+                        handleDeleteFile();
+                        setOpenPreguntaDocumentoDelete(false);
+                    }} onCancel={() => {
+                        setOpenPreguntaDocumentoDelete(false);
+                        setDoocumentoDelete(null)
+                    }} open={openPreguntaDocumentoDelete} text={'¿Desea eliminar el documentos seleccionado?'} title={''} />
 
             </Grid >
         </>

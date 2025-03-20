@@ -1,11 +1,12 @@
 import { Backdrop, Button, CircularProgress, Grid } from '@mui/material';
 import StepperGeneral from '../../componets/StepperGeneral/StepperGeneral';
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import SeleccionTipoSoliciud from '../../componets/SeleccionTipoSoliciud/SeleccionTipoSoliciud';
 import SolicitudPrestamo from '../../forms/SolicitudPrestamo/SolicitudPrestamo';
 import DragAndDropField from '../../componets/DragAndDropField';
 import SetFirmaForm from '../../forms/FirmasForm/SetFirmaForm';
 import SeleccionTipoSolicitudApple from '../../componets/SeleccionTipoSoliciud/SeleccionTipoSolicitudApple';
+import ModalConfirm from '../../componets/ModalConfirm/ModalConfirm';
 
 interface GacStepperFormProps {
     firma: any
@@ -23,7 +24,9 @@ interface GacStepperFormProps {
     handleRefreshTipoCambio: any
     handlePregunta: any
     handleGuardaDocumentos: any
-    setFirma:(data:any)=> void
+    setFirma: (data: any) => void
+    handleAddProveedor: () => void
+    handleAddBancoUsuario: (d: any) => void
 }
 
 const GacStepperForm: React.FC<GacStepperFormProps> = ({
@@ -42,13 +45,22 @@ const GacStepperForm: React.FC<GacStepperFormProps> = ({
     handleRefreshTipoCambio,
     handlePregunta,
     handleGuardaDocumentos,
-    setFirma
+    setFirma,
+    handleAddProveedor,
+    handleAddBancoUsuario
 }) => {
-
+    const [dataBanco, setDataBanco] = useState({});
+    const [openModalConfirmPlay, setOpenModalConfirmPlay] = useState(false);
+    const addBancoPregunta = (data: any) => {
+        if (data?.banco !== '' && data?.clabe !== '' && data?.cuenta !== '') {
+            setDataBanco(data)
+            setOpenModalConfirmPlay(true)
+        }
+    }
 
     return (
         <div>
-            <Grid container spacing={2} style={{ paddingTop: 30, width: '100%', paddingLeft: 50, paddingRight: 30 }}>
+            {useMemo(() => <Grid container spacing={2} style={{ paddingTop: 30, width: '100%', paddingLeft: 50, paddingRight: 30 }}>
                 {firma ? <StepperGeneral
                     isDisabledNext={isDisabledNext}
                     darkMode={false}
@@ -70,7 +82,13 @@ const GacStepperForm: React.FC<GacStepperFormProps> = ({
                                         return {
                                             id: r?.id,
                                             title: r?.nombre,
-                                            description: r?.descripcion
+                                            description: r?.descripcion,
+                                            requiere_beneficiario: r?.requiere_beneficiario,
+                                            requiere_documentos: r?.requiere_documentos,
+                                            requiere_concepto: r?.requiere_concepto,
+                                            mostrar_pago_quincenas: r?.mostrar_pago_quincenas,
+                                            requiere_fechaPago:r?.requiere_fechaPago,
+                                            
                                         }
                                     })} seleccionId={tipoSolicitud?.id} seleccion={(tipo: any) => handleSeleccionaTipoSolicitud(tipo)} />
 
@@ -81,10 +99,15 @@ const GacStepperForm: React.FC<GacStepperFormProps> = ({
                     }
                     {
                         activeStep === 1 ?
-                        
+
                             <SolicitudPrestamo
+                                handlePreguntaAddBanco={(data) => {
+                                    addBancoPregunta(data)
+                                }}
                                 tipoCambio={perfil?.tipoCambio}
+                                proveedores={perfil?.proveedores}
                                 monedas={perfil?.monedas}
+                                bancos={perfil?.bancos}
                                 formasPago={perfil?.formasPago}
                                 proyectos={perfil?.proyectos}
                                 beneficiarios={perfil?.beneficiarios}
@@ -96,6 +119,9 @@ const GacStepperForm: React.FC<GacStepperFormProps> = ({
                                 enAction={(f) => handleGuardaFormulario(f)}
                                 handleRefreshMonedas={() => handleRefreshMonedas()}
                                 handleRefreshTipoCambio={() => handleRefreshTipoCambio()}
+                                handleAddProveedor={() => {
+                                    handleAddProveedor()
+                                }}
                             />
                             : null
                     }
@@ -129,9 +155,9 @@ const GacStepperForm: React.FC<GacStepperFormProps> = ({
                                 <Grid item xs={12} style={{ height: 'auto' }}>
                                     <DragAndDropField
                                         acepted={{
-                                            /* "image/jpeg": [],
+                                            "image/jpeg": [],
                                             "image/jpg": [],
-                                            "image/png": [], */
+                                            "image/png": [],
                                             "application/pdf": [],
                                             /*  ".doc": [],
                                              ".docx": [], */
@@ -160,11 +186,22 @@ const GacStepperForm: React.FC<GacStepperFormProps> = ({
                         setFirma(firma)
                     }} /> : null
                 }
-                <Backdrop className='BackdropClass' open={procesando}>
-                    <CircularProgress color="inherit" />
-                </Backdrop>
 
-            </Grid>
+
+            </Grid>, [firma, perfil, tipoSolicitud, activeStep, solicitudForm])}
+            <Backdrop className='BackdropClass' open={procesando}>
+                <CircularProgress color="inherit" />
+            </Backdrop>
+
+            <ModalConfirm
+                esCambioEstatusEstimacion
+                esDocumentoAdjunto
+                onAcept={(x, file) => {   
+                    handleAddBancoUsuario({ ...dataBanco, ...{ alias: x, id_usuario: perfil?.idUsuario, file } });
+                    setOpenModalConfirmPlay(false);
+                }} onCancel={() => {
+                    setOpenModalConfirmPlay(false);
+                }} open={openModalConfirmPlay} text={`¿Desea guardar su información bancaria para proximos procesos ?, su información sera custodiada por arjion y no sera expuesta ni compartida a terceros, en los comentarios indique que alias desea asignar a esta información, gracias`} title={''} />
         </div>
     )
 }

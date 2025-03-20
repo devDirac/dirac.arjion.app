@@ -48,11 +48,17 @@ const AccionesTable: React.FC<AccionesTableProps> = (
         open={Boolean(anchorEl)}
         onClose={() => handleClose()}
       >
-
+        {
+          props?.esVistaSolicitante ? <MenuItem onClick={() => props?.enAccion("eliminar")}>
+          <IconButton aria-label={intl.formatMessage({ id: 'general_eliminar' })} size="small" style={{ color: darkMode ? '#fff' : 'rgb(31, 40, 62)' }}>
+            <DeleteIcon /> <small>{intl.formatMessage({ id: 'general_eliminar' })}</small>
+          </IconButton>
+        </MenuItem> : null
+        }
 
 
         {
-          props?.esGastoSolicitante ? <MenuItem onClick={() => props?.enAccion("verDetalle")}>
+          props?.esGastoSolicitante && !props?.esVistaSolicitante ? <MenuItem onClick={() => props?.enAccion("verDetalle")}>
             <IconButton aria-label={intl.formatMessage({ id: 'general_ver_detalle' })} size="small" style={{ color: darkMode ? '#fff' : 'rgb(31, 40, 62)' }}>
               <PlagiarismIcon /> <small>{intl.formatMessage({ id: 'general_ver_detalle' })}</small>
             </IconButton>
@@ -60,7 +66,7 @@ const AccionesTable: React.FC<AccionesTableProps> = (
         }
 
         {
-          props?.esGastoSolicitante && (props?.row?.id_estatus === 5) ? <MenuItem onClick={() => props?.enAccion("descargarDocumentos")}>
+          props?.esGastoSolicitante && (props?.row?.id_estatus === 5) && props?.row?.requiere_documentos === 1  && !props?.esVistaSolicitante  ? <MenuItem onClick={() => props?.enAccion("descargarDocumentos")}>
             <IconButton aria-label={'Descargar documentos '} size="small" style={{ color: darkMode ? '#fff' : 'rgb(31, 40, 62)' }}>
               <FolderZipIcon /> <small>{'Descargar documentos '}</small>
             </IconButton>
