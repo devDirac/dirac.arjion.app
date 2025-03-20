@@ -111,6 +111,28 @@ const TablaDocumentos: React.FC<TablaDocumentosProps> = (props: TablaDocumentosP
             }
         },
         {
+            field: 'rfc',
+            autoHeight: true,
+            headerName: 'RFC',
+            editable: false,
+            pinned: 'left',
+            width: 150,
+            cellStyle: {
+                backgroundColor: '#ffff'
+            }
+        },
+        {
+            field: 'fiscal_folio',
+            autoHeight: true,
+            headerName: 'Folio fiscal',
+            editable: false,
+            pinned: 'left',
+            width: 150,
+            cellStyle: {
+                backgroundColor: '#ffff'
+            }
+        },
+        {
             field: 'nombre',
             autoHeight: true,
             headerName: 'Nombre corto del documento',

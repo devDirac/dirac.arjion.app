@@ -20,4 +20,5 @@ export interface InputFieldProps {
     min?: any
     onChangeExtern?: () => void
     onKeyPress?: (a:any) => void
+    onBlur?:()=>void
 }

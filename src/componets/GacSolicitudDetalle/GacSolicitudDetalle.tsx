@@ -1,5 +1,10 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, CardContent, Divider, Grid, List, ListItem, ListItemText, Paper, Tooltip, Typography } from '@mui/material';
+import env from "react-dotenv";
+import PreviewIcon from '@mui/icons-material/Preview';
+import * as Yup from "yup";
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, CardContent, Divider, Grid, Link, List, ListItem, ListItemText, Paper, Tooltip, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import _ from 'lodash';
 import CloseIcon from '@mui/icons-material/Close';
@@ -18,7 +23,12 @@ import HistoryIcon from '@mui/icons-material/History';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import FolderIcon from '@mui/icons-material/Folder';
 import FolderZipIcon from '@mui/icons-material/FolderZip';
+import EditIcon from '@mui/icons-material/Edit';
 import './style.scss'
+import { Form } from 'react-bootstrap';
+import { FormikProvider, useFormik } from 'formik';
+import { useIntl } from 'react-intl';
+import SelectMultipleAutoCompleteField from '../../componets/SelectMultipleAutoCompleteField/SelectMultipleAutoCompleteField';
 
 interface GacSolicitudDetalleProps {
     item?: any
@@ -30,11 +40,34 @@ interface GacSolicitudDetalleProps {
     esPagador: boolean
     esRevisor: boolean
     perfil: any
+    conceptos: any[]
+    tipoSolicitudes: any[]
+    handleActualizaTipoSolicitud: (data: any) => void
+    handleActualizaConcepto: (data: any) => void
+    handlePreguntaEliminaArchivo?: (data: any) => void
 }
 
 const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolicitudDetalleProps) => {
-    const [documentosSeleccionados, setDocumentosSeleccionados] = useState([]);
+    const intl = useIntl();
 
+    const [documentosSeleccionados, setDocumentosSeleccionados] = useState([]);
+    const [editaTipoDeSoliitud, setEditaTipoDeSoliitud] = useState(false);
+    const [editaConcepto, setEditaConcepto] = useState(false);
+
+    const [id_tipo_solicitud, setId_tipo_solicitud] = useState<any>([]);
+    const [id_concepto, setId_concepto] = useState<any>([]);
+
+    const formik = useFormik({
+        initialValues: {
+            id_tipo_solicitud: [],
+            id_concepto: [],
+        },
+        onSubmit: async (values) => { },
+        validationSchema: Yup.object({
+            id_tipo_solicitud: Yup.array().min(1, intl.formatMessage({ id: "input_validation_requerido" })).required('Requerido'),
+            id_concepto: Yup.array().min(1, intl.formatMessage({ id: "input_validation_requerido" })).required('Requerido')
+        }),
+    });
     return (
         <div>
             <Grid container spacing={2} mt={5} style={{ padding: 15 }}>
@@ -64,7 +97,7 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                     expandIcon={<ExpandMoreIcon />}
                                     aria-controls="panel1-content"
                                     id="panel1-header"
-                                    
+
                                 >
                                     <Typography component="span" style={{ fontSize: 12 }}>Todas las interacciones de los usuarios con la solicitud {
                                         props?.estaEnMiCancha ? <Tooltip title="La solicitud está esperando que usted emita su juicio"><InfoIcon className='pulsante' fontSize='medium' color='info' /></Tooltip> : null
@@ -114,7 +147,7 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                                                 Fecha registro: {registro.fecha_registro}
                                                                             </Typography>
                                                                             <br />
-                                                                            Aprobo la solicitud: {registro.autorizo === 1 ? <>Si <CheckIcon color='success' /></> : registro.autorizo === 0 ? <>No <CloseIcon color={'error'} /></> : 'Sin interacción con la solicitud'}
+                                                                            Aprobo la solicitud: {registro.autorizo === 1 ? <>Si <CheckIcon color='success' /></> : registro.autorizo === 0 ? <>No <CloseIcon color={'error'} /></> : <span style={{ color: '#f44336' }}>Pendiente de autorizar</span>}
                                                                             <br />
                                                                             Fecha aprobada: {registro.fecha_accion || 'El usuario aun no ejerce su opinión sobre esta solicitud'}
                                                                             <br />
@@ -138,7 +171,31 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                             <ListItem
                                                                 secondaryAction={
                                                                     <div style={{ padding: 15 }}>
-                                                                        <Button
+
+                                                                        {props?.item?.requiere_documentos === 1 && props?.item?.requiere_aprobacion_revisor === 0 && !(props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1)?.length && (props?.item?.documentos || [])?.length ?
+                                                                            <Link
+                                                                                style={{ fontSize: 14, backgroundColor: '#f17171', color: '#ffff', padding: 5, borderRadius: 5, fontWeight: 500 }}
+                                                                                href={`#documentos_seccion`}
+                                                                                className='pulsante'
+                                                                            >
+                                                                                Aun hay documentos que tienes que revisar
+                                                                            </Link> : null}
+                                                                        {props?.item?.requiere_documentos === 1 && props?.item?.requiere_aprobacion_revisor === 0 && !(props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1)?.length && (props?.item?.documentos || [])?.length ? <br /> : null}
+
+
+                                                                        {props?.item?.requiere_documentos === 1 && !(props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1)?.length && !(props?.item?.documentos || [])?.length && props?.item?.requiere_aprobacion_revisor === 0 ? <Button
+                                                                            size="small"
+                                                                            variant="outlined"
+                                                                            color='error'
+                                                                            style={{ backgroundColor: '#f17171', color: '#ffff' }}
+                                                                            onClick={() => {
+                                                                                props?.enAction(props?.item, 'solicitar_carga_documental', null)
+                                                                            }}
+                                                                        >Notificar al solicitante que cargue documentos</Button> : null}
+                                                                        {props?.item?.requiere_documentos === 1 && !(props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1)?.length && !(props?.item?.documentos || [])?.length && props?.item?.requiere_aprobacion_revisor === 0 ? <br /> : null}
+
+
+                                                                        {(props?.item?.requiere_documentos === 1 && (props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1)?.length) || (props?.item?.requiere_documentos === 0 || props?.item?.requiere_aprobacion_revisor === 1) ? <Button
                                                                             size="small"
                                                                             variant="outlined"
                                                                             color='success'
@@ -146,9 +203,11 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                                             onClick={() => {
                                                                                 props?.enAction(props?.item, 'aprobar_autorizador', null)
                                                                             }}
-                                                                        > Aprobar como autorizador </Button>
-                                                                        <br />
-                                                                        <Button
+                                                                        > Aprobar como autorizador </Button> : null}
+                                                                        {(props?.item?.requiere_documentos === 1 && (props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1)?.length) || (props?.item?.requiere_documentos === 0 || props?.item?.requiere_aprobacion_revisor === 1) ? <br /> : null}
+
+
+                                                                        {((props?.item?.autorizadores || []).filter((r: any) => r?.autorizo === 1)?.length !== (props?.item?.autorizadores || [])?.length) && ((props?.item?.requiere_documentos === 1 && (props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1)?.length) || (props?.item?.requiere_documentos === 0 || props?.item?.requiere_aprobacion_revisor === 1)) ? <Button
                                                                             size="small"
                                                                             variant="outlined"
                                                                             color='warning'
@@ -156,8 +215,10 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                                             onClick={() => {
                                                                                 props?.enAction(props?.item, 'rechazar_autorizador', null)
                                                                             }}
-                                                                        > Rechazar como autorizador </Button>
-                                                                        <br />
+                                                                        > Rechazar como autorizador </Button> : null}
+                                                                        {((props?.item?.autorizadores || []).filter((r: any) => r?.autorizo === 1)?.length !== (props?.item?.autorizadores || [])?.length) && ((props?.item?.requiere_documentos === 1 && (props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1)?.length) || (props?.item?.requiere_documentos === 0 || props?.item?.requiere_aprobacion_revisor === 1)) ? <br /> : null}
+
+
                                                                         {(props?.item?.autorizadores || []).filter((r: any) => r?.requiere_aprobacion === 0 && r?.autorizo === null)?.length ? <Button
                                                                             size="small"
                                                                             variant="outlined"
@@ -175,7 +236,7 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                                     secondary={
                                                                         <>
                                                                             <Typography component="span" variant="body2" color="textPrimary">
-                                                                                Estatus: {props?.item?.autorizo_usuario_autorizador === 1 ? <>Si <CheckIcon color='success' /></> : props?.item?.autorizo_usuario_autorizador === 0 ? <>No <CloseIcon color={'error'} /></> : 'Sin interacción con la solicitud'}
+                                                                                Estatus: {props?.item?.autorizo_usuario_autorizador === 1 ? <>Si <CheckIcon color='success' /></> : props?.item?.autorizo_usuario_autorizador === 0 ? <>No <CloseIcon color={'error'} /></> : <span style={{ color: '#f44336' }}>Pendiente de autorizar</span>}
                                                                             </Typography>
                                                                             <br />
                                                                             Fecha aprobada: {props?.item?.fecha_id_usuario_autorizador || 'El usuario aun no ejerce su opinión sobre esta solicitud'}
@@ -203,7 +264,7 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                                         secondary={
                                                                             <>
                                                                                 <Typography component="span" variant="body2" color="textPrimary">
-                                                                                    Aprobo la solicitud: {props?.item?.autorizo_usuario_autorizador === 1 ? <>Si <CheckIcon color='success' /></> : props?.item?.autorizo_usuario_autorizador === 0 ? <>No <CloseIcon color={'error'} /></> : 'Sin interacción con la solicitud'}
+                                                                                    Aprobo la solicitud: {props?.item?.autorizo_usuario_autorizador === 1 ? <>Si <CheckIcon color='success' /></> : props?.item?.autorizo_usuario_autorizador === 0 ? <>No <CloseIcon color={'error'} /></> : <span style={{ color: '#f44336' }}>Pendiente de autorizar</span>}
                                                                                 </Typography>
                                                                                 <br />
                                                                                 Fecha aprobada: {props?.item?.fecha_id_usuario_autorizador || 'El autorizador aun no ejerce su opinión sobre esta solicitud'}
@@ -216,65 +277,62 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                             </React.Fragment> :
                                                             null
                                                     }
-
-
                                                     {/* El usuario revisor va a ejercer su opinion sobre la solicitud */}
-                                                    {props?.estaEnMiCancha && props?.esRevisor && props?.item?.id_usuario_revisor === null ?
-                                                        <React.Fragment>
-                                                            <Divider />
-                                                            <ListItem
-                                                                secondaryAction={
-                                                                    <div style={{ padding: 15 }}>
 
-                                                                        {!(props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1)?.length ? <Button
-                                                                            size="small"
-                                                                            variant="outlined"
-                                                                            color='error'
-                                                                            style={{ backgroundColor: '#f17171', color: '#ffff' }}
-                                                                        >Aun hay documentos que tienes que revisar</Button> : null}
-
-                                                                        {(props?.item?.documentos || []).filter((r: any) => +r?.es_valido_revisor === 1)?.length ? <Button
-                                                                            size="small"
-                                                                            variant="outlined"
-                                                                            color='success'
-                                                                            style={{ backgroundColor: '#75d175', color: '#ffff' }}
-                                                                            onClick={() => {
-                                                                                props?.enAction(props?.item, 'aprobar_revisor', null)
-                                                                            }}
-                                                                        > Aprobar como revisor </Button> : null}
-                                                                        {(props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1)?.length ? <br /> : null}
-
-                                                                        {(props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1)?.length ? <Button
-                                                                            size="small"
-                                                                            variant="outlined"
-                                                                            color='warning'
-                                                                            style={{ backgroundColor: '#f17171', color: '#ffff' }}
-                                                                            onClick={() => {
-                                                                                props?.enAction(props?.item, 'rechazar_revisor', null)
-                                                                            }}
-                                                                        > Rechazar como revisor </Button> : null}
-                                                                        <br />
-                                                                    </div>
-                                                                }
-                                                                style={{ backgroundColor: 'rgb(247 247 247)', paddingLeft: 15, paddingRight: 15, borderRadius: 10 }}>
-                                                                <ListItemText
-                                                                    primary={`Usuario: ${props?.perfil?.nombre}`}
-                                                                    secondary={
-                                                                        <>
-                                                                            <Typography component="span" variant="body2" color="textPrimary">
-                                                                                Estatus: {props?.item?.autorizo_usuario_revisor === 1 ? <>Si <CheckIcon color='success' /></> : props?.item?.autorizo_usuario_revisor === 0 ? <>No <CloseIcon color={'error'} /></> : 'La solicitud se encuentra en revisión'}
-                                                                            </Typography>
-                                                                            <br />
-                                                                            Fecha aprobada: {props?.item?.fecha_id_usuario_revisor || 'aaaa-mm-dd'}
-                                                                            <br />
-                                                                            Comentarios: {props?.item?.comentarios_usuario_revisor || "Sin comentarios registrados"}
-                                                                        </>
+                                                    {
+                                                        props?.estaEnMiCancha && props?.esRevisor && props?.item?.id_usuario_revisor === null ?
+                                                            <React.Fragment>
+                                                                <Divider />
+                                                                <ListItem
+                                                                    secondaryAction={
+                                                                        <div style={{ padding: 15 }}>
+                                                                            {props?.item?.requiere_documentos === 1 && !(props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1)?.length ? <Link
+                                                                                style={{ fontSize: 14, backgroundColor: '#f17171', color: '#ffff', padding: 5, borderRadius: 5, fontWeight: 500 }}
+                                                                                href={`#documentos_seccion`}
+                                                                                className='pulsante'
+                                                                            >
+                                                                                Aun hay documentos que tienes que revisar
+                                                                            </Link> : null}
+                                                                            {props?.item?.requiere_documentos === 0 || (props?.item?.documentos || []).filter((r: any) => +r?.es_valido_revisor === 1)?.length ? <Button
+                                                                                size="small"
+                                                                                variant="outlined"
+                                                                                color='success'
+                                                                                style={{ backgroundColor: '#75d175', color: '#ffff' }}
+                                                                                onClick={() => {
+                                                                                    props?.enAction(props?.item, 'aprobar_revisor', null)
+                                                                                }}
+                                                                            > Aprobar como revisor </Button> : null}
+                                                                            {(props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1)?.length ? <br /> : null}
+                                                                            {/*  {props?.item?.requiere_documentos === 0 || (props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1)?.length ? <Button
+                                                                                size="small"
+                                                                                variant="outlined"
+                                                                                color='warning'
+                                                                                style={{ backgroundColor: '#f17171', color: '#ffff' }}
+                                                                                onClick={() => {
+                                                                                    props?.enAction(props?.item, 'rechazar_revisor', null)
+                                                                                }}
+                                                                            > Rechazar como revisor </Button> : null}
+                                                                            <br /> */}
+                                                                        </div>
                                                                     }
-                                                                />
-                                                            </ListItem>
-                                                        </React.Fragment> : null}
-
-
+                                                                    style={{ backgroundColor: 'rgb(247 247 247)', paddingLeft: 15, paddingRight: 15, borderRadius: 10 }}>
+                                                                    <ListItemText
+                                                                        primary={`Usuario: ${props?.perfil?.nombre}`}
+                                                                        secondary={
+                                                                            <>
+                                                                                <Typography component="span" variant="body2" color="textPrimary">
+                                                                                    Estatus: {props?.item?.autorizo_usuario_revisor === 1 ? <>Si <CheckIcon color='success' /></> : props?.item?.autorizo_usuario_revisor === 0 ? <>No <CloseIcon color={'error'} /></> : 'La solicitud se encuentra en revisión'}
+                                                                                </Typography>
+                                                                                <br />
+                                                                                Fecha aprobada: {props?.item?.fecha_id_usuario_revisor || 'aaaa-mm-dd'}
+                                                                                <br />
+                                                                                Comentarios: {props?.item?.comentarios_usuario_revisor || "Sin comentarios registrados"}
+                                                                            </>
+                                                                        }
+                                                                    />
+                                                                </ListItem>
+                                                            </React.Fragment> : null
+                                                    }
 
                                                     {/* El usuario revisor ya emitio un juicio sobre esta solicitud */}
                                                     {
@@ -292,7 +350,7 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                                         secondary={
                                                                             <>
                                                                                 <Typography component="span" variant="body2" color="textPrimary">
-                                                                                    Aprobo la solicitud: {props?.item?.autorizo_usuario_revisor === 1 ? <>Si <CheckIcon color='success' /></> : props?.item?.autorizo_usuario_revisor === 0 ? <>No <CloseIcon color={'error'} /></> : 'Sin interacción con la solicitud'}
+                                                                                    Aprobo la solicitud: {props?.item?.autorizo_usuario_revisor === 1 ? <>Si <CheckIcon color='success' /></> : props?.item?.autorizo_usuario_revisor === 0 ? <>No <CloseIcon color={'error'} /></> : <span style={{ color: '#f44336' }}>Pendiente de autorizar</span>}
                                                                                 </Typography>
                                                                                 <br />
                                                                                 Fecha aprobada: {props?.item?.fecha_id_usuario_revisor || 'El autorizador aun no ejerce su opinión sobre esta solicitud'}
@@ -322,7 +380,7 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                                         secondary={
                                                                             <>
                                                                                 <Typography component="span" variant="body2" color="textPrimary">
-                                                                                    Aprobo la solicitud: {props?.item?.autorizo_usuario_pagada === 1 ? <>Si <CheckIcon color='success' /></> : props?.item?.autorizo_usuario_pagada === 0 ? <>No <CloseIcon color={'error'} /></> : 'Sin interacción con la solicitud'}
+                                                                                    Aprobo la solicitud: {props?.item?.autorizo_usuario_pagada === 1 ? <>Si <CheckIcon color='success' /></> : props?.item?.autorizo_usuario_pagada === 0 ? <>No <CloseIcon color={'error'} /></> : <span style={{ color: '#f44336' }}>Pendiente de autorizar</span>}
                                                                                 </Typography>
                                                                                 <br />
                                                                                 Fecha aprobada: {props?.item?.fecha_id_usuario_pagada || 'El autorizador aun no ejerce su opinión sobre esta solicitud'}
@@ -351,7 +409,7 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                                             onClick={() => {
                                                                                 props?.enAction(props?.item, 'aprobar_pagador', null)
                                                                             }}
-                                                                        > Enterado </Button>
+                                                                        > Registrar como pagado </Button>
                                                                     </div>
                                                                 }
                                                                 style={{ backgroundColor: 'rgb(247 247 247)', paddingLeft: 15, paddingRight: 15, borderRadius: 10 }}>
@@ -360,7 +418,7 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                                     secondary={
                                                                         <>
                                                                             <Typography component="span" variant="body2" color="textPrimary">
-                                                                                Estatus: {props?.item?.autorizo_usuario_pagada === 1 ? <>Si <CheckIcon color='success' /></> : props?.item?.autorizo_usuario_pagada === 0 ? <>No <CloseIcon color={'error'} /></> : 'Sin interacción con la solicitud'}
+                                                                                Estatus: {props?.item?.autorizo_usuario_pagada === 1 ? <>Si <CheckIcon color='success' /></> : props?.item?.autorizo_usuario_pagada === 0 ? <>No <CloseIcon color={'error'} /></> : <span style={{ color: '#f44336' }}>Pendiente de autorizar</span>}
                                                                             </Typography>
                                                                             <br />
                                                                             Fecha aprobada: {props?.item?.fecha_id_usuario_pagada || 'El usuario aun no ejerce su opinión sobre esta solicitud'}
@@ -371,14 +429,12 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                                 />
                                                             </ListItem>
                                                         </React.Fragment> : null}
-
                                                 </List>
                                             </Paper>
                                         </Grid>
                                     </Grid>
                                 </AccordionDetails>
                             </Accordion>
-
                         </CardContent>
                     </Card>
                 </Grid>
@@ -456,7 +512,55 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                             <Typography variant="h6" fontWeight="medium"> Información general <InfoIcon color='error' /> </Typography>
                         </Box>
                         <Box display="flex" justifyContent="space-between" alignItems="center" pt={2} px={2}>
-                            <p style={{ fontSize: 15 }}> <strong>Tipo de solicitud: </strong>{props?.item?.tipo_solicitud} </p>
+                            {(!props?.esAutorizador && !props?.esPagador && !props?.esRevisor) ? <p style={{ fontSize: 15 }}> <strong>Tipo de solicitud: </strong>{props?.item?.tipo_solicitud} </p> : null}
+
+                            {props?.item?.id_estatus !== 1 ? <p style={{ fontSize: 15 }}> <strong>Tipo de solicitud: </strong>{props?.item?.tipo_solicitud} </p> : null}
+
+                            {(props?.esAutorizador || props?.esPagador || props?.esRevisor) && props?.item?.id_estatus === 1 && !editaTipoDeSoliitud ?
+                                <p style={{ fontSize: 15 }}> <strong>Tipo de solicitud: </strong>{props?.item?.tipo_solicitud}
+                                    <span onClick={() => {
+                                        setEditaTipoDeSoliitud(true)
+                                    }} style={{ cursor: 'pointer' }} title='Cambiar el tipo de solicitud'><EditIcon color='info' /></span>
+
+                                </p> : (props?.esAutorizador || props?.esPagador || props?.esRevisor) && props?.item?.id_estatus === 1 && editaTipoDeSoliitud ? <div style={{ width: '250px' }}>
+                                    <FormikProvider value={formik}>
+                                        <Form.Group style={{ width: '100%' }}>
+                                            <SelectMultipleAutoCompleteField
+                                                label={'Tipo de solicitud'}
+                                                placeholder={'Seleccione una opción'}
+                                                defaultValue={id_tipo_solicitud?.[0]?.value}
+                                                options={(props?.tipoSolicitudes || []).map((e: any) => {
+                                                    return {
+                                                        label: e?.nombre,
+                                                        value: e?.id,
+                                                    };
+                                                })}
+                                                EsMultiple
+                                                name="id_tipo_solicitud"
+                                                id="id_tipo_solicitud"
+                                                key="id_tipo_solicitud"
+                                                required
+                                                onInput={(e: any) => {
+                                                    formik.setFieldValue("id_tipo_solicitud", [e]);
+                                                    setId_tipo_solicitud([e]);
+                                                }}
+                                                formik={formik?.getFieldMeta("id_tipo_solicitud")}
+                                            />
+                                            <span onClick={() => {
+                                                props?.handleActualizaTipoSolicitud(id_tipo_solicitud)
+                                                formik.setFieldValue("id_tipo_solicitud", []);
+                                                setId_tipo_solicitud([]);
+                                                setEditaTipoDeSoliitud(false)
+                                            }} style={{ cursor: 'pointer' }} title='guarda el cambios'><SaveIcon color='info' /></span>
+                                            <span onClick={() => {
+                                                setEditaTipoDeSoliitud(false)
+                                            }} style={{ cursor: 'pointer' }} title='cancelar'><CancelIcon color='error' /></span>
+                                        </Form.Group>
+                                    </FormikProvider>
+                                </div> : null}
+
+
+
                             <p style={{ fontSize: 15 }}> <strong>Fecha de solicitud: </strong>{props?.item?.fecha_solicitud} </p>
                         </Box>
                         <Box display="flex" justifyContent="space-between" alignItems="center" pt={2} px={2}>
@@ -471,13 +575,21 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                         <Box display="flex" justifyContent="space-between" alignItems="center" px={2} pt={1} >
                             <p style={{ fontSize: 15 }}> <strong>importe en pesos MXN: </strong>{numericFormatter(props?.item?.importe_pesos + '', { thousandSeparator: ',', decimalScale: 5, fixedDecimalScale: false, prefix: ' $' })} </p>
                         </Box>
-                        <Box display="flex" justifyContent="space-between" alignItems="center" px={2} pt={1} >
+                        {props?.item?.requiere_documentos === 1 ? <Box display="flex" justifyContent="space-between" alignItems="center" px={2} pt={1} >
                             <p style={{ fontSize: 15 }}><strong>importe capturado en todos los documentos: </strong>{numericFormatter(((props?.item?.documentos || []).reduce((a: any, c: any) => { return a + (+c?.importe) }, 0)) + '', { thousandSeparator: ',', decimalScale: 5, fixedDecimalScale: false, prefix: ' $' })} </p>
-                        </Box>
-                        <Box display="flex" justifyContent="space-between" alignItems="center" px={2} pt={1} >
+                        </Box> : null}
+                        {props?.item?.requiere_documentos === 1 ? <Box display="flex" justifyContent="space-between" alignItems="center" px={2} pt={1} >
                             <p style={{ fontSize: 15 }}><strong>importe capturado en los documentos validos:</strong>{numericFormatter(((props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1).reduce((a: any, c: any) => { return a + (+c?.importe) }, 0)) + '', { thousandSeparator: ',', decimalScale: 5, fixedDecimalScale: false, prefix: ' $' })} </p>
-                        </Box>
-                        {props?.item?.id_estatus === 5 ? <Box display="flex" justifyContent="space-between" alignItems="center" px={2} pt={1} >
+                        </Box> : null}
+
+
+                        {props?.item?.requiere_documentos === 1 ? <Box display="flex" justifyContent="space-between" alignItems="center" px={2} pt={1} >
+                            <p style={{ fontSize: 15}}><strong>Importe por validar:</strong> <span style={{ fontSize: 15, fontWeight:'bold', color:'red' }}>{numericFormatter( ((props?.item?.importe_pesos) - ((props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1).reduce((a: any, c: any) => { return a + (+c?.importe) }, 0))) + '', { thousandSeparator: ',', decimalScale: 5, fixedDecimalScale: false, prefix: ' $' })} </span></p>
+                        </Box> : null}
+
+
+
+                        {props?.item?.id_estatus === 5 && props?.item?.requiere_documentos === 1 ? <Box display="flex" justifyContent="space-between" alignItems="center" px={2} pt={1} >
                             <p style={{ fontSize: 15, cursor: 'pointer' }} onClick={() => {
                                 props?.enAction(props?.item, 'descargaZIP', null);
                             }}><strong>Descargar zip:</strong> <FolderZipIcon fontSize='medium' color='info' /> </p>
@@ -511,15 +623,69 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                 {props?.item?.proyecto_sr ? <Grid item xs={12} md={4} style={{ paddingLeft: 30, textAlign: 'left' }}>
                                     <p style={{ fontSize: 15 }}> <strong>Otro proyecto: </strong>{props?.item?.proyecto_sr} </p>
                                 </Grid> : null}
-                                <Grid item xs={12} md={4} style={{ paddingLeft: 30, textAlign: 'left' }}>
+                                {props?.item?.requiere_beneficiario === 1 ? <Grid item xs={12} md={4} style={{ paddingLeft: 30, textAlign: 'left' }}>
                                     <p style={{ fontSize: 15 }}> <strong>Beneficiario: </strong>{props?.item?.beneficiarioName} </p>
-                                </Grid>
+                                </Grid> : null}
                                 {props?.item?.proveedor ? <Grid item xs={12} md={4} style={{ paddingLeft: 30, textAlign: 'left' }}>
                                     <p style={{ fontSize: 15 }}> <strong>Otro beneficiario: </strong>{props?.item?.proveedor} </p>
                                 </Grid> : null}
+
+
                                 <Grid item xs={12} md={props?.item?.proveedor ? 4 : 8} style={{ paddingLeft: 30, textAlign: 'left' }}>
-                                    <p style={{ fontSize: 15 }}> <strong>Concepto: </strong>{props?.item?.concepto} </p>
+
+                                    {/*    <p style={{ fontSize: 15 }}> <strong>Concepto: </strong>{props?.item?.concepto} </p> */}
+
+
+                                    {(props?.esAutorizador || props?.esPagador || props?.esRevisor) && props?.item?.id_estatus === 1 && !editaConcepto ?
+                                        <p style={{ fontSize: 15 }}> <strong>Concepto: </strong> <span style={{ color: !props?.item?.concepto ? 'orange' : 'black', fontWeight: !props?.item?.concepto ? '700' : '400' }} >{props?.item?.concepto || 'Asigne un concepto'}</span>
+                                            <span onClick={() => {
+                                                setEditaConcepto(true)
+                                            }} style={{ cursor: 'pointer' }} title='Asignar un concepto'><EditIcon color='info' /></span>
+
+                                        </p> : (props?.esAutorizador || props?.esPagador || props?.esRevisor) && props?.item?.id_estatus === 1 && editaConcepto ? <div style={{ width: '250px' }}>
+                                            <FormikProvider value={formik}>
+                                                <Form.Group style={{ width: '100%' }}>
+                                                    <SelectMultipleAutoCompleteField
+                                                        placeholder={'Seleccione una opción'}
+                                                        label={intl.formatMessage({
+                                                            id: "input_concepto_gac",
+                                                        })}
+                                                        EsMultiple
+                                                        defaultValue={id_concepto?.[0]?.value}
+                                                        options={(props?.conceptos || []).map((e: any) => {
+                                                            return {
+                                                                label: e?.nombre,
+                                                                value: e?.id,
+                                                            };
+                                                        })}
+                                                        name="id_concepto"
+                                                        id="id_concepto"
+                                                        required
+                                                        onInput={(e: any) => {
+                                                            formik.setFieldValue("id_concepto", [e]);
+                                                            setId_concepto([e]);
+                                                        }}
+                                                        formik={formik?.getFieldMeta("id_concepto")}
+                                                    />
+                                                    <span onClick={() => {
+                                                        props?.handleActualizaConcepto(id_concepto)
+                                                        formik.setFieldValue("id_concepto", []);
+                                                        setId_concepto([]);
+                                                        setEditaConcepto(false)
+                                                    }} style={{ cursor: 'pointer' }} title='guarda el cambios'><SaveIcon color='info' /></span>
+                                                    <span onClick={() => {
+                                                        setEditaConcepto(false)
+                                                    }} style={{ cursor: 'pointer' }} title='cancelar'><CancelIcon color='error' /></span>
+                                                </Form.Group>
+                                            </FormikProvider>
+                                        </div> : null}
+
                                 </Grid>
+
+
+
+
+
                             </Grid>
                         </CardContent>
                     </Card>
@@ -546,6 +712,19 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                         </Box>
                         <CardContent>
                             <Grid container spacing={2}>
+                                {props?.item?.mostrar_pago_quincenas ?
+                                    <Grid item xs={12} md={4} style={{ paddingLeft: 30, textAlign: 'left' }}>
+                                        <p style={{ fontSize: 15 }}> <strong>Número de quincenas: </strong>{props?.item?.quincenas_numero} </p>
+                                    </Grid> : null
+                                }
+                                {props?.item?.mostrar_pago_quincenas ?
+                                    <Grid item xs={12} md={4} style={{ paddingLeft: 30, textAlign: 'left' }}>
+                                        <p style={{ fontSize: 15 }}> <strong>Importe por quincena: </strong>{numericFormatter(props?.item?.quincenas_valor + '', { thousandSeparator: ',', decimalScale: 2, fixedDecimalScale: true, prefix: ' $' })} </p>
+                                    </Grid> : null
+                                }
+                                {props?.item?.mostrar_pago_quincenas ?
+                                    <Grid item xs={12} md={4} style={{ paddingLeft: 30, textAlign: 'left' }} /> : null
+                                }
                                 <Grid item xs={12} md={4} style={{ paddingLeft: 30, textAlign: 'left' }}>
                                     <p style={{ fontSize: 15 }}> <strong>Moneda: </strong>{props?.item?.moneda} </p>
                                 </Grid>
@@ -589,6 +768,35 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                 <Grid item xs={12} md={4} style={{ paddingLeft: 30, textAlign: 'left' }}>
                                     <p style={{ fontSize: 15 }}> <strong>Clabe: </strong>{props?.item?.clabe} </p>
                                 </Grid>
+
+                                {props?.item?.fecha_pago ? <Grid item xs={12} md={4} style={{ paddingLeft: 30, textAlign: 'left' }}>
+                                    <p style={{ fontSize: 15 }}> <strong>Fecha limite para realizar el pago: </strong>{props?.item?.fecha_pago} </p>
+                                </Grid> : null}
+
+
+                                {props?.item?.muestra_notificar_nomina && props?.item?.id_usuario_autorizador && props?.item?.id_usuario_revisor && (props?.esAutorizador ||  props?.esPagador) && !props?.item?.id_usuario_pagada ? <Grid item xs={12} md={4} style={{ paddingLeft: 30, textAlign: 'left' }}>
+                                    <Button
+                                        size="small"
+                                        variant="outlined"
+                                        color='info'
+                                        style={{ backgroundColor: '#fcbf6a', color: '#ffff', position:'relative', top:'-12px' }}
+                                        onClick={() => {
+                                            props?.enAction(props?.item, 'notificar_nomina', ((props?.item?.importe_pesos) - ((props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1).reduce((a: any, c: any) => { return a + (+c?.importe) }, 0))))
+                                        }}
+                                    > Notificar a nomina  </Button>
+                                </Grid> : null}
+
+
+
+                                <Grid item xs={12} md={12} style={{ paddingLeft: 30, textAlign: 'left' }} >
+                                    {props?.item?.infoBancaria?.ruta ? <Link
+                                        target="_blank"
+                                        style={{ fontSize: 14 }}
+                                        href={`${env.API_URL_DOCUMENTOS}/${env.API_URL_DOCUMENTOS === 'https://dirac.api.arjion.com/' ? `${(props?.item?.infoBancaria?.ruta || "").replaceAll('storage/app/', '')} ` : props?.item?.infoBancaria?.ruta || ""}`}
+                                    >
+                                        <PreviewIcon color='primary' /> Ver documento bancario
+                                    </Link> : <p style={{ color: 'red', fontSize: 14 }}>Sin documento asociado al la información bancaria seleccionada</p>}
+                                </Grid>
                             </Grid>
                         </CardContent>
                     </Card>
@@ -622,7 +830,7 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                     </Card>
                 </Grid>
 
-                <Grid item xs={12} md={12} style={{ paddingLeft: 30 }}>
+                <Grid item xs={12} md={12} style={{ paddingLeft: 30 }} id='documentos_seccion'>
                     <Card sx={{ position: "relative", p: 2, borderRadius: 2, boxShadow: 3, }} style={{ boxShadow: 'none', border: 'solid 1px rgb(218, 222, 230)' }}>
                         <Box
                             sx={{
@@ -642,7 +850,7 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                         </Box>
                         <CardContent>
                             <>
-                                {props?.estaEnMiCancha && props?.esRevisor && props?.item?.id_usuario_revisor === null && documentosSeleccionados?.length ? <>
+                                {props?.estaEnMiCancha && ((props?.esRevisor && props?.item?.id_usuario_revisor === null && props?.item?.requiere_aprobacion_revisor === 1) || (props?.esAutorizador && props?.item?.id_usuario_autorizador === null && props?.item?.requiere_aprobacion_revisor === 0)) && documentosSeleccionados?.length ? <>
                                     <Grid item xs={12} md={12} style={{ paddingLeft: 30 }}>
                                         <p style={{ fontSize: 15 }}>Autoriza o rechaza los documentos</p>
                                     </Grid>
@@ -683,16 +891,22 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                     <AccordionDetails>
                                                         <Grid container spacing={2}>
                                                             <Grid item xs={12} md={12} style={{ paddingLeft: 30 }}>
-
                                                                 <DinamicTableMejorada
                                                                     flex
                                                                     key={JSON.stringify(props?.item?.documentos) + '0'}
-                                                                    showCheckBox={props?.estaEnMiCancha && props?.esRevisor && props?.item?.id_usuario_revisor === null}
+                                                                    showCheckBox={props?.estaEnMiCancha && ((props?.esRevisor && props?.item?.id_usuario_revisor === null && props?.item?.requiere_aprobacion_revisor === 1) || (props?.esAutorizador && props?.item?.id_usuario_autorizador === null && props?.item?.requiere_aprobacion_revisor === 0))}
                                                                     enCheckBox={(e) => {
                                                                         setDocumentosSeleccionados(e)
                                                                     }}
+                                                                    enAccion={(a, b) => {
+                                                                        props?.handlePreguntaEliminaArchivo && props?.handlePreguntaEliminaArchivo(b)
+                                                                    }}
+                                                                    actions={(props?.idUsuario === props?.item?.solicita || props?.idUsuario === props?.item?.beneficiario)}
+                                                                    esVistaSolicitante={(props?.idUsuario === props?.item?.solicita || props?.idUsuario === props?.item?.beneficiario)}
                                                                     esGastoSolicitante
                                                                     columnsToShow={[
+                                                                        'fiscal_folio',
+                                                                        'critsCoValidacion',
                                                                         'descripcion',
                                                                         'descripcion_documento_validado',
                                                                         'documento_valido',
@@ -708,24 +922,21 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                                         return {
                                                                             ...r,
                                                                             ...{
+                                                                                importe: numericFormatter(r?.importe + '', { thousandSeparator: ',', decimalScale: 2, fixedDecimalScale: true, prefix: ' $' }),
                                                                                 estatus: r?.estatus === 0 ? 'Inactivo' : 'Activo',
                                                                                 documento_valido: +r?.documento_valido === 0 ? 'Documento invalido' : 'Documento valido',
                                                                             }
                                                                         }
                                                                     })}
                                                                 />
-
                                                             </Grid>
                                                         </Grid>
                                                     </AccordionDetails>
                                                 </Accordion> : null}
                                             </>
                                         )
-                                    }, [props?.estaEnMiCancha, props?.esRevisor, props?.item?.id_usuario_revisor, props?.procesando, props?.item?.documentos])
+                                    }, [props?.estaEnMiCancha, props?.esRevisor, props?.esAutorizador, props?.item?.id_usuario_revisor, props?.procesando, props?.item?.documentos, props?.item?.requiere_aprobacion_revisor])
                                 }
-
-
-
 
                                 {(props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1)?.length && !props?.procesando ? <Accordion>
                                     <AccordionSummary
@@ -742,6 +953,8 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                     flex
                                                     esGastoSolicitante
                                                     columnsToShow={[
+                                                        'fiscal_folio',
+                                                        'critsCoValidacion',
                                                         'descripcion',
                                                         'descripcion_documento_validado',
                                                         'documento_valido',
@@ -758,6 +971,7 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                         return {
                                                             ...r,
                                                             ...{
+                                                                importe: numericFormatter(r?.importe + '', { thousandSeparator: ',', decimalScale: 2, fixedDecimalScale: true, prefix: ' $' }),
                                                                 estatus: r?.estatus === 0 ? 'Inactivo' : 'Activo',
                                                                 documento_valido: +r?.documento_valido === 0 ? 'Documento invalido' : 'Documento valido',
                                                             }
@@ -784,6 +998,8 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                     flex
                                                     esGastoSolicitante
                                                     columnsToShow={[
+                                                        'fiscal_folio',
+                                                        'critsCoValidacion',
                                                         'descripcion',
                                                         'descripcion_documento_validado',
                                                         'documento_valido',
@@ -800,6 +1016,7 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                         return {
                                                             ...r,
                                                             ...{
+                                                                importe: numericFormatter(r?.importe + '', { thousandSeparator: ',', decimalScale: 2, fixedDecimalScale: true, prefix: ' $' }),
                                                                 estatus: r?.estatus === 0 ? 'Inactivo' : 'Activo',
                                                                 documento_valido: +r?.documento_valido === 0 ? 'Documento invalido' : 'Documento valido',
                                                             }
@@ -812,8 +1029,10 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                 </Accordion> : null}
 
                                 {(props?.idUsuario === props?.item?.solicita || props?.idUsuario === props?.item?.beneficiario)
-                                    && props?.item?.id_usuario_revisor === null && !props?.procesando
-                                    && ((props?.item?.autorizadores || []).filter((r: any) => r?.autorizo === null)?.length === (props?.item?.autorizadores || [])?.length || (props?.item?.id_estatus === 2)) ?
+                                    && props?.item?.id_usuario_revisor === null
+                                    && !props?.procesando
+                                    && ((props?.item?.autorizadores || []).filter((r: any) => r?.autorizo === null)?.length === (props?.item?.autorizadores || [])?.length || (props?.item?.id_estatus === 2) || (props?.item?.id_estatus === 6) || (props?.item?.id_estatus === 1))
+                                    && props?.item?.requiere_documentos === 1 ?
                                     <Accordion>
                                         <AccordionSummary
                                             expandIcon={<ExpandMoreIcon />}
@@ -832,6 +1051,9 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                         <br></br>
                                                         <DragAndDropField
                                                             acepted={{
+                                                                "image/jpeg": [],
+                                                                "image/jpg": [],
+                                                                "image/png": [],
                                                                 "application/pdf": [],
                                                                 "text/xml": []
                                                             }}
@@ -846,12 +1068,11 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                 </Grid>
                                             </Grid>
                                         </AccordionDetails>
-                                    </Accordion> : null}
+                                    </Accordion> : props?.item?.requiere_documentos === 0 ? 'Este tipo de solicitud no requiere carga documental' : '...'}
                             </>
                         </CardContent>
                     </Card>
                 </Grid>
-
             </Grid>
         </div>
     )

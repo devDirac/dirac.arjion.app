@@ -27,7 +27,16 @@ export const useDragAndDropField = (props: DragAndDropFieldProps) => {
           const data1 = new FormData();
           data1.append("file", cat);
           const response = await gacAddMediaHttp(data1)
-          const nuevoObjs = { moneda: response?.json?.moneda, motivo_valido: response?.json?.motivo_valido, valido: response?.json?.valido, importe: response?.json?.importe, descripcion:response?.json?.descripcion, File: cat, ...cat };
+          const nuevoObjs = { 
+              moneda: response?.json?.moneda, 
+              motivo_valido: response?.json?.motivo_valido, 
+              valido: response?.json?.valido, 
+              importe: response?.json?.importe, 
+              rfc: response?.json?.rfc, 
+              fiscal_folio: response?.json?.fiscal_folio, 
+              descripcion:response?.json?.descripcion, 
+              File: cat, 
+              ...cat };
           documentos.push(nuevoObjs)
         } catch (error: any) {
 

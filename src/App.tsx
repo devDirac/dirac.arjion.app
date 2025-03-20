@@ -70,19 +70,24 @@ export default function App() {
           <Route path="/" element={<PublicRouter />}>
             <Route path="/" element={<CrudCarruselPage />} />
           </Route>
+
           <Route path="/info-dirac-seleccion" element={<PublicRouter />}>
             <Route path="/info-dirac-seleccion" element={<SeleccionCarruselPage />} />
           </Route>
+
           <Route path="/info-dirac" element={<PublicRouter />}>
             <Route path="/info-dirac" element={<CarruselPage />} />
           </Route>
+
           <Route path="/gac-home" element={<PublicRouter />}>
             <Route path="/gac-home" element={ <ProviderContextUserComponent> <SolicitantePage /> </ProviderContextUserComponent>} />
           </Route>
+
           {/* CRUD CATALOGO DE CONCEPTOS */}
           <Route path="/gac-revisor-catalogo-conceptos-crud" element={<PublicRouter />}>
             <Route path="/gac-revisor-catalogo-conceptos-crud" element={<ProviderContextUserComponent> <RevisionCrudConceptosPage /> </ProviderContextUserComponent>} />
           </Route>
+          
           {/* CRUD TIPOS DE SOLICITUD */}
           <Route path="/gac-revisor-catalogo-tipo-solicitud-crud" element={<PublicRouter />}>
             <Route path="/gac-revisor-catalogo-tipo-solicitud-crud" element={<ProviderContextUserComponent> <RevisionCrudTipoSolicitudPage /> </ProviderContextUserComponent>} />
@@ -92,7 +97,6 @@ export default function App() {
           <Route path="/gac-revisor-catalogo-forma-pago-crud" element={<PublicRouter />}>
             <Route path="/gac-revisor-catalogo-forma-pago-crud" element={<ProviderContextUserComponent> <RevisionCrudFormaPagoPage /> </ProviderContextUserComponent>} />
           </Route>
-
 
           {/* EDICION DE PERFILES */}
           <Route path="/gac-revisor-ediion-perfiles" element={<PublicRouter />}>
@@ -107,7 +111,6 @@ export default function App() {
           <Route path="/gac-detalle-solicitud" element={<PublicRouter />}>
             <Route path="/gac-detalle-solicitud" element={<ProviderContextUserComponent> <GacDetalleSolicitudPage /> </ProviderContextUserComponent>} />
           </Route>
-
 
           {/* fin rutas publicas */}
           <Route path="*" element={<NotFoundPage />} />

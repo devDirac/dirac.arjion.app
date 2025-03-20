@@ -88,6 +88,20 @@ export const notificaRevisoresFiscalesHttp = async (data: any): Promise<any> => 
     }
 };
 
+export const notificaRevisoresFiscalesAutorizadorHttp = async (data: any): Promise<any> => {
+    try {
+        const response: any = await axios.post(
+            `${env.API_URL}${"/notificaRevisoresFiscalesAutorizador"}`, data
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+
+
 export const handleDocumentosRevisorRevisaHttp = async (data: any): Promise<any> => {
     try {
         const response: any = await axios.post(
@@ -147,3 +161,52 @@ export const firmarDocumentoHttp = async (data: any): Promise<any> => {
         return promise;
     }
 };
+
+export const atualizaTipoSolicitudHttp = async (data: any): Promise<any> => {
+    try {
+        const response: any = await axios.put(
+            `${env.API_URL}${"/atualizaTipoSolicitud"}`, data
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const actualizaIdConceptoHttp = async (data: any): Promise<any> => {
+    try {
+        const response: any = await axios.put(
+            `${env.API_URL}${"/actualizaIdConcepto"}`, data
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const solicitaCargaDocumentalHttp = async (data: any): Promise<any> => {
+    try {
+        const response: any = await axios.post(
+            `${env.API_URL}${"/solicitaCargaDocumental"}`, data
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+export const notificaNominaHttp = async (data: any): Promise<any> => {
+    try {
+        const response: any = await axios.post(
+            `${env.API_URL}${"/notificaNomina"}`, data
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+

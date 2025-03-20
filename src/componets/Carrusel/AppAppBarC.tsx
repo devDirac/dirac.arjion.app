@@ -1,35 +1,33 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
 import AppBarC from './AppBarC';
 import ToolbarC from './ToolbarC';
 import logo from "../../assets/images/sdsd.png";
-import { Backdrop, Button, CircularProgress, Divider, Drawer, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, styled } from '@mui/material';
+import logoArjion from "../../assets/images/arjion_b.png";
+import { Button, Divider, Drawer, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, styled } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
 import Inventory2Icon from '@mui/icons-material/Inventory2';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import ModalComponent from '../../componets/Modal';
 import { useState } from 'react';
-import StepperGeneral from '../../componets/StepperGeneral/StepperGeneral';
-import SeleccionTipoSoliciud from '../../componets/SeleccionTipoSoliciud/SeleccionTipoSoliciud';
-import SolicitudPrestamo from '../../forms/SolicitudPrestamo/SolicitudPrestamo';
-import DragAndDropField from '../../componets/DragAndDropField';
 import PaymentsIcon from '@mui/icons-material/Payments';
 import {
   setGacEquivalenciaMonedaExtDolHttp,
-  setGacTipoCambioDolarHttp
+  setGacTipoCambioDolarHttp,
+  setProveedorHttp
 } from '../../actions/catalogos';
 import { GacUserQueryParamsContext } from '../../context/GacUserQueryParamsContexto';
 import moment from 'moment';
-import { getCurrentDate } from '../../utils';
+import { getCurrentDate, getErrorHttpMessage } from '../../utils';
 import { firmarDocumentoHttp, setDocumentoSolicitudHttp, setSolicitudHttp } from '../../actions/solicitud';
-import SetFirmaForm from '../../forms/FirmasForm/SetFirmaForm';
 import GacStepperForm from '../../forms/GacStepperForm/GacStepperForm';
+import AddProveedor from '../../forms/catalogos/Proveedores/AddProveedor';
+import { addBancoHttp } from '../../actions/user';
+import { getCritscoAnalisisHttp } from '../../actions/documentos';
 
 const CustomListItemText = styled(ListItemText)(({ theme }) => ({
   '& .MuiListItemText-primary': {
@@ -41,6 +39,7 @@ const CustomListItemText = styled(ListItemText)(({ theme }) => ({
 
 interface AppAppBarCProps {
   idUsuario?: any
+  esGastos?:boolean
 }
 
 const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
@@ -118,6 +117,11 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
   const handleisAlertOpen = () => setIsAlertOpen(true);
   const handleisAlerClose = () => setIsAlertOpen(false);
 
+  /* Para el modal del proveedor */
+  const [isAlertOpenProveedor, setIsAlertOpenProveedor] = useState(false);
+  const handleisAlertOpenProveedor = () => setIsAlertOpenProveedor(true);
+  const handleisAlerCloseProveedor = () => setIsAlertOpenProveedor(false);
+
   /* Para el alta de solicitud */
   const [activeStep, setActiveStep] = React.useState(0);
   const [isDisabledNext, setIsDisabledNext] = useState<boolean>(true);
@@ -145,6 +149,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
 
   /* Selecciona el tipo de solicitud alta */
   const handleSeleccionaTipoSolicitud = (tipo: any) => {
+    console.log('aqui ', tipo)
     setTipoSolicitud(tipo)
     setIsDisabledNext(false)
     setSolicitudForm(null)
@@ -184,9 +189,17 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
 
   /* Para guardar el formulario del tipo de solicitud */
   const handleGuardaFormulario = (f: any) => {
+    const actualSteps = Object.assign([], steps);
     setSolicitudForm(f)
-    setActiveStep(2);
-    setIsDisabledNext(true)
+    if (tipoSolicitud?.requiere_documentos === 1) {
+      setActiveStep(2);
+      setIsDisabledNext(true)
+    } else {
+      setSteps(actualSteps.filter((e: any) => e?.name != 'Formulario carga de documentos'));
+      setActiveStep(3);
+      setIsDisabledNext(true);
+      handleGuardaSinDocumentos(f);
+    }
   }
 
   /* Para preguntar si va a subir documentos o no  */
@@ -205,6 +218,49 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
     }
   }
 
+  /* Para guardar sin los documentos */
+  const handleGuardaSinDocumentos = async (d: any) => {
+    try {
+      setProcesando(true);
+      /* Guarda solicitud */
+      await setSolicitudHttp({
+        ...d,
+        ...{
+          id_beneficiario: d?.id_beneficiario?.[0]?.value,
+          id_proyecto: d?.id_proyecto?.[0]?.value,
+          id_moneda: d?.id_moneda?.[0]?.value,
+          importe_pesos: d?.importePesos,
+          id_forma_pago: d?.id_forma_pago?.[0]?.value,
+          id_empresa: d?.id_empresa?.[0]?.value,
+          id_concepto: d?.id_concepto?.[0]?.value,
+          proveedor: d?.proveedor?.[0]?.value + '',
+        },
+        ...{
+          id_tipo_solicitud: tipoSolicitud?.id,
+          fecha_solicitud: getCurrentDate(),
+          solicita: perfil?.idUsuario,
+          id_usuario: perfil?.idUsuario,
+          organigrama: perfil?.organigrama.map((r: any) => {
+            return {
+              ...r,
+              ...{
+                correo: 'cruz.sergio@dirac.mx',
+                telefono: '5635309370'
+              }
+            }
+          })
+        }
+      });
+      setProcesando(false)
+      setActiveStep(activeStep + 2);
+      setMensajeAlert('Exito al dar de alta la solicitud')
+      handleisAlertOpen()
+      setTipoSolicitud(null)
+    } catch (error) {
+      setProcesando(false)
+    }
+  }
+
   /* Para guardar los documentos */
   const handleGuardaDocumentos = async (d: any) => {
     try {
@@ -220,7 +276,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
           id_forma_pago: solicitudForm?.id_forma_pago?.[0]?.value,
           id_empresa: solicitudForm?.id_empresa?.[0]?.value,
           id_concepto: solicitudForm?.id_concepto?.[0]?.value,
-
+          proveedor: solicitudForm?.proveedor?.[0]?.value + '',
         },
         ...{
           id_tipo_solicitud: tipoSolicitud?.id,
@@ -242,8 +298,19 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
       await d.reduce(async (_: any, cat: any) => {
         try {
           await _;
+          let crist = null;
+          if (cat?.documento_valido === "si" && cat?.rfc && cat?.fiscal_folio && cat?.importe) {
+            crist = await getCritscoAnalisisHttp({
+              user_rfc: 'DIR7610279E5',
+              recive_rfc: cat?.rfc,
+              fiscal_folio: cat?.fiscal_folio,
+              monto: cat?.importe
+            })
+          }
           const data1: any = new FormData();
           data1.append("importe", cat?.importe);
+          data1.append("fiscal_folio", cat?.fiscal_folio || '-');
+          data1.append("rfc", cat?.rfc || '-');
           data1.append("nombre_corto", cat?.nombre);
           data1.append("descripcion", cat?.descripcion);
           data1.append("tipo_moneda", cat?.moneda);
@@ -253,9 +320,9 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
           data1.append("id_solicitud", responseSolicitud?.id);
           data1.append("id_usuario", perfil?.idUsuario);
           data1.append("file", cat?.file);
+          data1.append("critsCoValidacion",  JSON.stringify(crist));
           await setDocumentoSolicitudHttp(data1);
         } catch (error: any) {
-
         }
       }, Promise.resolve());
       setProcesando(false)
@@ -270,14 +337,13 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
   }
 
 
-  const handleFirma = async (firma:any)=> {
+  const handleFirma = async (firma: any) => {
     try {
       setProcesando(true);
       const body = {
-        id_usuario:perfil?.idUsuario,
-        firma:firma?.firma
+        id_usuario: perfil?.idUsuario,
+        firma: firma?.firma
       }
-      console.log(body);
       await firmarDocumentoHttp(body);
       setFirma(true);
       setMensajeAlert('Exito al estableces la firma digital');
@@ -289,6 +355,49 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
       handleisAlertOpen();
     }
   }
+
+  const addProveedorAPI = async (form: any) => {
+    try {
+      setProcesando(true);
+      await setProveedorHttp({ ...form, ...{ id_usuario: perfil?.idUsuario, } });
+      handleisAlerCloseProveedor();
+      perfil?.getData();
+      setMensajeAlert('Exito al guardar a el proveedor');
+      handleisAlertOpen();
+      setProcesando(false);
+    } catch (error) {
+      setProcesando(false);
+      setMensajeAlert('Error al guardar a el proveedor');
+      handleisAlertOpen();
+    }
+  }
+
+
+
+  const handleAddBancoUsuario = async (dataBanco: any) => {
+    try {
+      setProcesando(true);
+      const data1 = new FormData();
+      data1.append("alias", dataBanco?.alias);
+      data1.append("banco", dataBanco?.banco);
+      data1.append("clabe", dataBanco?.clabe);
+      data1.append("cuenta", dataBanco?.cuenta);
+      data1.append("id_usuario", dataBanco?.id_usuario);
+      if(dataBanco?.file){
+        data1.append("file", dataBanco?.file?.[0]);
+      }
+      await addBancoHttp(data1);
+      setMensajeAlert('Exito al guardar la información bancaria');
+      handleisAlertOpen();
+      setProcesando(false);
+    } catch (error) {
+      const mensajeerror = getErrorHttpMessage(error)
+      setProcesando(false);
+      setMensajeAlert(mensajeerror || 'Error al guardar la información bancaria');
+      handleisAlertOpen();
+    }
+  }
+
 
   const DrawerList = (
     <Box sx={{ width: '100%' }} role="presentation" onClick={toggleDrawer(false)}>
@@ -302,7 +411,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
         </ListItem>
         <Divider />
         {/* mODULO DE DASHBOARD */}
-        <ListItem disablePadding onClick={() => navigate(`/gac-home?id=${perfil?.idUsuario}`)}>
+        <ListItem disablePadding onClick={() => navigate(`/gac-home?id=${perfil?.idHash}`)}>
           <ListItemButton style={{ borderBottom: 'solid 1px #f5f5f5', }}>
             <ListItemIcon>
               <AnalyticsIcon color='info' fontSize='large' />
@@ -313,7 +422,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
           </ListItemButton>
         </ListItem>
         {/* mODULO PARA EL CRUD DE CONCEPTOS */}
-        {perfil?.esRevisor || perfil?.esAutorizador || perfil?.esPagador ? <ListItem disablePadding onClick={() => navigate(`/gac-revisor-catalogo-conceptos-crud?id=${perfil?.idUsuario}`)}>
+        {perfil?.esRevisor || perfil?.esAutorizador || perfil?.esPagador ? <ListItem disablePadding onClick={() => navigate(`/gac-revisor-catalogo-conceptos-crud?id=${perfil?.idHash}`)}>
           <ListItemButton style={{ borderBottom: 'solid 1px #f5f5f5' }}>
             <ListItemIcon>
               <DisplaySettingsIcon color='info' fontSize='large' />
@@ -324,7 +433,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
           </ListItemButton>
         </ListItem> : null}
         {/* mODULO PARA EL CRUD DE TIPO DE SOLICITUD */}
-        {perfil?.esRevisor || perfil?.esAutorizador || perfil?.esPagador ? <ListItem disablePadding onClick={() => navigate(`/gac-revisor-catalogo-tipo-solicitud-crud?id=${perfil?.idUsuario}`)}>
+        {perfil?.esRevisor || perfil?.esAutorizador || perfil?.esPagador ? <ListItem disablePadding onClick={() => navigate(`/gac-revisor-catalogo-tipo-solicitud-crud?id=${perfil?.idHash}`)}>
           <ListItemButton style={{ borderBottom: 'solid 1px #f5f5f5' }}>
             <ListItemIcon>
               <Inventory2Icon color='info' fontSize='large' />
@@ -336,7 +445,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
         </ListItem> : null}
 
         {/* mODULO PARA EL CRUD DE FORMA DE PAGO */}
-        {perfil?.esRevisor || perfil?.esAutorizador || perfil?.esPagador ? <ListItem disablePadding onClick={() => navigate(`/gac-revisor-catalogo-forma-pago-crud?id=${perfil?.idUsuario}`)}>
+        {perfil?.esRevisor || perfil?.esAutorizador || perfil?.esPagador ? <ListItem disablePadding onClick={() => navigate(`/gac-revisor-catalogo-forma-pago-crud?id=${perfil?.idHash}`)}>
           <ListItemButton style={{ borderBottom: 'solid 1px #f5f5f5' }}>
             <ListItemIcon>
               <PaymentsIcon color='info' fontSize='large' />
@@ -349,7 +458,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
 
 
         {/* mODULO PARA la edición de perfiles*/}
-        {perfil?.esRevisor || perfil?.esAutorizador || perfil?.esPagador ? <ListItem disablePadding onClick={() => navigate(`/gac-revisor-ediion-perfiles?id=${perfil?.idUsuario}`)}>
+        {perfil?.esRevisor || perfil?.esAutorizador || perfil?.esPagador ? <ListItem disablePadding onClick={() => navigate(`/gac-revisor-ediion-perfiles?id=${perfil?.idHash}`)}>
           <ListItemButton style={{ borderBottom: 'solid 1px #f5f5f5' }}>
             <ListItemIcon>
               <ManageAccountsIcon color='info' fontSize='large' />
@@ -399,7 +508,8 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
             </Drawer>
           </Box>
           <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }} >
-            <img width={170} src={logo} alt="profile-image" style={{ position: 'relative', top: 3 }} />
+            {!props?.esGastos ? <img width={170} src={logo} alt="profile-image" style={{ position: 'relative', top: 3 }} /> : null}
+            {props?.esGastos ? <img width={170} src={logoArjion} alt="profile-image" style={{ position: 'relative', top: 3 }} /> : null}
           </Box>
         </ToolbarC>
       </AppBarC>
@@ -421,11 +531,18 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
           handleRefreshTipoCambio={handleRefreshTipoCambio}
           handlePregunta={handlePregunta}
           handleGuardaDocumentos={handleGuardaDocumentos}
-          setFirma={(firma:any)=>{
+          setFirma={(firma: any) => {
             handleFirma(firma)
+          }}
+          handleAddProveedor={() => {
+            handleisAlertOpenProveedor()
+          }}
+          handleAddBancoUsuario={(d) => {
+            handleAddBancoUsuario(d)
           }}
         />
       </ModalComponent>
+
       <ModalComponent handleClose={handleisAlerClose} isOpen={isAlertOpen} key={'alertasss'}>
         <Grid container spacing={2} style={{ textAlign: 'center' }}>
           <Grid item xs={12}>
@@ -435,6 +552,13 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
           </Grid>
         </Grid>
       </ModalComponent>
+
+      <ModalComponent handleClose={handleisAlerCloseProveedor} isOpen={isAlertOpenProveedor} key={'alertasssProveedor'}>
+        <AddProveedor procesando={procesando} enAction={(d) => {
+          addProveedorAPI(d)
+        }} />
+      </ModalComponent>
+
     </div>
   );
 }

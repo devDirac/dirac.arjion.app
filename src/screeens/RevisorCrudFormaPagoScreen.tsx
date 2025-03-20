@@ -113,8 +113,8 @@ const RevisorCrudFormaPagoScreen: React.FC = () => {
 
     return (
         <>
-            <AppAppBarC />
-            <Grid container style={{ backgroundColor: '#fff', position: 'relative', top: 15, height: 'calc(100vh - 85px)' }} justifyContent="center">
+            <AppAppBarC esGastos/>
+            <Grid container style={{ backgroundColor: '#fff'}} justifyContent="center">
                 <Grid item xs={12} style={{ textAlign: 'center', marginBottom: 15, paddingTop: 15, padding: 25 }}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} md={12} style={{ textAlign: 'center', paddingLeft: 40 }}>

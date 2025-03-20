@@ -99,7 +99,6 @@ const CrudCarruselPage: React.FC = () => {
             setProcesando(false);
         } catch (error) {
             setProcesando(false);
-            console.log(error)
             const message = getErrorHttpMessage(error);
             setMensajeAlert(message || intl.formatMessage({ id: 'http_error_actualizar' }));
             handleisAlertOpen();
@@ -115,7 +114,6 @@ const CrudCarruselPage: React.FC = () => {
             setProcesando(false);
         } catch (error) {
             setProcesando(false);
-            console.log(error)
             const message = getErrorHttpMessage(error);
             setMensajeAlert(message || intl.formatMessage({ id: 'get_elementos_error' }));
             handleisAlertOpen();
@@ -386,6 +384,7 @@ const CrudCarruselPage: React.FC = () => {
     }
 
     return (
+        
         <>
             <AppAppBarC />
             <Grid container style={{ backgroundColor: '#fff', position: 'relative', top: 20 }}>

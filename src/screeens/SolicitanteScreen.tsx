@@ -1,28 +1,31 @@
-import { Backdrop, Box, Button, Card, CardContent, CircularProgress, Divider, Grid, Tab, Tabs, Typography } from '@mui/material';
-import * as Yup from "yup";
+import React from 'react';
+import {
+    Backdrop,
+    Box,
+    Button,
+    Card,
+    CardContent,
+    CircularProgress,
+    Grid,
+    Tab,
+    Tabs,
+    Typography
+} from '@mui/material';
 import AppAppBarC from '../componets/Carrusel/AppAppBarC';
-import env from "react-dotenv";
 import ModalComponent from '../componets/Modal';
-import React, { useCallback, useEffect, useState } from 'react';
 import ComplexStatisticsCard from '../examples/Cards/StatisticsCards/ComplexStatisticsCard';
 import RequestPageIcon from '@mui/icons-material/RequestPage';
 import DinamicTableMejorada from '../componets/DinamicTableMejorada/DinamicTableMejorada';
-import SolicitudCard from '../componets/SolicitudCard/SolicitudCard';
-import TimelineList from '../examples/Timeline/TimelineList';
-import TimelineItem from '../examples/Timeline/TimelineItem';
-import DragAndDropField from '../componets/DragAndDropField';
-import { GacUserQueryParamsContext } from '../context/GacUserQueryParamsContexto';
-import { groupByProperty } from '../utils';
 import DateRangePickerFiltro from '../componets/DateRangePickerFiltro/DateRangePickerFiltro';
 import ColumnasChartGac from '../componets/Amcharts/ColumnasChartGac';
 import PieChart from '../componets/Amcharts/pieChart';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
-import { useNavigate } from 'react-router-dom';
-import { generarZipSolicitudHttp } from '../actions/solicitud';
 import SelectMultipleAutoCompleteField from '../componets/SelectMultipleAutoCompleteField/SelectMultipleAutoCompleteField';
-import { FormikProvider, useFormik } from 'formik';
+import { FormikProvider } from 'formik';
 import { Form } from 'react-bootstrap';
+import { numericFormatter } from 'react-number-format';
+import useSolicitanteScreen from './useSolicitanteScreen';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -55,232 +58,67 @@ function a11yProps(index: number) {
         'aria-controls': `simple-tabpanel-${index}`,
     };
 }
+
+
+
 const SolicitanteScreen: React.FC = () => {
-    const navigate = useNavigate();
-    const perfil = React.useContext(GacUserQueryParamsContext);
-    /* Para el tab */
-    const [value, setValue] = React.useState(0);
-    /* Para la data de las solicitudes */
-    const [data, setData] = useState([]);
-    
-    const [dataTodasPerfil, setDataTodasPerfil] = useState<any>([]);
-    const [dataTodas, setDataTodas] = useState<any>([]);
 
-    const [dataTodasPerfilMuestra, setDataTodasPerfilMuestra] = useState<any>([]);
-    const [dataTodasMuestra, setDataTodasMuestra] = useState<any>([]);
-
-    const [dataPie, setDataPie] = useState([]);
-
-    /* Para el filtro por fecha */
-    const [tipo, setTipo] = useState('todas');
-    /* // Estado para saber si el DatePicker está abierto o cerrado */
-    const [isOpen, setIsOpen] = useState(false);
-    /* Para el detalle del tipo de solicitud */
-    const [itemDetalle, setItemDetalle] = useState<any>([]);
-    /* Detalle de la solicitud */
-    const [item, setItem] = useState<any>(null);
-    const [itemId, setItemId] = useState<any>(null);
-    /* Para el loader */
-    const [procesando, setProcesando] = useState<any>()
-    /* Modal mensajes generales */
-    const [mensajeAlert, setMensajeAlert] = useState('');
-    const [isAlertOpen, setIsAlertOpen] = useState(false);
-    const handleisAlertOpen = () => setIsAlertOpen(true);
-    const handleisAlerClose = () => setIsAlertOpen(false);
-    /* Modal DETALLE DE SOLICITUDES */
-    const [isAlertOpenDetalle, setIsAlertOpenDetalle] = useState(false);
-    const handleisAlertOpenDetalle = () => setIsAlertOpenDetalle(true);
-    const handleisAlerCloseDetalle = () => setIsAlertOpenDetalle(false);
-    /* Modal DETALLE DE una solicitud en particular */
-    const [isAlertOpenDetalleSolicitud, setIsAlertOpenDetalleSolicitud] = useState(false);
-    const handleisAlertOpenDetalleSolicitud = () => setIsAlertOpenDetalleSolicitud(true);
-    const handleisAlerCloseDetalleSolicitud = () => setIsAlertOpenDetalleSolicitud(false);
-
-    /* Filtros  */
-    const [tipoSolicitud, setTipoSolicitud] = useState<any>([]);
-    const [proyecto, setProyecto] = useState<any>([]);
-    const [empresa, setEmpresa] = useState<any>([]);
-    const [banco, setBanco] = useState<any>([]);
-    const [concepto, setConcepto] = useState<any>([]);
-    const [estatus, setEstatus] = useState<any>([]);
-    const [moneda, setMoneda] = useState<any>([]);
-    const [formaPago, setFormaPago] = useState<any>([]);
-
-
-    const filtrarDatos = useCallback(() => {
-        const filtros: any = {
-            id_tipo_solicitud: tipoSolicitud.map((r:any)=> r?.value),
-            id_proyecto: proyecto.map((r:any)=> r?.value),
-            id_empresa: empresa.map((r:any)=> r?.value),
-            banco: banco.map((r:any)=> r?.value),
-            id_concepto: concepto.map((r:any)=> r?.value),
-            id_estatus: estatus.map((r:any)=> r?.value),
-            id_moneda: moneda.map((r:any)=> r?.value),
-            id_forma_pago: formaPago.map((r:any)=> r?.value)
-        };
-        const respuestaFiltrada = (tipo === 'todas' ? dataTodasPerfil : perfil?.solicitudes || []).filter((item: any) => {
-            return Object.keys(filtros).every(key => {
-                if (!filtros[key] || filtros[key].length === 0) return true;
-                return filtros[key].includes(item[key]);
-            });
-        });
-        const resultadoestatus: any = groupByProperty(respuestaFiltrada, 'solicita');
-        if(tipo === 'todas'){
-            setDataTodasPerfilMuestra(respuestaFiltrada);
-            setDataTodasMuestra(resultadoestatus);
-        }else{
-            const resultado: any = groupByProperty(respuestaFiltrada, tipo);
-            setData(resultado);
-
-            const sumaTotalPesos = (resultado || []).reduce((a: any, c: any) => { return a + (+c?.suma_importe_en_pesos) }, 0)
-            const dataPieResult = resultado.map((r: any) => {
-                return {
-                    category: r?.[tipo],
-                    value: ((r?.suma_importe_en_pesos / sumaTotalPesos) * 100),
-                    valor: r?.suma_importe_en_pesos
-                }
-            });
-            setDataPie(dataPieResult);
-
-        }
-    }, [tipo, tipoSolicitud,proyecto, empresa, banco, concepto, estatus, moneda, formaPago, dataTodasPerfil])
-
-    const setDashboard = useCallback(() => {
-        const resultado: any = groupByProperty(perfil?.solicitudes || [], tipo);
-        setData(resultado);
-        const resultadoestatus: any = groupByProperty(perfil?.solicitudes || [], 'solicita');
-        setDataTodas(resultadoestatus);
-        setDataTodasPerfil(perfil?.solicitudes || [])
-
-        /* Para mostrar en el dashboard */
-        setDataTodasMuestra(resultadoestatus)
-        setDataTodasPerfilMuestra(perfil?.solicitudes || [])
-
-        const sumaTotalPesos = (resultado || []).reduce((a: any, c: any) => { return a + (+c?.suma_importe_en_pesos) }, 0)
-        const dataPieResult = resultado.map((r: any) => {
-            return {
-                category: r?.[tipo],
-                value: ((r?.suma_importe_en_pesos / sumaTotalPesos) * 100),
-                valor: r?.suma_importe_en_pesos
-            }
-        });
-        setDataPie(dataPieResult);
-        filtrarDatos()
-    }, [perfil, tipo, filtrarDatos]);
-
-    useEffect(() => {
-        setDashboard();
-    }, [setDashboard, tipo]);
-
-    const filterByDateRange = (data_: any, dateRange: any) => {
-        console.log(data_)
-        if (!dateRange) {
-            setDashboard();
-            return false;
-        }
-        const [startDate, endDate] = dateRange.map((date: any) => new Date(date));
-        const a = data_.filter((item: any) => {
-            const itemDate = new Date(item.fecha_solicitud);
-            return itemDate >= startDate && itemDate <= endDate;
-        });
-        const resultado: any = tipo === 'todas' ? a : groupByProperty(a, tipo);
-        if(tipo === 'todas'){
-            const resultadoestatus: any = groupByProperty(resultado || [], 'solicita');
-            setDataTodasMuestra(resultadoestatus)
-            setDataTodasPerfilMuestra(resultado)
-        }else{
-            setData(resultado)
-            const sumaTotalPesos = (resultado || []).reduce((a: any, c: any) => { return a + (+c?.suma_importe_en_pesos) }, 0)
-            const dataPieResult = resultado.map((r: any) => {
-                return {
-                    category: r?.[tipo],
-                    value: ((r?.suma_importe_en_pesos / sumaTotalPesos) * 100),
-                    valor: r?.suma_importe_en_pesos
-                }
-            });
-            setDataPie(dataPieResult);
-        }
-    }
-
-    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-        console.log(newValue,  tipo)
-        setValue(tipo === 'todas' && newValue === 1 ? 2 : newValue);
-    };
-
-    const handleDescargaZip = async (sol: any) => {
-        try {
-            setProcesando(true);
-            const resDocZip = await generarZipSolicitudHttp({ id_solicitud: sol?.id });
-            console.log(resDocZip)
-            window.open(`${env.API_URL_DOCUMENTOS}${resDocZip}`);
-            setProcesando(false);
-            setMensajeAlert('Exito al descargar los documentos')
-            handleisAlertOpen()
-        } catch (error) {
-            setProcesando(false);
-            setMensajeAlert('Error al descargar los documentos')
-            handleisAlertOpen()
-        }
-    }
-
-    const esMiTurno = (arr: any, idUsuario: any) => {
-        for (const item of arr) {
-            if (item.id_usuario === idUsuario && (item.autorizo === null || item.autorizo === false)) {
-                return 'si';
-            }
-        }
-    }
-
-    const miTurnoDos = (faltanAutorizadores: any, sol: any) => {
-        if (!faltanAutorizadores?.length) {
-            /* Turno autorizador */
-            if (perfil?.esAutorizador && sol?.id_usuario_autorizador === null) {
-                return 'si';
-            }
-            if (perfil?.esAutorizador && sol?.id_usuario_autorizador !== null) {
-                /* Turno pagador */
-                if ((perfil?.esPagador && sol?.id_usuario_pagada === null) && (sol?.id_usuario_revisor !== null && sol?.id_usuario_autorizador !== null)) {
-                    return 'si';
-                }
-                if (perfil?.esPagador && sol?.id_usuario_pagada !== null) {
-                    return 'no';
-                }
-                return 'no';
-            }
-            /* Turno revisores */
-            if (perfil?.esRevisor && sol?.id_usuario_revisor === null && sol?.id_usuario_autorizador !== null && (sol?.documentos || [])?.length) {
-                return 'si';
-            }
-            if (perfil?.esRevisor && sol?.id_usuario_revisor !== null || (perfil?.esRevisor && sol?.id_usuario_revisor === null && sol?.id_usuario_autorizador === null)) {
-                return 'no';
-            }
-        }
-    }
-
-
-    const formik = useFormik({
-        initialValues: {
-            tipo_solicitud: []
-        },
-        onSubmit: async (values) => { },
-        validationSchema: Yup.object({
-            tipo_solicitud: Yup.array()
-        }),
-    });
-
-    useEffect(()=>{
-        filtrarDatos()
-    },[tipo,tipoSolicitud,proyecto, empresa, banco, concepto, estatus, moneda, formaPago])
-
+    const {
+        setValue,
+        setTipo,
+        formik,
+        setTipoSolicitud,
+        setProyecto,
+        setEmpresa,
+        setBanco,
+        setConcepto,
+        setEstatus,
+        setMoneda,
+        setFormaPago,
+        tipo,
+        setIsOpen,
+        filterByDateRange,
+        dataTodasPerfilMuestra,
+        perfil,
+        tipoSolicitud,
+        dataTodasPerfil,
+        proyecto,
+        empresa,
+        banco,
+        concepto,
+        estatus,
+        moneda,
+        formaPago,
+        handleDataSolicitudes,
+        isOpen,
+        value,
+        handleChange,
+        setItemDetalle,
+        handleisAlertOpenDetalle,
+        dataTodasMuestra,
+        data,
+        dataPie,
+        procesando,
+        handleisAlerClose,
+        isAlertOpen,
+        handleisAlerCloseDetalle,
+        isAlertOpenDetalle,
+        mensajeAlert,
+        itemDetalle,
+        handleDescargaZip,
+        navigate,
+        esMiTurno,
+        miTurnoDos
+    } = useSolicitanteScreen()
 
     return (
         <>
-            <AppAppBarC />
-            <Grid container style={{ backgroundColor: '#fff', position: 'relative', top: 15, height: 'auto', minHeight: '110vh' }} justifyContent="center">
+            <AppAppBarC esGastos />
+            <Grid container style={{ backgroundColor: '#fff' }} justifyContent="center">
                 <Grid item xs={12} style={{ textAlign: 'center', marginBottom: 15, paddingTop: 15, padding: 25 }}>
                     <Grid container spacing={2}>
                         {/* Seccion de los filtros */}
-                        {value !== 2 ? <Grid item xs={12} md={12} style={{ margin: 14 }}>
+                        <Grid item xs={12} md={12} style={{ margin: 14 }}>
                             <Card sx={{ position: "relative", p: 2, borderRadius: 2, boxShadow: 3, }} style={{ boxShadow: 'none', border: 'solid 1px rgb(218, 222, 230)' }}>
                                 {/* Título en el borde superior */}
                                 <Box
@@ -303,6 +141,17 @@ const SolicitanteScreen: React.FC = () => {
                                 <CardContent>
                                     <Grid container spacing={2}>
                                         <Grid item xs={12} md={7} style={{ textAlign: 'left' }}>
+                                            {
+                                                perfil?.esJefe && perfil?.misSolicitudes?.length  ? <Button onClick={() => {
+                                                    handleisAlertOpenDetalle()
+                                                    setItemDetalle(perfil?.misSolicitudes)
+                                                }}
+                                                    size="small"
+                                                    variant="outlined"
+                                                    style={{ color: tipo === 'todas' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: tipo === 'todas' ? '#1A73E8' : '#fff' }}>
+                                                    Solicitudes bajo mi revisión <span style={{backgroundColor:'red', borderRadius:40, marginLeft:5, fontSize:11}}> {perfil?.misSolicitudes?.length}</span>
+                                                </Button> : null
+                                            }
                                             <Button onClick={() => {
                                                 setValue(0);
                                                 setTipo('todas');
@@ -400,7 +249,6 @@ const SolicitanteScreen: React.FC = () => {
                                                 style={{ color: tipo === 'empresa' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: tipo === 'empresa' ? '#1A73E8' : '#fff' }}>
                                                 Empresa
                                             </Button>
-
                                             <Button onClick={() => {
                                                 setTipo('banco');
                                                 formik.setFieldValue("tipo_solicitud", []);
@@ -530,9 +378,9 @@ const SolicitanteScreen: React.FC = () => {
                                                 handleClose={() => {
                                                     setIsOpen(false)
                                                 }}
-                                                title='Seleccione el rango de fecha para filtrar sus resultados' 
+                                                title='Seleccione el rango de fecha para filtrar sus resultados'
                                                 enAccion={(r: any) => {
-                                                    filterByDateRange(tipo === 'todas' ? dataTodasPerfilMuestra  : perfil?.solicitudes || [], r)
+                                                    filterByDateRange(tipo === 'todas' ? dataTodasPerfilMuestra : perfil?.solicitudes || [], r)
                                                 }} />
                                         </Grid>
                                         <Grid item xs={12} md={12} style={{ textAlign: 'left' }}>
@@ -556,7 +404,6 @@ const SolicitanteScreen: React.FC = () => {
                                                                 id="tipo_solicitud"
                                                                 required
                                                                 onInput={(e: any) => {
-                                                                    console.log([e])
                                                                     formik.setFieldValue("tipo_solicitud", e);
                                                                     setTipoSolicitud(e);
                                                                 }}
@@ -584,7 +431,6 @@ const SolicitanteScreen: React.FC = () => {
                                                                 id="proyecto"
                                                                 required
                                                                 onInput={(e: any) => {
-                                                                    console.log([e])
                                                                     formik.setFieldValue("proyecto", e);
                                                                     setProyecto(e);
                                                                 }}
@@ -612,7 +458,6 @@ const SolicitanteScreen: React.FC = () => {
                                                                 id="empresa"
                                                                 required
                                                                 onInput={(e: any) => {
-                                                                    console.log([e])
                                                                     formik.setFieldValue("empresa", e);
                                                                     setEmpresa(e);
                                                                 }}
@@ -640,7 +485,6 @@ const SolicitanteScreen: React.FC = () => {
                                                                 id="banco"
                                                                 required
                                                                 onInput={(e: any) => {
-                                                                    console.log([e])
                                                                     formik.setFieldValue("banco", e);
                                                                     setBanco(e);
                                                                 }}
@@ -668,7 +512,6 @@ const SolicitanteScreen: React.FC = () => {
                                                                 id="concepto"
                                                                 required
                                                                 onInput={(e: any) => {
-                                                                    console.log([e])
                                                                     formik.setFieldValue("concepto", e);
                                                                     setConcepto(e);
                                                                 }}
@@ -696,7 +539,6 @@ const SolicitanteScreen: React.FC = () => {
                                                                 id="estatus"
                                                                 required
                                                                 onInput={(e: any) => {
-                                                                    console.log([e])
                                                                     formik.setFieldValue("estatus", e);
                                                                     setEstatus(e);
                                                                 }}
@@ -719,12 +561,11 @@ const SolicitanteScreen: React.FC = () => {
                                                                     }
                                                                 }).filter(
                                                                     (item: any, index: any, self: any) => index === self.findIndex((t: any) => t.value === item.value)
-                                                                ) }
+                                                                )}
                                                                 name="moneda"
                                                                 id="moneda"
                                                                 required
                                                                 onInput={(e: any) => {
-                                                                    console.log([e])
                                                                     formik.setFieldValue("moneda", e);
                                                                     setMoneda(e);
                                                                 }}
@@ -747,12 +588,11 @@ const SolicitanteScreen: React.FC = () => {
                                                                     }
                                                                 }).filter(
                                                                     (item: any, index: any, self: any) => index === self.findIndex((t: any) => t.value === item.value)
-                                                                ) }
+                                                                )}
                                                                 name="forma_pago"
                                                                 id="forma_pago"
                                                                 required
                                                                 onInput={(e: any) => {
-                                                                    console.log([e])
                                                                     formik.setFieldValue("forma_pago", e);
                                                                     setFormaPago(e);
                                                                 }}
@@ -766,15 +606,15 @@ const SolicitanteScreen: React.FC = () => {
                                     </Grid>
                                 </CardContent>
                             </Card>
-                        </Grid> : null}
+                        </Grid>
                         {/* Seccion de los datos */}
                         <Grid item xs={12}>
                             {!isOpen ? <Box sx={{ width: '100%' }}>
                                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                                     <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
                                         <Tab label="Tarjetas con mis solicitudes" {...a11yProps(0)} />
-                                        {tipo !== 'todas' ? <Tab label="Graficas con mis solicitudes" {...a11yProps(1)} /> :null}
-                                        {perfil?.misSolicitudes?.length ? <Tab label="Solicitudes en seguimiento asignadas o atendedias por mi" {...a11yProps(2)} /> : null}                                    </Tabs>
+                                        {tipo !== 'todas' ? <Tab label="Graficas con mis solicitudes" {...a11yProps(1)} /> : null}
+                                    </Tabs>
                                 </Box>
                                 <CustomTabPanel value={value} index={0}>
                                     <Grid container spacing={2}>
@@ -793,6 +633,7 @@ const SolicitanteScreen: React.FC = () => {
                                                 datas={dataTodasMuestra?.[0]?.conteo_estatus}
                                             />
                                         </Grid> : null}
+
                                         {!perfil?.procesando && tipo !== 'todas' ? data?.map((r: any, key: number) => (
                                             <Grid item xs={12} md={3} sm={12} lg={4} key={key} style={{ marginBottom: 5 }}>
                                                 <ComplexStatisticsCard
@@ -812,22 +653,22 @@ const SolicitanteScreen: React.FC = () => {
                                         )) : perfil?.procesando ? '' : ''}
                                         {
                                             tipo !== 'todas' && !data?.length ? <Grid item xs={12} md={3} sm={12} lg={4} style={{ marginBottom: 5 }}>
-                                            <ComplexStatisticsCard
-                                                detalle={(tipo_: string, title: any) => {
-                                                   
-                                                }}
-                                                icon={<CurrencyExchangeIcon />}
-                                                title={'Sin resultados'}
-                                                count={0}
-                                                datas={[]}
-                                            />
-                                        </Grid> : null
+                                                <ComplexStatisticsCard
+                                                    detalle={(tipo_: string, title: any) => {
+
+                                                    }}
+                                                    icon={<CurrencyExchangeIcon />}
+                                                    title={'Sin resultados'}
+                                                    count={0}
+                                                    datas={[]}
+                                                />
+                                            </Grid> : null
                                         }
                                     </Grid>
                                 </CustomTabPanel>
                                 <CustomTabPanel value={value} index={1}>
                                     <Grid container spacing={2}>
-                                        <Grid item xs={12} md={6} style={{ maxHeight: 250 }} >
+                                        <Grid item xs={12} md={6}  >
                                             {data?.length && !perfil?.procesando ? <ColumnasChartGac
                                                 detalle={(item: any) => {
                                                     const re: any = data.filter((r: any) => r?.[tipo] === item?.[tipo]);
@@ -836,7 +677,7 @@ const SolicitanteScreen: React.FC = () => {
                                                 }}
                                                 data={data} categoria={tipo} /> : perfil?.procesando ? '' : 'Sin resultados para graficar'}
                                         </Grid>
-                                        <Grid item xs={12} md={6} style={{ maxHeight: 250 }}>
+                                        <Grid item xs={12} md={6} >
                                             {data?.length && !perfil?.procesando ? <PieChart data={dataPie} detalle={(item: any) => {
                                                 const re: any = data.filter((r: any) => r?.[tipo] === item?.category);
                                                 setItemDetalle(re?.[0]?.registros || []);
@@ -845,47 +686,6 @@ const SolicitanteScreen: React.FC = () => {
                                         </Grid>
                                     </Grid>
                                 </CustomTabPanel>
-                                {perfil?.misSolicitudes?.length ? <CustomTabPanel value={value} index={2}>
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={12} md={12} sm={12} lg={12} style={{ marginBottom: 5 }}>
-                                            <DinamicTableMejorada
-                                                flex
-                                                esGastoSolicitante
-                                                actions
-                                                key={'playList_'}
-                                                data={perfil?.misSolicitudes.map((r: any) => {
-                                                    let esMiTurno_:any = 'no'
-                                                    esMiTurno_ = esMiTurno(r?.autorizadores, perfil?.idUsuario);
-                                                    const faltanAutorizadores = r?.autorizadores.filter((x: any) => (x?.requiere_aprobacion === 1) && (x?.autorizo === false || x?.autorizo === null));
-                                                    if (!faltanAutorizadores?.length) {
-                                                        esMiTurno_ = miTurnoDos(faltanAutorizadores, r)
-                                                    }
-                                                    return {
-                                                        ...{
-                                                            id: r?.id,
-                                                            tipo_solicitud: r?.tipo_solicitud,
-                                                            estatus: r?.estatus,
-                                                            importe_pesos: r?.importe_pesos,
-                                                            pais_moneda: r?.pais_moneda,
-                                                            descripcion: r?.descripcion,
-                                                            esMiTurno: esMiTurno_
-                                                        },
-                                                        ...r
-                                                    }
-                                                })}
-                                                columnsToShow={['id', 'tipo_solicitud', 'estatus', 'importe_pesos', 'pais_moneda', 'descripcion', 'fecha_solicitud', 'esMiTurno']}
-                                                enAccion={(accion, row) => {
-                                                    if (accion === 'descargarDocumentos') {
-                                                        handleDescargaZip(row)
-                                                    }
-                                                    if (accion === 'verDetalle') {
-                                                        navigate('/gac-detalle-solicitud?' + 'id=' + perfil?.idUsuario + '&id_solicitud=' + row?.id)
-                                                    }
-                                                }}
-                                            />
-                                        </Grid>
-                                    </Grid>
-                                </CustomTabPanel> : null}
                             </Box> : null}
                         </Grid>
                     </Grid>
@@ -904,70 +704,45 @@ const SolicitanteScreen: React.FC = () => {
                 </ModalComponent>
                 <ModalComponent handleClose={handleisAlerCloseDetalle} isOpen={isAlertOpenDetalle} key={'alertasazDetalle'} esFullScreen>
                     <Grid container spacing={2}>
-                        {itemDetalle?.length && !item ? <Grid item xs={12} sm={12} md={12} lg={12} style={{ textAlign: 'center' }}>
+                        {itemDetalle?.length ? <Grid item xs={12} sm={12} md={12} lg={12} style={{ textAlign: 'center' }}>
                             <DinamicTableMejorada
                                 flex
                                 esGastoSolicitante
                                 actions
                                 key={'playList_'}
                                 data={itemDetalle.map((r: any) => {
+                                    let esMiTurno_: any = 'no'
+                                    esMiTurno_ = esMiTurno(r?.autorizadores, perfil?.idUsuario);
+                                    const faltanAutorizadores = r?.autorizadores.filter((x: any) => (x?.requiere_aprobacion === 1) && (x?.autorizo === false || x?.autorizo === null));
+                                    if (!faltanAutorizadores?.length) {
+                                        esMiTurno_ = miTurnoDos(faltanAutorizadores, r)
+                                    }
                                     return {
+                                        ...r,
                                         ...{
                                             id: r?.id,
                                             tipo_solicitud: r?.tipo_solicitud,
                                             estatus: r?.estatus,
-                                            importe_pesos: r?.importe_pesos,
+                                            importe_pesos: numericFormatter(r?.importe_pesos + '', { thousandSeparator: ',', decimalScale: 5, fixedDecimalScale: false, prefix: ' $' }),
                                             pais_moneda: r?.pais_moneda,
-                                            descripcion: r?.descripcion
+                                            descripcion: r?.descripcion,
+                                            esMiTurno: esMiTurno_
                                         },
-                                        ...r
+
                                     }
                                 })}
-                                columnsToShow={['id', 'tipo_solicitud', 'estatus', 'importe_pesos', 'pais_moneda', 'descripcion', 'fecha_solicitud']}
+                                columnsToShow={(perfil?.esRevisor || perfil?.esAutorizador || perfil?.esPagador)  || perfil?.misSolicitudes?.length ? ['id', 'tipo_solicitud', 'estatus', 'importe_pesos', 'pais_moneda', 'descripcion', 'fecha_solicitud','esMiTurno'] : ['id', 'tipo_solicitud', 'estatus', 'importe_pesos', 'pais_moneda', 'descripcion', 'fecha_solicitud']}
                                 enAccion={(accion, row) => {
                                     if (accion === 'descargarDocumentos') {
                                         handleDescargaZip(row)
                                     }
                                     if (accion === 'verDetalle') {
-                                        navigate('/gac-detalle-solicitud?' + 'id=' + perfil?.idUsuario + '&id_solicitud=' + row?.id)
+                                        navigate('/gac-detalle-solicitud?' + 'id=' + perfil?.idHash + '&id_solicitud=' +row?.id_hash)
                                     }
                                 }}
                             />
                         </Grid> : null}
                     </Grid>
-                </ModalComponent>
-                <ModalComponent handleClose={handleisAlerCloseDetalleSolicitud} isOpen={isAlertOpenDetalleSolicitud} key={'alertasazDetalleSolicitud'}>
-                    <TimelineList title="Bitacora de eventos para la solicitud">
-                        <TimelineItem
-                            onSelec={() => { }}
-                            color="success"
-                            icon="notifications"
-                            title="Solicitud creada"
-                            dateTime="22 DEC 7:20 PM"
-                        />
-                        <TimelineItem
-                            onSelec={() => { }}
-                            color="success"
-                            icon="notifications"
-                            title="Revisada"
-                            dateTime="22 DEC 7:21 AM"
-                        />
-                        <TimelineItem
-                            onSelec={() => { }}
-                            color="success"
-                            icon="notifications"
-                            title="Carga de documentos"
-                            dateTime="22 DEC 8:10 AM"
-                        />
-                        <TimelineItem
-                            onSelec={() => { }}
-                            color="success"
-                            icon="done"
-                            title="Solicitud liberada"
-                            dateTime="22 DEC 4:54 PM"
-                            lastItem
-                        />
-                    </TimelineList>
                 </ModalComponent>
             </Grid >
         </>

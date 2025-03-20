@@ -13,6 +13,7 @@ export interface DinamicTableMejoradaProps {
     titulo?: string;
     esUsuarioReporte?: boolean;
     actions?: boolean;
+    esVistaSolicitante?: boolean;
     enAccion?: (accion: string, row: any, idPermiso?:number) => void;
     opcionesRepo?:boolean
     esExpandible?:boolean

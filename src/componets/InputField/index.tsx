@@ -36,6 +36,9 @@ const InputField: React.FC<InputFieldProps> = (props: InputFieldProps) => {
               onFocus={handleFocus}
               {...newPros}
               {...field}
+              onBlur={()=>{
+                newPros?.onBlur &&  newPros?.onBlur()
+              }}
               style={darkMode ? { borderRight: 'none', backgroundColor: 'transparent', color: 'white' } : { borderRight: 'none' }}
             />
             {esError || (formik?.touched && !formik?.error && !_.isEmpty(formik?.value)) ? <Button variant="outline-secondary" style={{ border: '1px solid rgb(227 215 215)', borderLeft: 'none' }} id="button-addon2">

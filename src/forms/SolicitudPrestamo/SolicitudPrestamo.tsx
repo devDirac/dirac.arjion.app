@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Autocomplete, Box, Card, CardContent, Grid, Input, TextField, Tooltip, Typography } from '@mui/material';
+import PreviewIcon from '@mui/icons-material/Preview';
+import env from "react-dotenv";
+import { Autocomplete, Box, Card, CardContent, Grid, Input, Link, TextField, Tooltip, Typography } from '@mui/material';
 import { FormikProvider, FormikTouched, setNestedObjectValues, useFormik } from 'formik';
 import { Button, Form } from 'react-bootstrap';
 import InputField from '../../componets/InputField';
@@ -16,6 +18,7 @@ import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import DescriptionIcon from '@mui/icons-material/Description';
 import InfoIcon from '@mui/icons-material/Info';
+import moment from 'moment';
 
 interface SolicitudPrestamoProps {
     item?: any
@@ -24,6 +27,7 @@ interface SolicitudPrestamoProps {
     enAction: (data: any) => void
     tipoSolicitud: any
     monedas?: any[]
+    bancos?: any[]
     handleRefreshMonedas?: () => void
     handleRefreshTipoCambio?: () => void
     proyectos?: any[]
@@ -32,6 +36,9 @@ interface SolicitudPrestamoProps {
     empresas?: any[]
     conceptos?: any[]
     tipoCambio?: any
+    proveedores?: any[]
+    handleAddProveedor: () => void
+    handlePreguntaAddBanco?: (data: any) => void
 }
 
 const SolicitudPrestamo: React.FC<SolicitudPrestamoProps> = (props: SolicitudPrestamoProps) => {
@@ -40,6 +47,9 @@ const SolicitudPrestamo: React.FC<SolicitudPrestamoProps> = (props: SolicitudPre
     const [muestraOtroProyecto, setMuestraOtroProyecto] = useState(false);
     const [muestraOtroBeneficiario, setMuestraOtroBeneficiario] = useState(false)
     /* Para guardar el importe en pesos mexicanos */
+    const [numero_quincenas, seNumero_quincenas] = useState("");
+    const [valor_quincenas, seValor_quincenas] = useState("");
+
     const [importePesos, setImportePesos] = useState(0);
     const [importe, setImporte] = useState("");
     const [id_moneda, setId_moneda] = useState<any>([]);
@@ -50,14 +60,18 @@ const SolicitudPrestamo: React.FC<SolicitudPrestamoProps> = (props: SolicitudPre
     const [banco, setBanco] = useState('');
     const [cuenta, setCuenta] = useState('');
     const [clabe, setClabe] = useState('');
+    const [rutaBanco, setRutaBanco] = useState('');
     const [proyecto_sr, setProyecto_sr] = useState('');
     const [id_empresa, setId_empresa] = useState<any>([]);
-    const [proveedor, setProveedor] = useState('');
+    const [proveedor, setProveedor] = useState<any>([]);
     const [id_concepto, setId_concepto] = useState<any>([]);
+    const [fecha_pago, setFecha_pago] = useState('');
 
     const formik = useFormik({
         initialValues: {
             importe: "",
+            numero_quincenas: "",
+            valor_quincenas: "",
             id_moneda: [],
             id_proyecto: [],
             id_beneficiario: [],
@@ -65,27 +79,43 @@ const SolicitudPrestamo: React.FC<SolicitudPrestamoProps> = (props: SolicitudPre
             id_forma_pago: [],
             banco: "",
             cuenta: "",
+            fecha_pago: "",
             clabe: "",
             proyecto_sr: "",
             id_empresa: [],
-            proveedor: "",
+            //proveedor: "",
+            proveedor: [],
             id_concepto: []
         },
         onSubmit: async (values) => { },
         validationSchema: Yup.object({
             importe: Yup.string().max(500, 'Debe de tener máximo de 500 dígitos').matches(/^-?\d{1,500}(\.\d{1,50})?$/, 'Solo numeros son validos').required('Requerido'),
+            numero_quincenas: Yup.string().max(2, 'Debe de tener máximo de 2 dígitos').matches(/^-?\d{1,2}(\.\d{1,2})?$/, 'Solo numeros son validos'),//.required('Requerido'),
+            valor_quincenas: Yup.string().max(500, 'Debe de tener máximo de 500 dígitos').matches(/^-?\d{1,500}(\.\d{1,50})?$/, 'Solo numeros son validos'),//.required('Requerido'),
             id_moneda: Yup.array().min(1, intl.formatMessage({ id: "input_validation_requerido" })).required('Requerido'),
             id_proyecto: Yup.array().min(1, intl.formatMessage({ id: "input_validation_requerido" })).required('Requerido'),
-            id_beneficiario: Yup.array().min(1, intl.formatMessage({ id: "input_validation_requerido" })).required('Requerido'),
+            id_beneficiario: Yup.array(),//.min(1, intl.formatMessage({ id: "input_validation_requerido" })).required('Requerido'),
             descripcion: Yup.string().required(intl.formatMessage({ id: 'input_validation_requerido' })),
             id_forma_pago: Yup.array().min(1, intl.formatMessage({ id: "input_validation_requerido" })).required('Requerido'),
             banco: Yup.string().max(150, 'Debe de tener máximo de 150 dígitos').required('Requerido'),
             cuenta: Yup.string().max(24, 'Debe de tener máximo de 24 dígitos').required('Requerido').matches(/^-?\d{1,46}(\.\d{1,10})?$/, intl.formatMessage({ id: 'input_validation_solo_numeros' })),
             clabe: Yup.string().max(18, 'Debe de tener máximo de 24 dígitos').required('Requerido').matches(/^-?\d{1,46}(\.\d{1,10})?$/, intl.formatMessage({ id: 'input_validation_solo_numeros' })),
+            fecha_pago:Yup.string().test(
+                "olderThanToday",
+                'La fecha de ejecución no puede ser menor a la fecha de hoy',
+                (value) => {
+                    const date1 = moment().startOf("day");
+                    const date2 = moment(value);
+                    return !date1?.isValid || fecha_pago === ""
+                        ? true
+                        : !date2.isBefore(date1);
+                }
+            ),
             proyecto_sr: Yup.string().max(150, 'Debe de tener máximo de 150 dígitos'),
             id_empresa: Yup.array().min(1, intl.formatMessage({ id: "input_validation_requerido" })).required('Requerido'),
-            proveedor: Yup.string().max(150, 'Debe de tener máximo de 150 dígitos'),
-            id_concepto: Yup.array().min(1, intl.formatMessage({ id: "input_validation_requerido" })).required('Requerido')
+            //proveedor: Yup.string().max(150, 'Debe de tener máximo de 150 dígitos'),
+            proveedor: Yup.array(),
+            id_concepto: Yup.array(),//.min(1, intl.formatMessage({ id: "input_validation_requerido" })).required('Requerido')
         }),
     });
 
@@ -98,15 +128,32 @@ const SolicitudPrestamo: React.FC<SolicitudPrestamoProps> = (props: SolicitudPre
     }
 
     useEffect(() => {
+        console.log(props?.monedas)
+
 
         if (props?.item && props?.item?.importe) {
             formik.setFieldValue("importe", props?.item?.importe || '');
             setImporte(props?.item?.importe || '');
         }
+        
+
+        if(props?.monedas?.length){
+            const mexico = props?.monedas?.filter((e:any)=>e?.pais === 'Mexico').map((e:any)=>{
+                return {
+                    label: 'Moneda: ' + e?.moneda + ', Pais:' + e?.pais + ', Valor en dolar:' + numericFormatter(e?.valor_en_dolar + '', { thousandSeparator: ',', decimalScale: 2, fixedDecimalScale: true, prefix: ' $' }),
+                    value: e?.id,
+                }
+            });
+            formik.setFieldValue("id_moneda", mexico);
+            setId_moneda(mexico);
+        }
+
         if (props?.item && props?.item?.id_moneda) {
             formik.setFieldValue("id_moneda", props?.item?.id_moneda || '');
             setId_moneda(props?.item?.id_moneda || '');
         }
+
+
         if (props?.item && props?.item?.id_proyecto) {
             formik.setFieldValue("id_proyecto", props?.item?.id_proyecto || '');
             setId_proyecto(props?.item?.id_proyecto || '');
@@ -135,25 +182,34 @@ const SolicitudPrestamo: React.FC<SolicitudPrestamoProps> = (props: SolicitudPre
             formik.setFieldValue("clabe", props?.item?.clabe || '');
             setClabe(props?.item?.clabe || '');
         }
+
+        if (props?.item && props?.item?.fecha_pago) {
+            formik.setFieldValue("fecha_pago", props?.item?.fecha_pago || '');
+            setFecha_pago(props?.item?.fecha_pago || '');
+        }
+
         if (props?.item && props?.item?.proyecto_sr) {
             formik.setFieldValue("proyecto_sr", props?.item?.proyecto_sr || '');
             setProyecto_sr(props?.item?.proyecto_sr || '');
         }
+        
         if (props?.item && props?.item?.id_empresa) {
             formik.setFieldValue("id_empresa", props?.item?.id_empresa || '');
             setId_empresa(props?.item?.id_empresa || '');
         }
+        
         if (props?.item && props?.item?.proveedor) {
             formik.setFieldValue("proveedor", props?.item?.proveedor || '');
             setProveedor(props?.item?.proveedor || '');
         }
-        if (props?.item && props?.item?.id_concepto) {
+        /* if (props?.item && props?.item?.id_concepto) {
             formik.setFieldValue("id_concepto", props?.item?.id_concepto || '');
             setId_concepto(props?.item?.id_concepto || '');
-        }
+        } */
         if (props?.item && props?.item?.proveedor && props?.item?.proveedor !== '') {
             setMuestraOtroBeneficiario(true)
         }
+
         if (props?.item && props?.item?.proyecto_sr && props?.item?.proyecto_sr !== '') {
             setMuestraOtroProyecto(true)
         }
@@ -186,19 +242,19 @@ const SolicitudPrestamo: React.FC<SolicitudPrestamoProps> = (props: SolicitudPre
 
 
     useEffect(() => {
-        let importe_:any = importe;
+        let importe_: any = importe;
         const tasaCOPUSD = (props?.monedas || []).find((r: any) => r?.id === +id_moneda?.[0]?.value)?.valor_en_dolar
         let tasaMXNUSD = props?.tipoCambio?.pesos_dolar;
         let resultado = convertirAMXN(importe_, tasaCOPUSD, tasaMXNUSD);
         if (isNaN(resultado)) {
             setImportePesos(0)
         } else {
-            if(resultado === 0){
+            if (resultado === 0) {
                 setImportePesos(importe_)
-            }else{
+            } else {
                 setImportePesos(resultado)
             }
-            
+
         }
 
     }, [id_moneda, importe, props?.tipoCambio?.pesos_dolar])
@@ -236,7 +292,7 @@ const SolicitudPrestamo: React.FC<SolicitudPrestamoProps> = (props: SolicitudPre
                                 <Box display="flex" justifyContent="space-between" alignItems="center" pt={2} px={2}>
                                     <Typography variant="h6" fontWeight="medium">
                                         Tipo de solicitud: {props?.tipoSolicitud?.title}  <Tooltip title={props?.tipoSolicitud?.description}>
-                                            <HelpCenterIcon style={{ cursor: 'help', color:'rgb(32, 47, 80)' }} fontSize='medium' />
+                                            <HelpCenterIcon style={{ cursor: 'help', color: 'rgb(32, 47, 80)' }} fontSize='medium' />
                                         </Tooltip>
                                     </Typography>
                                 </Box>
@@ -286,7 +342,7 @@ const SolicitudPrestamo: React.FC<SolicitudPrestamoProps> = (props: SolicitudPre
                                 >
 
                                     <Typography variant="h6" fontWeight="medium">
-                                        Detalles de la solicitud <AssignmentIcon color='error'  />
+                                        Detalles de la solicitud <AssignmentIcon color='error' />
 
 
                                     </Typography>
@@ -369,9 +425,9 @@ const SolicitudPrestamo: React.FC<SolicitudPrestamoProps> = (props: SolicitudPre
                                             />
                                         </Grid> : null}
 
-                                        <Grid item xs={12} md={4} style={{ paddingLeft: 30 }}>
+                                        {props?.tipoSolicitud?.requiere_beneficiario === 1 ? <Grid item xs={12} md={4} style={{ paddingLeft: 30 }}>
                                             <SelectMultipleAutoCompleteField
-                                             placeholder={'Seleccione una opción'}
+                                                placeholder={'Seleccione una opción'}
                                                 label={intl.formatMessage({
                                                     id: "input_beneficiario",
                                                 })}
@@ -399,9 +455,33 @@ const SolicitudPrestamo: React.FC<SolicitudPrestamoProps> = (props: SolicitudPre
                                                 }}
                                                 formik={formik?.getFieldMeta("id_beneficiario")}
                                             />
-                                        </Grid>
+                                        </Grid> : null}
                                         {muestraOtroBeneficiario ? <Grid item xs={12} md={4} style={{ paddingLeft: 30 }}>
-                                            <InputField
+                                            <SelectMultipleAutoCompleteField
+                                                label={intl.formatMessage({ id: 'input_beneficiario_otro' })}
+                                                placeholder={intl.formatMessage({ id: 'input_beneficiario_otro_descripcion' })}
+                                                EsMultiple
+                                                btnPlus
+                                                onAdd={() => {
+                                                    props?.handleAddProveedor()
+                                                }}
+                                                defaultValue={proveedor?.[0]?.value}
+                                                options={(props?.proveedores || []).map((e: any) => {
+                                                    return {
+                                                        label: e?.nombre,
+                                                        value: e?.id,
+                                                    };
+                                                })}
+                                                name="proveedor"
+                                                id="proveedor"
+                                                required
+                                                onInput={(e: any) => {
+                                                    formik.setFieldValue("proveedor", [e]);
+                                                    setProveedor([e]);
+                                                }}
+                                                formik={formik?.getFieldMeta("proveedor")}
+                                            />
+                                            {/* <InputField
                                                 required
                                                 value={proveedor || ''}
                                                 name="proveedor"
@@ -415,11 +495,11 @@ const SolicitudPrestamo: React.FC<SolicitudPrestamoProps> = (props: SolicitudPre
                                                 type="text"
                                                 id="proveedor"
                                                 formik={formik?.getFieldMeta('proveedor')}
-                                            />
+                                            /> */}
                                         </Grid> : null}
-                                        <Grid item xs={12} md={muestraOtroBeneficiario ? 4 : 8} style={{ paddingLeft: 30 }}>
+                                        {/* {props?.tipoSolicitud?.requiere_concepto === 1 ? <Grid item xs={12} md={muestraOtroBeneficiario ? 4 : 8} style={{ paddingLeft: 30 }}>
                                             <SelectMultipleAutoCompleteField
-                                             placeholder={'Seleccione una opción'}
+                                                placeholder={'Seleccione una opción'}
                                                 label={intl.formatMessage({
                                                     id: "input_concepto_gac",
                                                 })}
@@ -440,7 +520,7 @@ const SolicitudPrestamo: React.FC<SolicitudPrestamoProps> = (props: SolicitudPre
                                                 }}
                                                 formik={formik?.getFieldMeta("id_concepto")}
                                             />
-                                        </Grid>
+                                        </Grid> : null} */}
                                     </Grid>
                                 </CardContent>
                             </Card>
@@ -468,9 +548,50 @@ const SolicitudPrestamo: React.FC<SolicitudPrestamoProps> = (props: SolicitudPre
                                 {/* Contenido del formulario */}
                                 <CardContent>
                                     <Grid container spacing={2}>
+
+                                        {props?.tipoSolicitud?.mostrar_pago_quincenas ?
+                                            <Grid item xs={12} md={6} style={{ paddingLeft: 30 }}>
+                                                <InputField
+                                                    required
+                                                    value={numero_quincenas || ''}
+                                                    name="numero_quincenas"
+                                                    onInput={(e: any) => {
+                                                        const target = e.target as HTMLTextAreaElement;
+                                                        formik.setFieldValue("numero_quincenas", target?.value || '');
+                                                        seNumero_quincenas(target?.value);
+                                                    }}
+                                                    label={'Número de quincenas'}
+                                                    placeholder={'Ingrese el numero de quincenas a pagar'}
+                                                    type="text"
+                                                    id="numero_quincenas"
+                                                    formik={formik?.getFieldMeta('numero_quincenas')}
+                                                />
+                                            </Grid> : null}
+                                        {props?.tipoSolicitud?.mostrar_pago_quincenas ?
+                                            <Grid item xs={12} md={6} style={{ paddingLeft: 30 }}>
+                                                <InputField
+                                                    required
+                                                    value={valor_quincenas || ''}
+                                                    name="valor_quincenas"
+                                                    onInput={(e: any) => {
+                                                        const target = e.target as HTMLTextAreaElement;
+                                                        formik.setFieldValue("valor_quincenas", target?.value || '');
+                                                        seValor_quincenas(target?.value);
+                                                    }}
+                                                    label={'Importe por quincena'}
+                                                    placeholder={'Ingrese el importe a descontar en cada quincena'}
+                                                    type="text"
+                                                    id="valor_quincenas"
+                                                    formik={formik?.getFieldMeta('valor_quincenas')}
+                                                />
+                                            </Grid> : null
+
+
+                                        }
+
                                         <Grid item xs={12} md={4} style={{ paddingLeft: 30 }}>
                                             <SelectMultipleAutoCompleteField
-                                             placeholder={'Seleccione una opción'}
+                                                placeholder={'Seleccione una opción'}
                                                 label={intl.formatMessage({
                                                     id: "input_moneda",
                                                 })}
@@ -498,7 +619,7 @@ const SolicitudPrestamo: React.FC<SolicitudPrestamoProps> = (props: SolicitudPre
                                         </Grid>
                                         <Grid item xs={12} md={4} style={{ paddingLeft: 30 }}>
                                             <SelectMultipleAutoCompleteField
-                                             placeholder={'Seleccione una opción'}
+                                                placeholder={'Seleccione una opción'}
                                                 label={intl.formatMessage({
                                                     id: "input_forma_pago",
                                                 })}
@@ -572,6 +693,38 @@ const SolicitudPrestamo: React.FC<SolicitudPrestamoProps> = (props: SolicitudPre
                                 {/* Contenido del formulario */}
                                 <CardContent>
                                     <Grid container spacing={2}>
+                                        {(props?.bancos)?.length ? <Grid item xs={12} md={12} style={{ paddingLeft: 30 }}>
+                                            <p style={{ fontSize: 14 }}>Utiliza las cuentas guardadas con anterioridad</p>
+                                        </Grid> : null}
+
+                                        {(props?.bancos)?.length ? <Grid item xs={12} md={12} style={{ paddingLeft: 30 }}>
+
+                                            {(props?.bancos)?.map((r: any) => {
+                                                return (
+                                                    <Button onClick={() => {
+                                                        formik.setFieldValue("banco", r?.banco || '');
+                                                        setBanco(r?.banco || '');
+
+                                                        formik.setFieldValue("cuenta", r?.cuenta || '');
+                                                        setCuenta(r?.cuenta || '');
+
+                                                        formik.setFieldValue("clabe", r?.clabe || '');
+                                                        setClabe(r?.clabe || '');
+
+                                                        setRutaBanco(r?.ruta || '')
+                                                    }}
+                                                        size='sm'
+                                                        variant="outlined"
+                                                        style={{ color: '#ffff', marginLeft: 5, marginRight: 5, backgroundColor: '#1A73E8' }}>
+                                                        {r?.alias}
+                                                    </Button>
+                                                )
+                                            })}
+                                        </Grid> : <Grid item xs={12} md={12} style={{ textAlign: 'right' }}>
+                                            <p style={{ fontSize: 12, color: 'grey' }}>
+                                                Aun no cuentas con información bancaria
+                                            </p>
+                                        </Grid>}
                                         <Grid item xs={12} md={4} style={{ paddingLeft: 30 }}>
                                             <InputField
                                                 required
@@ -581,6 +734,12 @@ const SolicitudPrestamo: React.FC<SolicitudPrestamoProps> = (props: SolicitudPre
                                                     const target = e.target as HTMLTextAreaElement;
                                                     formik.setFieldValue("banco", target?.value || '');
                                                     setBanco(target?.value);
+                                                }}
+                                                onBlur={() => {
+                                                    const existe = (props?.bancos)?.find((r: any) => r?.banco === banco && r?.clabe === clabe && r?.cuenta === cuenta)
+                                                    if ((banco !== '' && clabe !== '' && cuenta !== '') && !existe) {
+                                                        props?.handlePreguntaAddBanco && props?.handlePreguntaAddBanco({ banco, cuenta, clabe })
+                                                    }
                                                 }}
                                                 label={intl.formatMessage({ id: 'input_banco' })}
                                                 placeholder={intl.formatMessage({ id: 'input_banco_descripcion' })}
@@ -599,6 +758,12 @@ const SolicitudPrestamo: React.FC<SolicitudPrestamoProps> = (props: SolicitudPre
                                                     formik.setFieldValue("cuenta", target?.value || '');
                                                     setCuenta(target?.value);
                                                 }}
+                                                onBlur={() => {
+                                                    const existe = (props?.bancos)?.find((r: any) => r?.banco === banco && r?.clabe === clabe && r?.cuenta === cuenta)
+                                                    if ((banco !== '' && clabe !== '' && cuenta !== '') && !existe) {
+                                                        props?.handlePreguntaAddBanco && props?.handlePreguntaAddBanco({ banco, cuenta, clabe })
+                                                    }
+                                                }}
                                                 label={intl.formatMessage({ id: 'input_cuenta' })}
                                                 placeholder={intl.formatMessage({ id: 'input_cuenta_descripcion' })}
                                                 type="text"
@@ -606,7 +771,7 @@ const SolicitudPrestamo: React.FC<SolicitudPrestamoProps> = (props: SolicitudPre
                                                 formik={formik?.getFieldMeta('cuenta')}
                                             />
                                         </Grid>
-                                        <Grid item xs={12} md={4} style={{ paddingLeft: 30}} >
+                                        <Grid item xs={12} md={4} style={{ paddingLeft: 30 }} >
                                             <InputField
                                                 required
                                                 value={clabe || ''}
@@ -616,12 +781,47 @@ const SolicitudPrestamo: React.FC<SolicitudPrestamoProps> = (props: SolicitudPre
                                                     formik.setFieldValue("clabe", target?.value || '');
                                                     setClabe(target?.value);
                                                 }}
+                                                onBlur={() => {
+                                                    const existe = (props?.bancos)?.find((r: any) => r?.banco === banco && r?.clabe === clabe && r?.cuenta === cuenta)
+                                                    if ((banco !== '' && clabe !== '' && cuenta !== '') && !existe) {
+                                                        props?.handlePreguntaAddBanco && props?.handlePreguntaAddBanco({ banco, cuenta, clabe })
+                                                    }
+                                                }}
                                                 label={intl.formatMessage({ id: 'input_clabe' })}
                                                 placeholder={intl.formatMessage({ id: 'input_clabe_descripcion' })}
                                                 type="text"
                                                 id="clabe"
                                                 formik={formik?.getFieldMeta('clabe')}
                                             />
+                                        </Grid>
+                                        
+                                       {props?.tipoSolicitud?.requiere_fechaPago === 1 ? <Grid item xs={12} md={4} style={{ paddingLeft: 30 }} >
+                                            <InputField
+                                                required
+                                                value={fecha_pago || ''}
+                                                name="fecha_pago"
+                                                onInput={(e: any) => {
+                                                    const target = e.target as HTMLTextAreaElement;
+                                                    formik.setFieldValue("fecha_pago", target?.value || '');
+                                                    setFecha_pago(target?.value);
+                                                }}
+                                                label={intl.formatMessage({ id: 'input_fecha_pago' })}
+                                                placeholder={intl.formatMessage({ id: 'input_fecha_pago_descripcion' })}
+                                                type="date"
+                                                id="fecha_pago"
+                                                formik={formik?.getFieldMeta('fecha_pago')}
+                                            />
+                                        </Grid> : null}
+                                        
+
+                                        <Grid item xs={12} md={12} style={{ paddingLeft: 30 }} >
+                                            {rutaBanco ? <Link
+                                                target="_blank"
+                                                    style={{fontSize:14}}
+                                                href={`${env.API_URL_DOCUMENTOS}/${env.API_URL_DOCUMENTOS === 'https://dirac.api.arjion.com/' ? `${(rutaBanco || "").replaceAll('storage/app/', '')} ` : rutaBanco || "" }`}
+                                            >
+                                                <PreviewIcon color='primary' /> Ver documento bancario
+                                            </Link> : null}
                                         </Grid>
                                     </Grid>
                                 </CardContent>
@@ -673,7 +873,7 @@ const SolicitudPrestamo: React.FC<SolicitudPrestamoProps> = (props: SolicitudPre
                         <Grid
                             item
                             xs={12}
-                            style={{ padding: "5px", paddingTop: "15", paddingBottom: "0", textAlign: 'right', marginTop:15 }}
+                            style={{ padding: "5px", paddingTop: "15", paddingBottom: "0", textAlign: 'right', marginTop: 15 }}
                         >
                             <Button
                                 variant="primary"
@@ -682,6 +882,8 @@ const SolicitudPrestamo: React.FC<SolicitudPrestamoProps> = (props: SolicitudPre
                                     props?.enAction({
                                         importePesos,
                                         importe,
+                                        quincenas_numero: numero_quincenas,
+                                        quincenas_valor: valor_quincenas,
                                         id_moneda,
                                         id_proyecto,
                                         id_beneficiario,
@@ -690,10 +892,11 @@ const SolicitudPrestamo: React.FC<SolicitudPrestamoProps> = (props: SolicitudPre
                                         banco,
                                         cuenta,
                                         clabe,
+                                        fecha_pago,
                                         proyecto_sr,
                                         id_empresa,
                                         proveedor,
-                                        id_concepto
+                                        /* id_concepto */
                                     });
                                 }}
                             >

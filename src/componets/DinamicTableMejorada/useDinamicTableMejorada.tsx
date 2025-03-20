@@ -131,7 +131,7 @@ const useDinamicTableMejorada = (props: DinamicTableMejoradaProps) => {
             <Grid container>
                 <Grid item xs={12}>
                     
-                        {text !== '' && text !== undefined ? <Tooltip title="La solicitud está esperando que usted emita su juicio"><p style={{ fontWeight: 'bold' }}>
+                        {text === 'si' ? <Tooltip title="La solicitud está esperando que usted emita su juicio"><p style={{ fontWeight: 'bold' }}>
                             <InfoIcon className='pulsante' fontSize='medium' color='info' />
                         </p></Tooltip> : <Tooltip title="La solicitud no requiere de su atención"><p style={{ fontWeight: 'bold' }}>
                             <HighlightOffIcon  fontSize='medium' color='error' />
@@ -344,7 +344,6 @@ const useDinamicTableMejorada = (props: DinamicTableMejoradaProps) => {
                 </Grid>
             </Grid>
         )
-
     }
 
     const printDisponibles = (row_: any) => {
@@ -690,6 +689,7 @@ const useDinamicTableMejorada = (props: DinamicTableMejoradaProps) => {
             row?.hasOwnProperty('aplicado') && row?.aplicado === 0 ? <AccionesTable
                 esInfoCarrusel={props?.esInfoCarrusel}
                 esGenerarPaquete={props?.esGenerarPaquete}
+                esVistaSolicitante={props?.esVistaSolicitante}
                 proyectoCatalogoEliminarValores={props?.proyectoCatalogoEliminarValores}
                 proyectoAgregarValoresConceptos={props?.proyectoAgregarValoresConceptos}
                 esProgramaGuardado={props?.esProgramaGuardado}
@@ -720,6 +720,7 @@ const useDinamicTableMejorada = (props: DinamicTableMejoradaProps) => {
                 enAccion={(accion) => props?.enAccion && props?.enAccion(accion, row)}
             /> : row?.hasOwnProperty('aplicado') && row?.aplicado !== 0 ? <></> : <AccionesTable
                 esGenerarPaquete={props?.esGenerarPaquete}
+                esVistaSolicitante={props?.esVistaSolicitante}
                 esInfoCarrusel={props?.esInfoCarrusel}
                 esProgramaGuardado={props?.esProgramaGuardado}
                 proyectoCatalogoEliminarValores={props?.proyectoCatalogoEliminarValores}

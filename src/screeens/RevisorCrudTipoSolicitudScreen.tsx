@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Backdrop, Button, CircularProgress, Grid } from '@mui/material';
 import AppAppBarC from '../componets/Carrusel/AppAppBarC';
 import ModalComponent from '../componets/Modal';
-import Inventory2Icon from '@mui/icons-material/Inventory2';
 import DinamicTableMejorada from '../componets/DinamicTableMejorada/DinamicTableMejorada';
 import AddTipoSolicitud from '../forms/catalogos/TipoSolicitud/AddTipoSolicitud';
 import ModalConfirm from '../componets/ModalConfirm/ModalConfirm';
@@ -113,8 +112,8 @@ const RevisorCrudTipoSolicitudScreen: React.FC = () => {
 
     return (
         <>
-            <AppAppBarC />
-            <Grid container style={{ backgroundColor: '#fff', position: 'relative', top: 15, height: 'calc(100vh - 85px)' }} justifyContent="center">
+            <AppAppBarC esGastos />
+            <Grid container style={{ backgroundColor: '#fff' }} justifyContent="center">
                 <Grid item xs={12} style={{ textAlign: 'center', marginBottom: 15, paddingTop: 15, padding: 25 }}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} md={12} style={{ textAlign: 'center', paddingLeft: 40 }}>
@@ -133,7 +132,19 @@ const RevisorCrudTipoSolicitudScreen: React.FC = () => {
                                     flex
                                     actions
                                     esInfoCarrusel
-                                    data={data}
+                                    data={data.map((r: any) => {
+                                        return {
+                                            ...r,
+                                            ...{
+                                                requiere_beneficiario: r?.requiere_beneficiario === 1 ? 'Si' : 'No',
+                                                requiere_documentos: r?.requiere_documentos === 1 ? 'Si' : 'No',
+                                                requiere_concepto: r?.requiere_concepto === 1 ? 'Si' : 'No',
+                                                mostrar_pago_quincenas: r?.mostrar_pago_quincenas === 1 ? 'Si' : 'No',
+                                                muestra_notificar_nomina: r?.muestra_notificar_nomina === 1 ? 'Si' : 'No',
+                                                estatus: r?.estatus === 1 ? 'Activo' : 'Inactivo',
+                                            }
+                                        }
+                                    })}
                                     enAccion={(accion, row) => {
                                         setItem(row);
                                         if (accion === 'editar') {
