@@ -17,11 +17,16 @@ const ColumnasChartGac: React.FC<any> = ({ data, categoria, detalle }) => {
         let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
         categoryAxis.dataFields.category = categoria;
         categoryAxis.renderer.grid.template.location = 0;
+
+        categoryAxis.renderer.labels.template.fontSize = 12; // Tamaño de fuente para el eje X
+        
+
         let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
         valueAxis.min = 0;
         valueAxis.max = Math.max(...data.map((item: any) => Math.max(item.suma_importe, item.suma_importe_en_pesos))) * 1.1; 
         valueAxis.extraMin = 0.1;
         valueAxis.minZoomCount = 15; 
+        valueAxis.renderer.labels.template.fontSize = 12; // Tamaño de fuente para el eje Y
 
         chart.cursor = new am4charts.XYCursor();
         chart.cursor.behavior = "zoomXY"; 
@@ -61,7 +66,7 @@ const ColumnasChartGac: React.FC<any> = ({ data, categoria, detalle }) => {
         };
     }, [data]);
 
-    return <div id="chartdiv" style={{ width: "100%", height: "500px" }}></div>;
+    return <div id="chartdiv" style={{ width: "100%", height: "400px" }}></div>;
 };
 
 export default ColumnasChartGac;

@@ -67,7 +67,7 @@ const RevisorEdicionPerfilesScreen: React.FC = () => {
             await setPerfilSolicitudHttp({ right: r });
             getData();
             setProcesando(false);
-            setMensajeAlert('Exito al guardar la configuración de los revisores fiscales');
+            setMensajeAlert('Éxito al guardar la configuración de los revisores fiscales');
             handleisAlertOpen();
         } catch (error) {
             setProcesando(false);
@@ -90,7 +90,7 @@ const RevisorEdicionPerfilesScreen: React.FC = () => {
             await setPerfilSolicitudNominaHttp({ right: r });
             getData();
             setProcesando(false);
-            setMensajeAlert('Exito al guardar la configuración para el perfil de nomina');
+            setMensajeAlert('Éxito al guardar la configuración para el perfil de nomina');
             handleisAlertOpen();
         } catch (error) {
             setProcesando(false);
@@ -156,14 +156,14 @@ const RevisorEdicionPerfilesScreen: React.FC = () => {
                         {
                             muestraVista === 'Autorizador' ?
                                 <Grid item xs={12} md={12} style={{ textAlign: 'center', marginTop: 100 }}>
-                                    <h5 style={{ color: 'rgb(68, 94, 150)', fontWeight: 'bolder' }}>El perfil autorizador esta asignado a:</h5>
+                                    <h5 style={{ color: 'rgb(68, 94, 150)', fontWeight: 'bolder' }}>El perfil autorizador está asignado a:</h5>
                                     <p style={{ color: 'rgb(68, 94, 150)' }}>  {admins.find((r: any) => r?.nivel === 'A')?.direccion}</p>
                                     <p style={{ color: 'rgb(68, 94, 150)' }}>  {admins.find((r: any) => r?.nivel === 'A')?.nombre} {admins.find((r: any) => r?.nivel === 'A')?.apellidos} </p>
                                 </Grid> : null
                         }
                         {
                             muestraVista === 'Pagador' ? <Grid item xs={12} md={12} style={{ textAlign: 'center', marginTop: 100 }}>
-                                <h5 style={{ color: 'rgb(68, 94, 150)', fontWeight: 'bolder' }}>El perfil pagador esta asignado a:</h5>
+                                <h5 style={{ color: 'rgb(68, 94, 150)', fontWeight: 'bolder' }}>El perfil pagador está asignado a:</h5>
                                 <p style={{ color: 'rgb(68, 94, 150)' }}>  {admins.find((r: any) => r?.nivel === 'A')?.direccion}</p>
                                 <p style={{ color: 'rgb(68, 94, 150)' }}>  {admins.find((r: any) => r?.nivel === 'A')?.nombre} {admins.find((r: any) => r?.nivel === 'A')?.apellidos} </p>
                             </Grid> : null

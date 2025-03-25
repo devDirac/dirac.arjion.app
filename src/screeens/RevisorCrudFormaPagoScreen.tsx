@@ -69,7 +69,7 @@ const RevisorCrudFormaPagoScreen: React.FC = () => {
             setProcesando(true);
             await setFormaPagoHttp({ ...data, ...{ id_usuario: idUsuario } });
             handleisAlerCloseForm();
-            setMensajeAlert('Exito al registrar la forma de pago');
+            setMensajeAlert('Éxito al registrar la forma de pago');
             handleisAlertOpen();
             getData();
         } catch (error) {
@@ -85,7 +85,7 @@ const RevisorCrudFormaPagoScreen: React.FC = () => {
             setProcesando(true);
             await editFormaPagoHttp({ ...data, ...{ id_usuario: idUsuario, id: item?.id } })
             handleisAlerCloseFormEdita();
-            setMensajeAlert('Exito al editar la forma de pago');
+            setMensajeAlert('Éxito al editar la forma de pago');
             handleisAlertOpen();
             getData();
         } catch (error) {
@@ -101,7 +101,7 @@ const RevisorCrudFormaPagoScreen: React.FC = () => {
             setProcesando(true);
             await deleteoFrmaPagoHttp(item)
             handleisAlerCloseForm();
-            setMensajeAlert('Exito al actualizar el estatus dla forma de pago');
+            setMensajeAlert('Éxito al actualizar el estatus dla forma de pago');
             handleisAlertOpen();
             getData();
         } catch (error) {
@@ -118,7 +118,7 @@ const RevisorCrudFormaPagoScreen: React.FC = () => {
                 <Grid item xs={12} style={{ textAlign: 'center', marginBottom: 15, paddingTop: 15, padding: 25 }}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} md={12} style={{ textAlign: 'center', paddingLeft: 40 }}>
-                            <h4 style={{ color: 'rgb(68, 94, 150)', fontWeight: 'bolder' }}>Administrar las formas de pago</h4>
+                            <h4 style={{ color: 'rgb(68, 94, 150)', fontWeight: 'bolder' }}>Administración de las formas de pago</h4>
                         </Grid>
                         <Grid item xs={12} md={12} style={{ textAlign: 'right' }}>
                             <Button variant="outlined" style={{ color: '#1976d2' }} onClick={() => {
@@ -130,10 +130,19 @@ const RevisorCrudFormaPagoScreen: React.FC = () => {
                         <Grid item xs={12} md={12} style={{ textAlign: 'center' }}>
                             {data?.length ?
                                 <DinamicTableMejorada
-                                    flex
+                                    //flex
                                     actions
                                     esInfoCarrusel
-                                    data={data}
+                                    data={data.map((r: any) => {
+                                        return {
+                                            ...r,
+                                            ...{
+                                                estatus: r?.estatus === 1 ? 'Activo' : 'Inactivo',
+                                            }
+                                        }
+                                    })}
+                                    columnsToShow={['clave','nombre','descripcion','estatus','fecha_registro']}
+                                    pinned={[{ columna: 'clave', lado: 'left' },{ columna: 'nombre', lado: 'left' },{ columna: 'descripcion', lado: 'left' }]}
                                     enAccion={(accion, row) => {
                                         setItem(row);
                                         if (accion === 'editar') {

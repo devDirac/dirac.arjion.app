@@ -122,7 +122,7 @@ export const ProviderContextUserComponent: any = ({ children }: any) => {
             setProcesando(false);
         } catch (error) {
             const mensajeerror = getErrorHttpMessage(error);
-            setProcesando(true);
+            setProcesando(false);
             setMensajeAlert(mensajeerror || 'Error al obtener la información del usuario');
             handleisAlertOpen();
             setEsError(true);
@@ -144,6 +144,7 @@ export const ProviderContextUserComponent: any = ({ children }: any) => {
             },
             id_director_area: user?.id_director_area,
             idUsuario: user?.id_usuario,
+            idUsuarioURL:idUsuario,
             idHash:user?.id_hash,
             bancos: user?.bancos,
             nombre: user?.nombre + ' ' + user?.apellidos,

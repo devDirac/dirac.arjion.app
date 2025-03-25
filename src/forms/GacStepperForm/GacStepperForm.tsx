@@ -64,7 +64,7 @@ const GacStepperForm: React.FC<GacStepperFormProps> = ({
                 {firma ? <StepperGeneral
                     isDisabledNext={isDisabledNext}
                     darkMode={false}
-                    textStepsCompleted={'Solicitud creada con exito'}
+                    textStepsCompleted={'Solicitud creada con éxito'}
                     activeStep={activeStep}
                     onStep={handleStep}
                     steps={steps}
