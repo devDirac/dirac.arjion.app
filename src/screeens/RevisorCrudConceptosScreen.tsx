@@ -70,7 +70,7 @@ const RevisorCrudConceptosScreen: React.FC = () => {
             setProcesando(true);
             await setConceptoHttp({ ...data, ...{ id_usuario: idUsuario } });
             handleisAlerCloseForm();
-            setMensajeAlert('Exito al registrar el concepto');
+            setMensajeAlert('Éxito al registrar el concepto');
             handleisAlertOpen();
             getData();
         } catch (error) {
@@ -86,7 +86,7 @@ const RevisorCrudConceptosScreen: React.FC = () => {
             setProcesando(true);
             await editConceptoHttp({ ...data, ...{ id_usuario: idUsuario, id: item?.id } })
             handleisAlerCloseFormEdita();
-            setMensajeAlert('Exito al editar el concepto');
+            setMensajeAlert('Éxito al editar el concepto');
             handleisAlertOpen();
             getData();
         } catch (error) {
@@ -102,7 +102,7 @@ const RevisorCrudConceptosScreen: React.FC = () => {
             setProcesando(true);
             await deleteConceptoHttp(item)
             handleisAlerCloseForm();
-            setMensajeAlert('Exito al actualizar el estatus del concepto');
+            setMensajeAlert('Éxito al actualizar el estatus del concepto');
             handleisAlertOpen();
             getData();
         } catch (error) {
@@ -119,7 +119,7 @@ const RevisorCrudConceptosScreen: React.FC = () => {
                 <Grid item xs={12} style={{ textAlign: 'center', marginBottom: 15, paddingTop: 15, padding: 25 }}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} md={12} style={{ textAlign: 'center', paddingLeft: 40 }}>
-                            <h4 style={{ color: 'rgb(68, 94, 150)', fontWeight: 'bolder' }}>Administrción de los conceptos</h4>
+                            <h4 style={{ color: 'rgb(68, 94, 150)', fontWeight: 'bolder' }}>Administración de los conceptos</h4>
                         </Grid>
                         <Grid item xs={12} md={12} style={{ textAlign: 'right' }}>
                             <Button variant="outlined" style={{ color: '#1976d2' }} onClick={() => {
@@ -131,10 +131,19 @@ const RevisorCrudConceptosScreen: React.FC = () => {
                         <Grid item xs={12} md={12} style={{ textAlign: 'center' }}>
                             {data?.length ?
                                 <DinamicTableMejorada
-                                    flex
+                                    //flex
                                     actions
                                     esInfoCarrusel
-                                    data={data}
+                                    data={data.map((r: any) => {
+                                        return {
+                                            ...r,
+                                            ...{
+                                                estatus: r?.estatus === 1 ? 'Activo' : 'Inactivo',
+                                            }
+                                        }
+                                    })}
+                                    columnsToShow={['clave','nombre','descripcion','estatus','fecha_registro']}
+                                    pinned={[{ columna: 'clave', lado: 'left' },{ columna: 'nombre', lado: 'left' },{ columna: 'descripcion', lado: 'left' }]}
                                     enAccion={(accion, row) => {
                                         setItem(row);
                                         if (accion === 'editar') {
@@ -143,7 +152,6 @@ const RevisorCrudConceptosScreen: React.FC = () => {
                                         if (accion === 'eliminar') {
                                             setOpenModalConfirm(true);
                                         }
-
                                     }}
                                 /> : procesando ? 'Cargando la información' : <p style={{ color: 'rgb(68, 94, 150)', fontWeight: 'bolder' }}>Sin registros</p>}
                         </Grid>

@@ -21,7 +21,7 @@ const RevisorScreen: React.FC = () => {
                 <Grid item xs={12} style={{ textAlign: 'center', marginBottom: 15, paddingTop: 15, padding: 25 }}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} md={12} style={{ textAlign: 'center', paddingLeft: 40 }}>
-                            <h4 style={{ color: 'rgb(68, 94, 150)', fontWeight: 'bolder' }}>Revisor</h4>
+                            <h4 style={{ color: 'rgb(68, 94, 150)', fontWeight: 'bolder' }}>Revisor fiscal</h4>
                         </Grid>
                     </Grid>
                 </Grid>

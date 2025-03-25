@@ -409,7 +409,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
   const handleRespuestaCorrecta = async(id) => {
     try {
       await setPreguntaCorrectaHTTP({pregunta:id?.pregunta, embedding:id?.embedding_pregunta, id_contenido: id?.sql?.id});
-      setMensajeAlert('exito al asignar esta respuesta como correcta');
+      setMensajeAlert('Éxito al asignar esta respuesta como correcta');
       setRespuestaId(null);
       handleisAlertOpen();  
     } catch (error) {

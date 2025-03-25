@@ -9,7 +9,9 @@ import {
     Grid,
     Tab,
     Tabs,
-    Typography
+    Typography,
+    IconButton,
+    Collapse
 } from '@mui/material';
 import AppAppBarC from '../componets/Carrusel/AppAppBarC';
 import ModalComponent from '../componets/Modal';
@@ -26,6 +28,8 @@ import { FormikProvider } from 'formik';
 import { Form } from 'react-bootstrap';
 import { numericFormatter } from 'react-number-format';
 import useSolicitanteScreen from './useSolicitanteScreen';
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -64,6 +68,8 @@ function a11yProps(index: number) {
 const SolicitanteScreen: React.FC = () => {
 
     const {
+        area,
+        setArea,
         setValue,
         setTipo,
         formik,
@@ -108,7 +114,9 @@ const SolicitanteScreen: React.FC = () => {
         handleDescargaZip,
         navigate,
         esMiTurno,
-        miTurnoDos
+        miTurnoDos,
+        open,
+        setOpen
     } = useSolicitanteScreen()
 
     return (
@@ -134,477 +142,538 @@ const SolicitanteScreen: React.FC = () => {
                                     }}
                                 >
                                     <Typography variant="h6" fontWeight="medium">
-                                        Filtros <FilterListIcon />
+                                        Filtros <FilterListIcon /><IconButton size="small" onClick={() => setOpen(!open)} sx={{ ml: 1 }}>
+                                        {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                                    </IconButton>
                                     </Typography>
+                                    {/* Botón para colapsar */}
+                                    
                                 </Box>
                                 {/* Contenido del formulario */}
-                                <CardContent>
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={12} md={7} style={{ textAlign: 'left' }}>
-                                            {
-                                                perfil?.esJefe && perfil?.misSolicitudes?.length  ? <Button onClick={() => {
-                                                    handleisAlertOpenDetalle()
-                                                    setItemDetalle(perfil?.misSolicitudes)
+                                <Collapse in={open}>
+                                    <CardContent>
+                                        <Grid container spacing={2}>
+                                            <Grid item xs={12} md={7} style={{ textAlign: 'left' }}>
+                                                {
+                                                    perfil?.esJefe && perfil?.misSolicitudes?.length ? <Button onClick={() => {
+                                                        handleisAlertOpenDetalle()
+                                                        setItemDetalle(perfil?.misSolicitudes)
+                                                    }}
+                                                        size="small"
+                                                        variant="outlined"
+                                                        style={{ color: tipo === 'todas' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: tipo === 'todas' ? '#1A73E8' : '#fff' }}>
+                                                        Solicitudes bajo mi revisión <span style={{ backgroundColor: 'red', borderRadius: 40, marginLeft: 5, fontSize: 11 }}> {perfil?.misSolicitudes?.length}</span>
+                                                    </Button> : null
+                                                }
+                                                <Button onClick={() => {
+                                                    setValue(0);
+                                                    setTipo('todas');
+                                                    formik.setFieldValue("tipo_solicitud", []);
+                                                    setTipoSolicitud([]);
+                                                    formik.setFieldValue("proyecto", []);
+                                                    setProyecto([]);
+                                                    formik.setFieldValue("empresa", []);
+                                                    setEmpresa([]);
+                                                    formik.setFieldValue("banco", []);
+                                                    setBanco([]);
+                                                    formik.setFieldValue("concepto", []);
+                                                    setConcepto([]);
+                                                    formik.setFieldValue("estatus", []);
+                                                    setEstatus([]);
+                                                    formik.setFieldValue("moneda", []);
+                                                    setMoneda([]);
+                                                    formik.setFieldValue("forma_pago", []);
+                                                    setFormaPago([]);
                                                 }}
                                                     size="small"
                                                     variant="outlined"
                                                     style={{ color: tipo === 'todas' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: tipo === 'todas' ? '#1A73E8' : '#fff' }}>
-                                                    Solicitudes bajo mi revisión <span style={{backgroundColor:'red', borderRadius:40, marginLeft:5, fontSize:11}}> {perfil?.misSolicitudes?.length}</span>
-                                                </Button> : null
-                                            }
-                                            <Button onClick={() => {
-                                                setValue(0);
-                                                setTipo('todas');
-                                                formik.setFieldValue("tipo_solicitud", []);
-                                                setTipoSolicitud([]);
-                                                formik.setFieldValue("proyecto", []);
-                                                setProyecto([]);
-                                                formik.setFieldValue("empresa", []);
-                                                setEmpresa([]);
-                                                formik.setFieldValue("banco", []);
-                                                setBanco([]);
-                                                formik.setFieldValue("concepto", []);
-                                                setConcepto([]);
-                                                formik.setFieldValue("estatus", []);
-                                                setEstatus([]);
-                                                formik.setFieldValue("moneda", []);
-                                                setMoneda([]);
-                                                formik.setFieldValue("forma_pago", []);
-                                                setFormaPago([]);
-                                            }}
-                                                size="small"
-                                                variant="outlined"
-                                                style={{ color: tipo === 'todas' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: tipo === 'todas' ? '#1A73E8' : '#fff' }}>
-                                                Todas
-                                            </Button>
-                                            <Button onClick={() => {
-                                                setTipo('tipo_solicitud');
-                                                formik.setFieldValue("tipo_solicitud", []);
-                                                setTipoSolicitud([]);
-                                                formik.setFieldValue("proyecto", []);
-                                                setProyecto([]);
-                                                formik.setFieldValue("empresa", []);
-                                                setEmpresa([]);
-                                                formik.setFieldValue("banco", []);
-                                                setBanco([]);
-                                                formik.setFieldValue("concepto", []);
-                                                setConcepto([]);
-                                                formik.setFieldValue("estatus", []);
-                                                setEstatus([]);
-                                                formik.setFieldValue("moneda", []);
-                                                setMoneda([]);
-                                                formik.setFieldValue("forma_pago", []);
-                                                setFormaPago([]);
-                                            }}
-                                                size="small"
-                                                variant="outlined"
-                                                style={{ color: tipo === 'tipo_solicitud' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: tipo === 'tipo_solicitud' ? '#1A73E8' : '#fff' }}>
-                                                Tipo
-                                            </Button>
-                                            <Button onClick={() => {
-                                                setTipo('proyecto');
-                                                formik.setFieldValue("tipo_solicitud", []);
-                                                setTipoSolicitud([]);
-                                                formik.setFieldValue("proyecto", []);
-                                                setProyecto([]);
-                                                formik.setFieldValue("empresa", []);
-                                                setEmpresa([]);
-                                                formik.setFieldValue("banco", []);
-                                                setBanco([]);
-                                                formik.setFieldValue("concepto", []);
-                                                setConcepto([]);
-                                                formik.setFieldValue("estatus", []);
-                                                setEstatus([]);
-                                                formik.setFieldValue("moneda", []);
-                                                setMoneda([]);
-                                                formik.setFieldValue("forma_pago", []);
-                                                setFormaPago([]);
-                                            }}
-                                                size="small"
-                                                variant="outlined"
-                                                style={{ color: tipo === 'proyecto' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: tipo === 'proyecto' ? '#1A73E8' : '#fff' }}>
-                                                Proyecto
-                                            </Button>
-                                            <Button onClick={() => {
-                                                setTipo('empresa');
-                                                formik.setFieldValue("tipo_solicitud", []);
-                                                setTipoSolicitud([]);
-                                                formik.setFieldValue("proyecto", []);
-                                                setProyecto([]);
-                                                formik.setFieldValue("empresa", []);
-                                                setEmpresa([]);
-                                                formik.setFieldValue("banco", []);
-                                                setBanco([]);
-                                                formik.setFieldValue("concepto", []);
-                                                setConcepto([]);
-                                                formik.setFieldValue("estatus", []);
-                                                setEstatus([]);
-                                                formik.setFieldValue("moneda", []);
-                                                setMoneda([]);
-                                                formik.setFieldValue("forma_pago", []);
-                                                setFormaPago([]);
-                                            }}
-                                                size="small"
-                                                variant="outlined"
-                                                style={{ color: tipo === 'empresa' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: tipo === 'empresa' ? '#1A73E8' : '#fff' }}>
-                                                Empresa
-                                            </Button>
-                                            <Button onClick={() => {
-                                                setTipo('banco');
-                                                formik.setFieldValue("tipo_solicitud", []);
-                                                setTipoSolicitud([]);
-                                                formik.setFieldValue("proyecto", []);
-                                                setProyecto([]);
-                                                formik.setFieldValue("empresa", []);
-                                                setEmpresa([]);
-                                                formik.setFieldValue("banco", []);
-                                                setBanco([]);
-                                                formik.setFieldValue("concepto", []);
-                                                setConcepto([]);
-                                                formik.setFieldValue("estatus", []);
-                                                setEstatus([]);
-                                                formik.setFieldValue("moneda", []);
-                                                setMoneda([]);
-                                                formik.setFieldValue("forma_pago", []);
-                                                setFormaPago([]);
-                                            }}
-                                                size="small"
-                                                variant="outlined"
-                                                style={{ color: tipo === 'banco' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: tipo === 'banco' ? '#1A73E8' : '#fff' }}>
-                                                Banco
-                                            </Button>
-                                            <Button onClick={() => {
-                                                setTipo('concepto');
-                                                formik.setFieldValue("tipo_solicitud", []);
-                                                setTipoSolicitud([]);
-                                                formik.setFieldValue("proyecto", []);
-                                                setProyecto([]);
-                                                formik.setFieldValue("empresa", []);
-                                                setEmpresa([]);
-                                                formik.setFieldValue("banco", []);
-                                                setBanco([]);
-                                                formik.setFieldValue("concepto", []);
-                                                setConcepto([]);
-                                                formik.setFieldValue("estatus", []);
-                                                setEstatus([]);
-                                                formik.setFieldValue("moneda", []);
-                                                setMoneda([]);
-                                                formik.setFieldValue("forma_pago", []);
-                                                setFormaPago([]);
-                                            }}
-                                                size="small"
-                                                variant="outlined"
-                                                style={{ color: tipo === 'concepto' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: tipo === 'concepto' ? '#1A73E8' : '#fff' }}>
-                                                Concepto
-                                            </Button>
-                                            <Button onClick={() => {
-                                                setTipo('estatus');
-                                                formik.setFieldValue("tipo_solicitud", []);
-                                                setTipoSolicitud([]);
-                                                formik.setFieldValue("proyecto", []);
-                                                setProyecto([]);
-                                                formik.setFieldValue("empresa", []);
-                                                setEmpresa([]);
-                                                formik.setFieldValue("banco", []);
-                                                setBanco([]);
-                                                formik.setFieldValue("concepto", []);
-                                                setConcepto([]);
-                                                formik.setFieldValue("estatus", []);
-                                                setEstatus([]);
-                                                formik.setFieldValue("moneda", []);
-                                                setMoneda([]);
-                                                formik.setFieldValue("forma_pago", []);
-                                                setFormaPago([]);
-                                            }}
-                                                size="small"
-                                                variant="outlined"
-                                                style={{ color: tipo === 'estatus' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: tipo === 'estatus' ? '#1A73E8' : '#fff' }}>
-                                                Estatus
-                                            </Button>
-                                            <Button onClick={() => {
-                                                setTipo('moneda');
-                                                formik.setFieldValue("tipo_solicitud", []);
-                                                setTipoSolicitud([]);
-                                                formik.setFieldValue("proyecto", []);
-                                                setProyecto([]);
-                                                formik.setFieldValue("empresa", []);
-                                                setEmpresa([]);
-                                                formik.setFieldValue("banco", []);
-                                                setBanco([]);
-                                                formik.setFieldValue("concepto", []);
-                                                setConcepto([]);
-                                                formik.setFieldValue("estatus", []);
-                                                setEstatus([]);
-                                                formik.setFieldValue("moneda", []);
-                                                setMoneda([]);
-                                                formik.setFieldValue("forma_pago", []);
-                                                setFormaPago([]);
-                                            }}
-                                                size="small"
-                                                variant="outlined"
-                                                style={{ color: tipo === 'moneda' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: tipo === 'moneda' ? '#1A73E8' : '#fff' }}>
-                                                Moneda
-                                            </Button>
-                                            <Button onClick={() => {
-                                                setTipo('forma_pago');
-                                                formik.setFieldValue("tipo_solicitud", []);
-                                                setTipoSolicitud([]);
-                                                formik.setFieldValue("proyecto", []);
-                                                setProyecto([]);
-                                                formik.setFieldValue("empresa", []);
-                                                setEmpresa([]);
-                                                formik.setFieldValue("banco", []);
-                                                setBanco([]);
-                                                formik.setFieldValue("concepto", []);
-                                                setConcepto([]);
-                                                formik.setFieldValue("estatus", []);
-                                                setEstatus([]);
-                                                formik.setFieldValue("moneda", []);
-                                                setMoneda([]);
-                                                formik.setFieldValue("forma_pago", []);
-                                                setFormaPago([]);
-                                            }}
-                                                size="small"
-                                                variant="outlined"
-                                                style={{ color: tipo === 'forma_pago' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: tipo === 'forma_pago' ? '#1A73E8' : '#fff' }}>
-                                                Forma de pago
-                                            </Button>
-                                        </Grid>
-                                        <Grid item xs={12} md={5} style={{ textAlign: 'left' }}>
-                                            <DateRangePickerFiltro
-                                                handleOpen={() => {
-                                                    setIsOpen(true)
+                                                    Todas
+                                                </Button>
+                                                {(perfil?.esRevisor || perfil?.esAutorizador || perfil?.esPagador) || perfil?.misSolicitudes?.length ? <Button onClick={() => {
+                                                    setValue(0);
+                                                    setTipo('area');
+                                                    formik.setFieldValue("area", []);
+                                                    setArea([]);
+                                                    formik.setFieldValue("tipo_solicitud", []);
+                                                    setTipoSolicitud([]);
+                                                    formik.setFieldValue("proyecto", []);
+                                                    setProyecto([]);
+                                                    formik.setFieldValue("empresa", []);
+                                                    setEmpresa([]);
+                                                    formik.setFieldValue("banco", []);
+                                                    setBanco([]);
+                                                    formik.setFieldValue("concepto", []);
+                                                    setConcepto([]);
+                                                    formik.setFieldValue("estatus", []);
+                                                    setEstatus([]);
+                                                    formik.setFieldValue("moneda", []);
+                                                    setMoneda([]);
+                                                    formik.setFieldValue("forma_pago", []);
+                                                    setFormaPago([]);
                                                 }}
-                                                handleClose={() => {
-                                                    setIsOpen(false)
+                                                    size="small"
+                                                    variant="outlined"
+                                                    style={{ color: tipo === 'area' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: tipo === 'area' ? '#1A73E8' : '#fff' }}>
+                                                    Área
+                                                </Button>:null}
+                                                <Button onClick={() => {
+                                                    setTipo('tipo_solicitud');
+                                                    formik.setFieldValue("tipo_solicitud", []);
+                                                    setTipoSolicitud([]);
+                                                    formik.setFieldValue("proyecto", []);
+                                                    setProyecto([]);
+                                                    formik.setFieldValue("empresa", []);
+                                                    setEmpresa([]);
+                                                    formik.setFieldValue("banco", []);
+                                                    setBanco([]);
+                                                    formik.setFieldValue("concepto", []);
+                                                    setConcepto([]);
+                                                    formik.setFieldValue("estatus", []);
+                                                    setEstatus([]);
+                                                    formik.setFieldValue("moneda", []);
+                                                    setMoneda([]);
+                                                    formik.setFieldValue("forma_pago", []);
+                                                    setFormaPago([]);
                                                 }}
-                                                title='Seleccione el rango de fecha para filtrar sus resultados'
-                                                enAccion={(r: any) => {
-                                                    filterByDateRange(tipo === 'todas' ? dataTodasPerfilMuestra : perfil?.solicitudes || [], r)
-                                                }} />
-                                        </Grid>
-                                        <Grid item xs={12} md={12} style={{ textAlign: 'left' }}>
-                                            <Grid container spacing={2}>
-                                                {tipo === 'todas' || tipo !== 'tipo_solicitud' ? <Grid item xs={12} md={3}>
+                                                    size="small"
+                                                    variant="outlined"
+                                                    style={{ color: tipo === 'tipo_solicitud' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: tipo === 'tipo_solicitud' ? '#1A73E8' : '#fff' }}>
+                                                    Tipo
+                                                </Button>
+                                                <Button onClick={() => {
+                                                    setTipo('proyecto');
+                                                    formik.setFieldValue("tipo_solicitud", []);
+                                                    setTipoSolicitud([]);
+                                                    formik.setFieldValue("proyecto", []);
+                                                    setProyecto([]);
+                                                    formik.setFieldValue("empresa", []);
+                                                    setEmpresa([]);
+                                                    formik.setFieldValue("banco", []);
+                                                    setBanco([]);
+                                                    formik.setFieldValue("concepto", []);
+                                                    setConcepto([]);
+                                                    formik.setFieldValue("estatus", []);
+                                                    setEstatus([]);
+                                                    formik.setFieldValue("moneda", []);
+                                                    setMoneda([]);
+                                                    formik.setFieldValue("forma_pago", []);
+                                                    setFormaPago([]);
+                                                }}
+                                                    size="small"
+                                                    variant="outlined"
+                                                    style={{ color: tipo === 'proyecto' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: tipo === 'proyecto' ? '#1A73E8' : '#fff' }}>
+                                                    Proyecto
+                                                </Button>
+                                                <Button onClick={() => {
+                                                    setTipo('empresa');
+                                                    formik.setFieldValue("tipo_solicitud", []);
+                                                    setTipoSolicitud([]);
+                                                    formik.setFieldValue("proyecto", []);
+                                                    setProyecto([]);
+                                                    formik.setFieldValue("empresa", []);
+                                                    setEmpresa([]);
+                                                    formik.setFieldValue("banco", []);
+                                                    setBanco([]);
+                                                    formik.setFieldValue("concepto", []);
+                                                    setConcepto([]);
+                                                    formik.setFieldValue("estatus", []);
+                                                    setEstatus([]);
+                                                    formik.setFieldValue("moneda", []);
+                                                    setMoneda([]);
+                                                    formik.setFieldValue("forma_pago", []);
+                                                    setFormaPago([]);
+                                                }}
+                                                    size="small"
+                                                    variant="outlined"
+                                                    style={{ color: tipo === 'empresa' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: tipo === 'empresa' ? '#1A73E8' : '#fff' }}>
+                                                    Empresa
+                                                </Button>
+                                                <Button onClick={() => {
+                                                    setTipo('banco');
+                                                    formik.setFieldValue("tipo_solicitud", []);
+                                                    setTipoSolicitud([]);
+                                                    formik.setFieldValue("proyecto", []);
+                                                    setProyecto([]);
+                                                    formik.setFieldValue("empresa", []);
+                                                    setEmpresa([]);
+                                                    formik.setFieldValue("banco", []);
+                                                    setBanco([]);
+                                                    formik.setFieldValue("concepto", []);
+                                                    setConcepto([]);
+                                                    formik.setFieldValue("estatus", []);
+                                                    setEstatus([]);
+                                                    formik.setFieldValue("moneda", []);
+                                                    setMoneda([]);
+                                                    formik.setFieldValue("forma_pago", []);
+                                                    setFormaPago([]);
+                                                }}
+                                                    size="small"
+                                                    variant="outlined"
+                                                    style={{ color: tipo === 'banco' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: tipo === 'banco' ? '#1A73E8' : '#fff' }}>
+                                                    Banco
+                                                </Button>
+                                                <Button onClick={() => {
+                                                    setTipo('concepto');
+                                                    formik.setFieldValue("tipo_solicitud", []);
+                                                    setTipoSolicitud([]);
+                                                    formik.setFieldValue("proyecto", []);
+                                                    setProyecto([]);
+                                                    formik.setFieldValue("empresa", []);
+                                                    setEmpresa([]);
+                                                    formik.setFieldValue("banco", []);
+                                                    setBanco([]);
+                                                    formik.setFieldValue("concepto", []);
+                                                    setConcepto([]);
+                                                    formik.setFieldValue("estatus", []);
+                                                    setEstatus([]);
+                                                    formik.setFieldValue("moneda", []);
+                                                    setMoneda([]);
+                                                    formik.setFieldValue("forma_pago", []);
+                                                    setFormaPago([]);
+                                                }}
+                                                    size="small"
+                                                    variant="outlined"
+                                                    style={{ color: tipo === 'concepto' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: tipo === 'concepto' ? '#1A73E8' : '#fff' }}>
+                                                    Concepto
+                                                </Button>
+                                                <Button onClick={() => {
+                                                    setTipo('estatus');
+                                                    formik.setFieldValue("tipo_solicitud", []);
+                                                    setTipoSolicitud([]);
+                                                    formik.setFieldValue("proyecto", []);
+                                                    setProyecto([]);
+                                                    formik.setFieldValue("empresa", []);
+                                                    setEmpresa([]);
+                                                    formik.setFieldValue("banco", []);
+                                                    setBanco([]);
+                                                    formik.setFieldValue("concepto", []);
+                                                    setConcepto([]);
+                                                    formik.setFieldValue("estatus", []);
+                                                    setEstatus([]);
+                                                    formik.setFieldValue("moneda", []);
+                                                    setMoneda([]);
+                                                    formik.setFieldValue("forma_pago", []);
+                                                    setFormaPago([]);
+                                                }}
+                                                    size="small"
+                                                    variant="outlined"
+                                                    style={{ color: tipo === 'estatus' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: tipo === 'estatus' ? '#1A73E8' : '#fff' }}>
+                                                    Estatus
+                                                </Button>
+                                                <Button onClick={() => {
+                                                    setTipo('moneda');
+                                                    formik.setFieldValue("tipo_solicitud", []);
+                                                    setTipoSolicitud([]);
+                                                    formik.setFieldValue("proyecto", []);
+                                                    setProyecto([]);
+                                                    formik.setFieldValue("empresa", []);
+                                                    setEmpresa([]);
+                                                    formik.setFieldValue("banco", []);
+                                                    setBanco([]);
+                                                    formik.setFieldValue("concepto", []);
+                                                    setConcepto([]);
+                                                    formik.setFieldValue("estatus", []);
+                                                    setEstatus([]);
+                                                    formik.setFieldValue("moneda", []);
+                                                    setMoneda([]);
+                                                    formik.setFieldValue("forma_pago", []);
+                                                    setFormaPago([]);
+                                                }}
+                                                    size="small"
+                                                    variant="outlined"
+                                                    style={{ color: tipo === 'moneda' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: tipo === 'moneda' ? '#1A73E8' : '#fff' }}>
+                                                    Moneda
+                                                </Button>
+                                                <Button onClick={() => {
+                                                    setTipo('forma_pago');
+                                                    formik.setFieldValue("tipo_solicitud", []);
+                                                    setTipoSolicitud([]);
+                                                    formik.setFieldValue("proyecto", []);
+                                                    setProyecto([]);
+                                                    formik.setFieldValue("empresa", []);
+                                                    setEmpresa([]);
+                                                    formik.setFieldValue("banco", []);
+                                                    setBanco([]);
+                                                    formik.setFieldValue("concepto", []);
+                                                    setConcepto([]);
+                                                    formik.setFieldValue("estatus", []);
+                                                    setEstatus([]);
+                                                    formik.setFieldValue("moneda", []);
+                                                    setMoneda([]);
+                                                    formik.setFieldValue("forma_pago", []);
+                                                    setFormaPago([]);
+                                                }}
+                                                    size="small"
+                                                    variant="outlined"
+                                                    style={{ color: tipo === 'forma_pago' ? '#ffff' : '#1A73E8', marginLeft: 5, marginRight: 5, backgroundColor: tipo === 'forma_pago' ? '#1A73E8' : '#fff' }}>
+                                                    Forma de pago
+                                                </Button>
+                                            </Grid>
+                                            <Grid item xs={12} md={5} style={{ textAlign: 'left' }}>
+                                                <DateRangePickerFiltro
+                                                    handleOpen={() => {
+                                                        setIsOpen(true)
+                                                    }}
+                                                    handleClose={() => {
+                                                        setIsOpen(false)
+                                                    }}
+                                                    title='Seleccione el rango de fecha para filtrar sus resultados'
+                                                    enAccion={(r: any) => {
+                                                        filterByDateRange(tipo === 'todas' ? dataTodasPerfilMuestra : perfil?.solicitudes || [], r)
+                                                    }} />
+                                            </Grid>
+                                            <Grid item xs={12} md={12} style={{ textAlign: 'left' }}>
+                                                <Grid container spacing={2}>
+                                                    {tipo === 'todas' || tipo !== 'area' ? <Grid item xs={12} md={3}>
                                                     <FormikProvider value={formik}>
                                                         <Form.Group style={{ width: '100%' }}>
                                                             <SelectMultipleAutoCompleteField
-                                                                label={'Tipo de solicitud'}
+                                                                label={'Área'}
                                                                 placeholder={'Seleccione una opción'}
-                                                                defaultValue={tipoSolicitud}
+                                                                defaultValue={area}
                                                                 options={dataTodasPerfil.map((r: any) => {
                                                                     return {
-                                                                        label: r?.tipo_solicitud || '',
-                                                                        value: r?.id_tipo_solicitud,
+                                                                        label: r?.area || '',
+                                                                        value: r?.area,
                                                                     }
                                                                 }).filter(
                                                                     (item: any, index: any, self: any) => index === self.findIndex((t: any) => t.value === item.value)
                                                                 )}
-                                                                name="tipo_solicitud"
-                                                                id="tipo_solicitud"
+                                                                name="area"
+                                                                id="area"
                                                                 required
                                                                 onInput={(e: any) => {
-                                                                    formik.setFieldValue("tipo_solicitud", e);
-                                                                    setTipoSolicitud(e);
+                                                                    formik.setFieldValue("area", e);
+                                                                    setArea(e);
                                                                 }}
-                                                                formik={formik?.getFieldMeta("tipo_solicitud")}
+                                                                formik={formik?.getFieldMeta("area")}
                                                             />
                                                         </Form.Group>
                                                     </FormikProvider>
                                                 </Grid> : null}
-                                                {tipo === 'todas' || tipo !== 'proyecto' ? <Grid item xs={12} md={3} >
-                                                    <FormikProvider value={formik}>
-                                                        <Form.Group style={{ width: '100%' }}>
-                                                            <SelectMultipleAutoCompleteField
-                                                                label={'Proyecto'}
-                                                                placeholder={'Seleccione una opción'}
-                                                                defaultValue={proyecto}
-                                                                options={dataTodasPerfil.map((r: any) => {
-                                                                    return {
-                                                                        label: r?.proyecto || '',
-                                                                        value: r?.id_proyecto,
-                                                                    }
-                                                                }).filter(
-                                                                    (item: any, index: any, self: any) => index === self.findIndex((t: any) => t.value === item.value)
-                                                                )}
-                                                                name="proyecto"
-                                                                id="proyecto"
-                                                                required
-                                                                onInput={(e: any) => {
-                                                                    formik.setFieldValue("proyecto", e);
-                                                                    setProyecto(e);
-                                                                }}
-                                                                formik={formik?.getFieldMeta("proyecto")}
-                                                            />
-                                                        </Form.Group>
-                                                    </FormikProvider>
-                                                </Grid> : null}
-                                                {tipo === 'todas' || tipo !== 'empresa' ? <Grid item xs={12} md={3} >
-                                                    <FormikProvider value={formik}>
-                                                        <Form.Group style={{ width: '100%' }}>
-                                                            <SelectMultipleAutoCompleteField
-                                                                label={'Empresa'}
-                                                                placeholder={'Seleccione una opción'}
-                                                                defaultValue={empresa}
-                                                                options={dataTodasPerfil.map((r: any) => {
-                                                                    return {
-                                                                        label: r?.empresa || '',
-                                                                        value: r?.id_empresa,
-                                                                    }
-                                                                }).filter(
-                                                                    (item: any, index: any, self: any) => index === self.findIndex((t: any) => t.value === item.value)
-                                                                )}
-                                                                name="empresa"
-                                                                id="empresa"
-                                                                required
-                                                                onInput={(e: any) => {
-                                                                    formik.setFieldValue("empresa", e);
-                                                                    setEmpresa(e);
-                                                                }}
-                                                                formik={formik?.getFieldMeta("empresa")}
-                                                            />
-                                                        </Form.Group>
-                                                    </FormikProvider>
-                                                </Grid> : null}
-                                                {tipo === 'todas' || tipo !== 'banco' ? <Grid item xs={12} md={3} >
-                                                    <FormikProvider value={formik}>
-                                                        <Form.Group style={{ width: '100%' }}>
-                                                            <SelectMultipleAutoCompleteField
-                                                                label={'Banco'}
-                                                                placeholder={'Seleccione una opción'}
-                                                                defaultValue={banco}
-                                                                options={dataTodasPerfil.map((r: any) => {
-                                                                    return {
-                                                                        label: r?.banco || '',
-                                                                        value: r?.banco,
-                                                                    }
-                                                                }).filter(
-                                                                    (item: any, index: any, self: any) => index === self.findIndex((t: any) => t.value === item.value)
-                                                                )}
-                                                                name="banco"
-                                                                id="banco"
-                                                                required
-                                                                onInput={(e: any) => {
-                                                                    formik.setFieldValue("banco", e);
-                                                                    setBanco(e);
-                                                                }}
-                                                                formik={formik?.getFieldMeta("banco")}
-                                                            />
-                                                        </Form.Group>
-                                                    </FormikProvider>
-                                                </Grid> : null}
-                                                {tipo === 'todas' || tipo !== 'concepto' ? <Grid item xs={12} md={3} >
-                                                    <FormikProvider value={formik}>
-                                                        <Form.Group style={{ width: '100%' }}>
-                                                            <SelectMultipleAutoCompleteField
-                                                                label={'Concepto'}
-                                                                placeholder={'Seleccione una opción'}
-                                                                defaultValue={concepto}
-                                                                options={dataTodasPerfil.map((r: any) => {
-                                                                    return {
-                                                                        label: r?.concepto || '',
-                                                                        value: r?.id_concepto,
-                                                                    }
-                                                                }).filter(
-                                                                    (item: any, index: any, self: any) => index === self.findIndex((t: any) => t.value === item.value)
-                                                                )}
-                                                                name="concepto"
-                                                                id="concepto"
-                                                                required
-                                                                onInput={(e: any) => {
-                                                                    formik.setFieldValue("concepto", e);
-                                                                    setConcepto(e);
-                                                                }}
-                                                                formik={formik?.getFieldMeta("concepto")}
-                                                            />
-                                                        </Form.Group>
-                                                    </FormikProvider>
-                                                </Grid> : null}
-                                                {tipo === 'todas' || tipo !== 'estatus' ? <Grid item xs={12} md={3} >
-                                                    <FormikProvider value={formik}>
-                                                        <Form.Group style={{ width: '100%' }}>
-                                                            <SelectMultipleAutoCompleteField
-                                                                label={'Estatus'}
-                                                                placeholder={'Seleccione una opción'}
-                                                                defaultValue={estatus}
-                                                                options={dataTodasPerfil.map((r: any) => {
-                                                                    return {
-                                                                        label: r?.estatus || '',
-                                                                        value: r?.id_estatus,
-                                                                    }
-                                                                }).filter(
-                                                                    (item: any, index: any, self: any) => index === self.findIndex((t: any) => t.value === item.value)
-                                                                )}
-                                                                name="estatus"
-                                                                id="estatus"
-                                                                required
-                                                                onInput={(e: any) => {
-                                                                    formik.setFieldValue("estatus", e);
-                                                                    setEstatus(e);
-                                                                }}
-                                                                formik={formik?.getFieldMeta("estatus")}
-                                                            />
-                                                        </Form.Group>
-                                                    </FormikProvider>
-                                                </Grid> : null}
-                                                {tipo === 'todas' || tipo !== 'moneda' ? <Grid item xs={12} md={3} >
-                                                    <FormikProvider value={formik}>
-                                                        <Form.Group style={{ width: '100%' }}>
-                                                            <SelectMultipleAutoCompleteField
-                                                                label={'Moneda'}
-                                                                placeholder={'Seleccione una opción'}
-                                                                defaultValue={moneda}
-                                                                options={dataTodasPerfil.map((r: any) => {
-                                                                    return {
-                                                                        label: r?.moneda || '',
-                                                                        value: r?.id_moneda,
-                                                                    }
-                                                                }).filter(
-                                                                    (item: any, index: any, self: any) => index === self.findIndex((t: any) => t.value === item.value)
-                                                                )}
-                                                                name="moneda"
-                                                                id="moneda"
-                                                                required
-                                                                onInput={(e: any) => {
-                                                                    formik.setFieldValue("moneda", e);
-                                                                    setMoneda(e);
-                                                                }}
-                                                                formik={formik?.getFieldMeta("moneda")}
-                                                            />
-                                                        </Form.Group>
-                                                    </FormikProvider>
-                                                </Grid> : null}
-                                                {tipo === 'todas' || tipo !== 'forma_pago' ? <Grid item xs={12} md={3} >
-                                                    <FormikProvider value={formik}>
-                                                        <Form.Group style={{ width: '100%' }}>
-                                                            <SelectMultipleAutoCompleteField
-                                                                label={'Forma de pago'}
-                                                                placeholder={'Seleccione una opción'}
-                                                                defaultValue={formaPago}
-                                                                options={dataTodasPerfil.map((r: any) => {
-                                                                    return {
-                                                                        label: r?.forma_pago || '',
-                                                                        value: r?.id_forma_pago,
-                                                                    }
-                                                                }).filter(
-                                                                    (item: any, index: any, self: any) => index === self.findIndex((t: any) => t.value === item.value)
-                                                                )}
-                                                                name="forma_pago"
-                                                                id="forma_pago"
-                                                                required
-                                                                onInput={(e: any) => {
-                                                                    formik.setFieldValue("forma_pago", e);
-                                                                    setFormaPago(e);
-                                                                }}
-                                                                formik={formik?.getFieldMeta("forma_pago")}
-                                                            />
-                                                        </Form.Group>
-                                                    </FormikProvider>
-                                                </Grid> : null}
+                                                    {tipo === 'todas' || tipo !== 'tipo_solicitud' ? <Grid item xs={12} md={3}>
+                                                        <FormikProvider value={formik}>
+                                                            <Form.Group style={{ width: '100%' }}>
+                                                                <SelectMultipleAutoCompleteField
+                                                                    label={'Tipo de solicitud'}
+                                                                    placeholder={'Seleccione una opción'}
+                                                                    defaultValue={tipoSolicitud}
+                                                                    options={dataTodasPerfil.map((r: any) => {
+                                                                        return {
+                                                                            label: r?.tipo_solicitud || '',
+                                                                            value: r?.id_tipo_solicitud,
+                                                                        }
+                                                                    }).filter(
+                                                                        (item: any, index: any, self: any) => index === self.findIndex((t: any) => t.value === item.value)
+                                                                    )}
+                                                                    name="tipo_solicitud"
+                                                                    id="tipo_solicitud"
+                                                                    required
+                                                                    onInput={(e: any) => {
+                                                                        formik.setFieldValue("tipo_solicitud", e);
+                                                                        setTipoSolicitud(e);
+                                                                    }}
+                                                                    formik={formik?.getFieldMeta("tipo_solicitud")}
+                                                                />
+                                                            </Form.Group>
+                                                        </FormikProvider>
+                                                    </Grid> : null}
+                                                    {tipo === 'todas' || tipo !== 'proyecto' ? <Grid item xs={12} md={3} >
+                                                        <FormikProvider value={formik}>
+                                                            <Form.Group style={{ width: '100%' }}>
+                                                                <SelectMultipleAutoCompleteField
+                                                                    label={'Proyecto'}
+                                                                    placeholder={'Seleccione una opción'}
+                                                                    defaultValue={proyecto}
+                                                                    options={dataTodasPerfil.filter((e:any)=>e?.id_proyecto).map((r: any) => {
+                                                                        return {
+                                                                            label: r?.proyecto || 'Proyecto terminado',
+                                                                            value: r?.id_proyecto,
+                                                                        }
+                                                                    }).filter(
+                                                                        (item: any, index: any, self: any) => index === self.findIndex((t: any) => t.value === item.value)
+                                                                    )}
+                                                                    name="proyecto"
+                                                                    id="proyecto"
+                                                                    required
+                                                                    onInput={(e: any) => {
+                                                                        console.log(dataTodasPerfil, e)
+                                                                        formik.setFieldValue("proyecto", e);
+                                                                        setProyecto(e);
+                                                                    }}
+                                                                    formik={formik?.getFieldMeta("proyecto")}
+                                                                />
+                                                            </Form.Group>
+                                                        </FormikProvider>
+                                                    </Grid> : null}
+                                                    {tipo === 'todas' || tipo !== 'empresa' ? <Grid item xs={12} md={3} >
+                                                        <FormikProvider value={formik}>
+                                                            <Form.Group style={{ width: '100%' }}>
+                                                                <SelectMultipleAutoCompleteField
+                                                                    label={'Empresa'}
+                                                                    placeholder={'Seleccione una opción'}
+                                                                    defaultValue={empresa}
+                                                                    options={dataTodasPerfil.map((r: any) => {
+                                                                        return {
+                                                                            label: r?.empresa || '',
+                                                                            value: r?.id_empresa,
+                                                                        }
+                                                                    }).filter(
+                                                                        (item: any, index: any, self: any) => index === self.findIndex((t: any) => t.value === item.value)
+                                                                    )}
+                                                                    name="empresa"
+                                                                    id="empresa"
+                                                                    required
+                                                                    onInput={(e: any) => {
+                                                                        formik.setFieldValue("empresa", e);
+                                                                        setEmpresa(e);
+                                                                    }}
+                                                                    formik={formik?.getFieldMeta("empresa")}
+                                                                />
+                                                            </Form.Group>
+                                                        </FormikProvider>
+                                                    </Grid> : null}
+                                                    {tipo === 'todas' || tipo !== 'banco' ? <Grid item xs={12} md={3} >
+                                                        <FormikProvider value={formik}>
+                                                            <Form.Group style={{ width: '100%' }}>
+                                                                <SelectMultipleAutoCompleteField
+                                                                    label={'Banco'}
+                                                                    placeholder={'Seleccione una opción'}
+                                                                    defaultValue={banco}
+                                                                    options={dataTodasPerfil.map((r: any) => {
+                                                                        return {
+                                                                            label: r?.banco || '',
+                                                                            value: r?.banco,
+                                                                        }
+                                                                    }).filter(
+                                                                        (item: any, index: any, self: any) => index === self.findIndex((t: any) => t.value === item.value)
+                                                                    )}
+                                                                    name="banco"
+                                                                    id="banco"
+                                                                    required
+                                                                    onInput={(e: any) => {
+                                                                        formik.setFieldValue("banco", e);
+                                                                        setBanco(e);
+                                                                    }}
+                                                                    formik={formik?.getFieldMeta("banco")}
+                                                                />
+                                                            </Form.Group>
+                                                        </FormikProvider>
+                                                    </Grid> : null}
+                                                    {tipo === 'todas' || tipo !== 'concepto' ? <Grid item xs={12} md={3} >
+                                                        <FormikProvider value={formik}>
+                                                            <Form.Group style={{ width: '100%' }}>
+                                                                <SelectMultipleAutoCompleteField
+                                                                    label={'Concepto'}
+                                                                    placeholder={'Seleccione una opción'}
+                                                                    defaultValue={concepto}
+                                                                    options={dataTodasPerfil.filter((e:any)=>e?.id_concepto).map((r: any) => {
+                                                                        return {
+                                                                            label: r?.concepto || '',
+                                                                            value: r?.id_concepto,
+                                                                        }
+                                                                    }).filter(
+                                                                        (item: any, index: any, self: any) => index === self.findIndex((t: any) => t.value === item.value)
+                                                                    )}
+                                                                    name="concepto"
+                                                                    id="concepto"
+                                                                    required
+                                                                    onInput={(e: any) => {
+                                                                        formik.setFieldValue("concepto", e);
+                                                                        setConcepto(e);
+                                                                    }}
+                                                                    formik={formik?.getFieldMeta("concepto")}
+                                                                />
+                                                            </Form.Group>
+                                                        </FormikProvider>
+                                                    </Grid> : null}
+                                                    {tipo === 'todas' || tipo !== 'estatus' ? <Grid item xs={12} md={3} >
+                                                        <FormikProvider value={formik}>
+                                                            <Form.Group style={{ width: '100%' }}>
+                                                                <SelectMultipleAutoCompleteField
+                                                                    label={'Estatus'}
+                                                                    placeholder={'Seleccione una opción'}
+                                                                    defaultValue={estatus}
+                                                                    options={dataTodasPerfil.map((r: any) => {
+                                                                        return {
+                                                                            label: r?.estatus || '',
+                                                                            value: r?.id_estatus,
+                                                                        }
+                                                                    }).filter(
+                                                                        (item: any, index: any, self: any) => index === self.findIndex((t: any) => t.value === item.value)
+                                                                    )}
+                                                                    name="estatus"
+                                                                    id="estatus"
+                                                                    required
+                                                                    onInput={(e: any) => {
+                                                                        formik.setFieldValue("estatus", e);
+                                                                        setEstatus(e);
+                                                                    }}
+                                                                    formik={formik?.getFieldMeta("estatus")}
+                                                                />
+                                                            </Form.Group>
+                                                        </FormikProvider>
+                                                    </Grid> : null}
+                                                    {tipo === 'todas' || tipo !== 'moneda' ? <Grid item xs={12} md={3} >
+                                                        <FormikProvider value={formik}>
+                                                            <Form.Group style={{ width: '100%' }}>
+                                                                <SelectMultipleAutoCompleteField
+                                                                    label={'Moneda'}
+                                                                    placeholder={'Seleccione una opción'}
+                                                                    defaultValue={moneda}
+                                                                    options={dataTodasPerfil.map((r: any) => {
+                                                                        return {
+                                                                            label: r?.moneda || '',
+                                                                            value: r?.id_moneda,
+                                                                        }
+                                                                    }).filter(
+                                                                        (item: any, index: any, self: any) => index === self.findIndex((t: any) => t.value === item.value)
+                                                                    )}
+                                                                    name="moneda"
+                                                                    id="moneda"
+                                                                    required
+                                                                    onInput={(e: any) => {
+                                                                        formik.setFieldValue("moneda", e);
+                                                                        setMoneda(e);
+                                                                    }}
+                                                                    formik={formik?.getFieldMeta("moneda")}
+                                                                />
+                                                            </Form.Group>
+                                                        </FormikProvider>
+                                                    </Grid> : null}
+                                                    {tipo === 'todas' || tipo !== 'forma_pago' ? <Grid item xs={12} md={3} >
+                                                        <FormikProvider value={formik}>
+                                                            <Form.Group style={{ width: '100%' }}>
+                                                                <SelectMultipleAutoCompleteField
+                                                                    label={'Forma de pago'}
+                                                                    placeholder={'Seleccione una opción'}
+                                                                    defaultValue={formaPago}
+                                                                    options={dataTodasPerfil.map((r: any) => {
+                                                                        return {
+                                                                            label: r?.forma_pago || '',
+                                                                            value: r?.id_forma_pago,
+                                                                        }
+                                                                    }).filter(
+                                                                        (item: any, index: any, self: any) => index === self.findIndex((t: any) => t.value === item.value)
+                                                                    )}
+                                                                    name="forma_pago"
+                                                                    id="forma_pago"
+                                                                    required
+                                                                    onInput={(e: any) => {
+                                                                        formik.setFieldValue("forma_pago", e);
+                                                                        setFormaPago(e);
+                                                                    }}
+                                                                    formik={formik?.getFieldMeta("forma_pago")}
+                                                                />
+                                                            </Form.Group>
+                                                        </FormikProvider>
+                                                    </Grid> : null}
+                                                </Grid>
                                             </Grid>
                                         </Grid>
-                                    </Grid>
-                                </CardContent>
+                                    </CardContent>
+                                </Collapse>
                             </Card>
                         </Grid>
                         {/* Seccion de los datos */}
@@ -731,13 +800,13 @@ const SolicitanteScreen: React.FC = () => {
 
                                     }
                                 })}
-                                columnsToShow={(perfil?.esRevisor || perfil?.esAutorizador || perfil?.esPagador)  || perfil?.misSolicitudes?.length ? ['id', 'tipo_solicitud', 'estatus', 'importe_pesos', 'pais_moneda', 'descripcion', 'fecha_solicitud','esMiTurno'] : ['id', 'tipo_solicitud', 'estatus', 'importe_pesos', 'pais_moneda', 'descripcion', 'fecha_solicitud']}
+                                columnsToShow={(perfil?.esRevisor || perfil?.esAutorizador || perfil?.esPagador) || perfil?.misSolicitudes?.length ? ['id', 'tipo_solicitud', 'estatus', 'importe_pesos', 'pais_moneda', 'descripcion', 'fecha_solicitud', 'esMiTurno'] : ['id', 'tipo_solicitud', 'estatus', 'importe_pesos', 'pais_moneda', 'descripcion', 'fecha_solicitud']}
                                 enAccion={(accion, row) => {
                                     if (accion === 'descargarDocumentos') {
                                         handleDescargaZip(row)
                                     }
                                     if (accion === 'verDetalle') {
-                                        navigate('/gac-detalle-solicitud?' + 'id=' + perfil?.idHash + '&id_solicitud=' +row?.id_hash)
+                                        navigate('/gac-detalle-solicitud?' + 'id=' + perfil?.idHash + '&id_solicitud=' + row?.id_hash)
                                     }
                                 }}
                             />

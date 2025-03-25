@@ -79,7 +79,7 @@ const SetFirmaForm: React.FC<SetFirmaFormProps> = (props: SetFirmaFormProps) => 
                                 </Grid>
                                 <Grid item xs={12} md={12} style={{ textAlign: 'center' }}>
                                     <p style={{ color: '#344767' }}>
-                                        ¿Aun no cuentas con tu clave o se te olvido?, ingresa en este <strong style={{ color: 'rgb(251, 140, 0)', cursor: 'pointer' }}><a href=''> enlace</a></strong> para crear una clave o recuperar la anterior
+                                        ¿Aún no cuentas con tu clave o se te olvido?, ingresa en este <strong style={{ color: 'rgb(251, 140, 0)', cursor: 'pointer' }}><a href=''> enlace</a></strong> para crear una clave o recuperar la anterior
                                     </p>
                                     
                                 </Grid>

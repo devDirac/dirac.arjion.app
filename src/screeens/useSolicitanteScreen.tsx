@@ -46,6 +46,7 @@ const useSolicitanteScreen = () => {
     const handleisAlerCloseDetalle = () => setIsAlertOpenDetalle(false);
 
     /* Filtros  */
+    const [area, setArea] = useState<any>([]);
     const [tipoSolicitud, setTipoSolicitud] = useState<any>([]);
     const [proyecto, setProyecto] = useState<any>([]);
     const [empresa, setEmpresa] = useState<any>([]);
@@ -58,8 +59,12 @@ const useSolicitanteScreen = () => {
     /* seccion dashboard */
     const [seccion, setSeccion] = useState<number>(1);
 
+    /* para controlar el colapso del contenido de los filtros  */
+    const [open, setOpen] = useState(true); // Estado para controlar el colapso
+
     const filtrarDatos = useCallback(() => {
         const filtros: any = {
+            area:area.map((r: any) => r?.value),
             id_tipo_solicitud: tipoSolicitud.map((r: any) => r?.value),
             id_proyecto: proyecto.map((r: any) => r?.value),
             id_empresa: empresa.map((r: any) => r?.value),
@@ -94,7 +99,7 @@ const useSolicitanteScreen = () => {
             setDataPie(dataPieResult);
 
         }
-    }, [tipo, tipoSolicitud, proyecto, empresa, banco, concepto, estatus, moneda, formaPago, dataTodasPerfil]);
+    }, [area, tipo, tipoSolicitud, proyecto, empresa, banco, concepto, estatus, moneda, formaPago, dataTodasPerfil]);
 
     const setDashboard = useCallback(() => {
         const dataOrigen = perfil?.solicitudes;
@@ -162,7 +167,7 @@ const useSolicitanteScreen = () => {
             const resDocZip = await generarZipSolicitudHttp({ id_solicitud: sol?.id });
             window.open(`${env.API_URL_DOCUMENTOS}${resDocZip}`);
             setProcesando(false);
-            setMensajeAlert('Exito al descargar los documentos')
+            setMensajeAlert('Éxito al descargar los documentos')
             handleisAlertOpen()
         } catch (error) {
             setProcesando(false);
@@ -183,7 +188,7 @@ const useSolicitanteScreen = () => {
 
     useEffect(() => {
         filtrarDatos()
-    }, [tipo, tipoSolicitud, proyecto, empresa, banco, concepto, estatus, moneda, formaPago]);
+    }, [area, tipo, tipoSolicitud, proyecto, empresa, banco, concepto, estatus, moneda, formaPago]);
 
 
     const handleDataSolicitudes = useCallback((ele: any) => {
@@ -234,6 +239,8 @@ const useSolicitanteScreen = () => {
 
     return {
         setValue,
+        area,
+        setArea,
         setTipo,
         formik,
         setTipoSolicitud,
@@ -278,8 +285,9 @@ const useSolicitanteScreen = () => {
         navigate,
         seccion,
         esMiTurno,
-        miTurnoDos
-
+        miTurnoDos,
+        open, 
+        setOpen
     }
 }
 

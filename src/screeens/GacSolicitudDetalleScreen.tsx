@@ -56,8 +56,7 @@ const GacSolicitudDetalleScreen: React.FC = () => {
         if (documentosCargadosMuestra && !solicitudDocumentos?.length) {
             handleNotificaJefes()
             setDocumentosCargados(false);
-        }
-    };
+        }};
 
     const esMiTurno = (arr: any, idUsuario: any) => {
         for (const item of arr) {
@@ -220,7 +219,7 @@ const GacSolicitudDetalleScreen: React.FC = () => {
             }, Promise.resolve());
             setProcesando(false);
             getData();
-            setMensajeAlert('Exito al subir los documentos');
+            setMensajeAlert('Éxito al subir los documentos');
             handleisAlertOpen();
             setDocumentosCargadosMuestra(true)
         } catch (error) {
@@ -246,13 +245,13 @@ const GacSolicitudDetalleScreen: React.FC = () => {
             }
             setDocumentosCargadosMuestra(false)
             setProcesando(false);
-            setMensajeAlert(solicitud?.[0]?.requiere_aprobacion_revisor === 1 ? 'Se ha notificado a los revisores con exito' : 'Se ha notificado al autorizador con exito');
+            setMensajeAlert(solicitud?.[0]?.requiere_aprobacion_revisor === 1 ? 'Se ha notificado a los revisores fiscales con éxito' : 'Se ha notificado al autorizador con éxito');
             handleisAlertOpen();
         } catch (error) {
             setDocumentosCargados(false);
             setDocumentosCargadosMuestra(false)
             setProcesando(true);
-            setMensajeAlert(solicitud?.[0]?.requiere_aprobacion_revisor === 1 ? 'Error al notificar a los revisores' : 'Error al notificar al autorizador');
+            setMensajeAlert(solicitud?.[0]?.requiere_aprobacion_revisor === 1 ? 'Error al notificar a los revisores fiscales' : 'Error al notificar al autorizador');
             handleisAlertOpen();
         }
     }
@@ -275,11 +274,11 @@ const GacSolicitudDetalleScreen: React.FC = () => {
             setJefe(null);
             setDocumentosCargadosMuestra(false)
             setProcesando(false);
-            setMensajeAlert('Se ha aprobado la solicitud con exito');
+            setMensajeAlert('Se ha aprobado la solicitud con éxito');
             handleisAlertOpen();
         } catch (error) {
             setProcesando(false);
-            setMensajeAlert('Error al notificar a los revisores');
+            setMensajeAlert('Error al aprobar la solicitud');
             handleisAlertOpen();
         }
     }
@@ -302,11 +301,11 @@ const GacSolicitudDetalleScreen: React.FC = () => {
             setJefe(null);
             setDocumentosCargadosMuestra(false)
             setProcesando(false);
-            setMensajeAlert('Se ha rechazado la solicitud con exito');
+            setMensajeAlert('Se ha rechazado la solicitud con éxito');
             handleisAlertOpen();
         } catch (error) {
             setProcesando(false);
-            setMensajeAlert('Error al notificar a los revisores');
+            setMensajeAlert('Error al rechazar la solicitud');
             handleisAlertOpen();
         }
     }
@@ -329,11 +328,11 @@ const GacSolicitudDetalleScreen: React.FC = () => {
             setJefe(null);
             setDocumentosCargadosMuestra(false)
             setProcesando(false);
-            setMensajeAlert('Se ha autorizado la solicitud con exito');
+            setMensajeAlert('Se ha autorizado la solicitud con éxito');
             handleisAlertOpen();
         } catch (error) {
             setProcesando(false);
-            setMensajeAlert('Error al notificar a los revisores');
+            setMensajeAlert('Error al  autorizar la solicitud');
             handleisAlertOpen();
         }
     }
@@ -355,11 +354,11 @@ const GacSolicitudDetalleScreen: React.FC = () => {
             setJefe(null);
             setDocumentosCargadosMuestra(false)
             setProcesando(false);
-            setMensajeAlert('Se ha rechazado la solicitud con exito');
+            setMensajeAlert('Se ha rechazado la solicitud con éxito');
             handleisAlertOpen();
         } catch (error) {
             setProcesando(false);
-            setMensajeAlert('Error al notificar a los revisores');
+            setMensajeAlert('Error al rechazar la solicitud');
             handleisAlertOpen();
         }
     }
@@ -373,11 +372,11 @@ const GacSolicitudDetalleScreen: React.FC = () => {
             setJefe(null);
             setDocumentosCargadosMuestra(false)
             setProcesando(false);
-            setMensajeAlert('Se ha solicitado la aprobacion de dirección general con exito');
+            setMensajeAlert('Se ha solicitado la aprobación de dirección general con éxito');
             handleisAlertOpen();
         } catch (error) {
             setProcesando(false);
-            setMensajeAlert('Error al solicitar la aprobacion de dirección general');
+            setMensajeAlert('Error al solicitar la aprobación de dirección general');
             handleisAlertOpen();
         }
     }
@@ -427,7 +426,7 @@ const GacSolicitudDetalleScreen: React.FC = () => {
             }
             await cambioEnSolicitudRevisorHttp(body)
             setProcesando(false);
-            setMensajeAlert('Exito al aprobar la solicitud');
+            setMensajeAlert('Éxito al aprobar la solicitud');
             setMuestraConfirmAprobarJefe(false);
             setSolicitudDetalle(null);
             getData();
@@ -452,7 +451,7 @@ const GacSolicitudDetalleScreen: React.FC = () => {
             }
             await cambioEnSolicitudRevisorHttp(body);
             setProcesando(false);
-            setMensajeAlert('Exito al rechazar la solicitud');
+            setMensajeAlert('Éxito al rechazar la solicitud');
             setMuestraConfirmAprobarJefe(false);
             setSolicitudDetalle(null);
             getData();
@@ -476,7 +475,7 @@ const GacSolicitudDetalleScreen: React.FC = () => {
             }
             await cambioEnSolicitudPagadorHttp(body)
             setProcesando(false);
-            setMensajeAlert('Exito al realizar la operación');
+            setMensajeAlert('Éxito al realizar la operación');
             getData();
             handleisAlertOpen();
         } catch (error) {
@@ -493,7 +492,7 @@ const GacSolicitudDetalleScreen: React.FC = () => {
             const resDocZip = await generarZipSolicitudHttp({ id_solicitud: sol?.id });
             window.open(`${env.API_URL_DOCUMENTOS}${resDocZip}`);
             setProcesando(false);
-            setMensajeAlert('Exito al descargar los documentos')
+            setMensajeAlert('Éxito al descargar los documentos')
             handleisAlertOpen()
         } catch (error) {
             setProcesando(false);
@@ -512,7 +511,7 @@ const GacSolicitudDetalleScreen: React.FC = () => {
             };
             await atualizaTipoSolicitudHttp(body);
             setProcesando(false);
-            setMensajeAlert('Exito al actualizar el tipo de solicitud')
+            setMensajeAlert('Éxito al actualizar el tipo de solicitud')
             getData();
             handleisAlertOpen()
         } catch (error) {
@@ -532,7 +531,7 @@ const GacSolicitudDetalleScreen: React.FC = () => {
             };
             await actualizaIdConceptoHttp(body);
             setProcesando(false);
-            setMensajeAlert('Exito al actualizar el concepto')
+            setMensajeAlert('Éxito al actualizar el concepto')
             getData();
             handleisAlertOpen()
         } catch (error) {
@@ -551,7 +550,7 @@ const GacSolicitudDetalleScreen: React.FC = () => {
             };
             await solicitaCargaDocumentalHttp(body);
             setProcesando(false);
-            setMensajeAlert('Exito al solicitar la carga de documentos')
+            setMensajeAlert('Éxito al solicitar la carga de documentos')
             getData();
             handleisAlertOpen()
         } catch (error) {
@@ -573,7 +572,7 @@ const GacSolicitudDetalleScreen: React.FC = () => {
             setProcesando(true);
             await deleteDocumentHttp(documentoDelete?.id)
             setProcesando(false);
-            setMensajeAlert('Exito al eliminar el documento')
+            setMensajeAlert('Éxito al eliminar el documento')
             getData();
             handleisAlertOpen()
         } catch (error) {
@@ -590,7 +589,7 @@ const GacSolicitudDetalleScreen: React.FC = () => {
             setProcesando(true);
             await notificaNominaHttp({id_solicitud:d?.id, id_usuario_notifica:perfil?.idUsuario, importe:c});
             setProcesando(false);
-            setMensajeAlert('Exito al notificar a nomina')
+            setMensajeAlert('Éxito al notificar a nomina')
             handleisAlertOpen()
         } catch (error) {
             setProcesando(false);
@@ -721,7 +720,7 @@ const GacSolicitudDetalleScreen: React.FC = () => {
                     }} onCancel={() => {
                         setDocumentosCargados(false);
                         setDocumentosCargadosMuestra(false)
-                    }} open={documentosCargados} text={solicitud?.[0]?.requiere_aprobacion_revisor === 1 ? '¿Desea notificar a los revisores que se han cargado documentos?' : '¿Desea notificar al autorizador que se han cargado documentos?'} title={''} />
+                    }} open={documentosCargados} text={solicitud?.[0]?.requiere_aprobacion_revisor === 1 ? '¿Desea notificar a los revisores fiscales que se han cargado documentos?' : '¿Desea notificar al autorizador que se han cargado documentos?'} title={''} />
 
                 <ModalConfirm
                     esCambioEstatusEstimacion

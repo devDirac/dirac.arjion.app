@@ -160,7 +160,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
     try {
       setProcesando(true);
       await setGacEquivalenciaMonedaExtDolHttp({ fecha: moment().format("YYYY-MM-DD") });
-      setMensajeAlert('Exito al actualizar el catalogo de monedas');
+      setMensajeAlert('Éxito al actualizar el catalogo de monedas');
       handleisAlertOpen();
       setProcesando(false);
       perfil?.getData();
@@ -177,7 +177,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
       setProcesando(true);
       await setGacTipoCambioDolarHttp({ fecha: moment().format("YYYY-MM-DD") })
       perfil?.getData();
-      setMensajeAlert('Exito al actualizar el catalogo de tipo de cambio');
+      setMensajeAlert('Éxito al actualizar el catalogo de tipo de cambio');
       handleisAlertOpen();
       setProcesando(false);
     } catch (error) {
@@ -253,7 +253,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
       });
       setProcesando(false)
       setActiveStep(activeStep + 2);
-      setMensajeAlert('Exito al dar de alta la solicitud')
+      setMensajeAlert('Éxito al dar de alta la solicitud')
       handleisAlertOpen()
       setTipoSolicitud(null)
     } catch (error) {
@@ -327,7 +327,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
       }, Promise.resolve());
       setProcesando(false)
       setActiveStep(activeStep + 1);
-      const a = d?.length ? 'Exito al dar de alta la solicitud y sus documentos' : 'Exito al dar de alta la solicitud'
+      const a = d?.length ? 'Éxito al dar de alta la solicitud y sus documentos' : 'Éxito al dar de alta la solicitud'
       setMensajeAlert(a)
       handleisAlertOpen()
       setTipoSolicitud(null)
@@ -346,7 +346,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
       }
       await firmarDocumentoHttp(body);
       setFirma(true);
-      setMensajeAlert('Exito al estableces la firma digital');
+      setMensajeAlert('Éxito al establecer la firma digital');
       handleisAlertOpen();
       setProcesando(false);
     } catch (error) {
@@ -362,7 +362,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
       await setProveedorHttp({ ...form, ...{ id_usuario: perfil?.idUsuario, } });
       handleisAlerCloseProveedor();
       perfil?.getData();
-      setMensajeAlert('Exito al guardar a el proveedor');
+      setMensajeAlert('Éxito al guardar a el proveedor');
       handleisAlertOpen();
       setProcesando(false);
     } catch (error) {
@@ -387,7 +387,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
         data1.append("file", dataBanco?.file?.[0]);
       }
       await addBancoHttp(data1);
-      setMensajeAlert('Exito al guardar la información bancaria');
+      setMensajeAlert('Éxito al guardar la información bancaria');
       handleisAlertOpen();
       setProcesando(false);
     } catch (error) {
@@ -411,7 +411,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
         </ListItem>
         <Divider />
         {/* mODULO DE DASHBOARD */}
-        <ListItem disablePadding onClick={() => navigate(`/gac-home?id=${perfil?.idHash}`)}>
+        <ListItem disablePadding onClick={() => navigate(`/gac-home?id=${perfil?.idUsuarioURL}`)}>
           <ListItemButton style={{ borderBottom: 'solid 1px #f5f5f5', }}>
             <ListItemIcon>
               <AnalyticsIcon color='info' fontSize='large' />
@@ -422,7 +422,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
           </ListItemButton>
         </ListItem>
         {/* mODULO PARA EL CRUD DE CONCEPTOS */}
-        {perfil?.esRevisor || perfil?.esAutorizador || perfil?.esPagador ? <ListItem disablePadding onClick={() => navigate(`/gac-revisor-catalogo-conceptos-crud?id=${perfil?.idHash}`)}>
+        {perfil?.esRevisor || perfil?.esAutorizador || perfil?.esPagador ? <ListItem disablePadding onClick={() => navigate(`/gac-revisor-catalogo-conceptos-crud?id=${perfil?.idUsuarioURL}`)}>
           <ListItemButton style={{ borderBottom: 'solid 1px #f5f5f5' }}>
             <ListItemIcon>
               <DisplaySettingsIcon color='info' fontSize='large' />
@@ -433,7 +433,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
           </ListItemButton>
         </ListItem> : null}
         {/* mODULO PARA EL CRUD DE TIPO DE SOLICITUD */}
-        {perfil?.esRevisor || perfil?.esAutorizador || perfil?.esPagador ? <ListItem disablePadding onClick={() => navigate(`/gac-revisor-catalogo-tipo-solicitud-crud?id=${perfil?.idHash}`)}>
+        {perfil?.esRevisor || perfil?.esAutorizador || perfil?.esPagador ? <ListItem disablePadding onClick={() => navigate(`/gac-revisor-catalogo-tipo-solicitud-crud?id=${perfil?.idUsuarioURL}`)}>
           <ListItemButton style={{ borderBottom: 'solid 1px #f5f5f5' }}>
             <ListItemIcon>
               <Inventory2Icon color='info' fontSize='large' />
@@ -445,7 +445,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
         </ListItem> : null}
 
         {/* mODULO PARA EL CRUD DE FORMA DE PAGO */}
-        {perfil?.esRevisor || perfil?.esAutorizador || perfil?.esPagador ? <ListItem disablePadding onClick={() => navigate(`/gac-revisor-catalogo-forma-pago-crud?id=${perfil?.idHash}`)}>
+        {perfil?.esRevisor || perfil?.esAutorizador || perfil?.esPagador ? <ListItem disablePadding onClick={() => navigate(`/gac-revisor-catalogo-forma-pago-crud?id=${perfil?.idUsuarioURL}`)}>
           <ListItemButton style={{ borderBottom: 'solid 1px #f5f5f5' }}>
             <ListItemIcon>
               <PaymentsIcon color='info' fontSize='large' />
@@ -458,7 +458,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
 
 
         {/* mODULO PARA la edición de perfiles*/}
-        {perfil?.esRevisor || perfil?.esAutorizador || perfil?.esPagador ? <ListItem disablePadding onClick={() => navigate(`/gac-revisor-ediion-perfiles?id=${perfil?.idHash}`)}>
+        {perfil?.esRevisor || perfil?.esAutorizador || perfil?.esPagador ? <ListItem disablePadding onClick={() => navigate(`/gac-revisor-ediion-perfiles?id=${perfil?.idUsuarioURL}`)}>
           <ListItemButton style={{ borderBottom: 'solid 1px #f5f5f5' }}>
             <ListItemIcon>
               <ManageAccountsIcon color='info' fontSize='large' />

@@ -187,7 +187,7 @@ const AddTipoSolicitud: React.FC<AddTipoSolicitudProps> = (props: AddTipoSolicit
 
                         <Grid item xs={12} md={6}>
                             <CampoSwitch
-                                label={'Requiere aprobación del revisor'}
+                                label={'Requiere aprobación del revisor fiscal'}
                                 value={requiereAprobacionRevisor}
                                 onAction={(v) => setRequiereAprobacionRevisor(v)}
                             />

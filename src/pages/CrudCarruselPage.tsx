@@ -185,7 +185,7 @@ const CrudCarruselPage: React.FC = () => {
             getData(playListSeleccionado);
             getContenidoInformacion()
             handleisAlerCloseEdit()
-            setMensajeAlert('Exito al actualizar');
+            setMensajeAlert('Éxito al actualizar');
             handleisAlertOpen();
             setProcesando(false);
         } catch (error) {
@@ -203,7 +203,7 @@ const CrudCarruselPage: React.FC = () => {
             handleisAlerCloseEditPlayAdd();
             getPisos();
             getPisos_();
-            setMensajeAlert('Exito al guardar');
+            setMensajeAlert('Éxito al guardar');
             handleisAlertOpen();
             setProcesando(false);
         } catch (error) {
@@ -232,7 +232,7 @@ const CrudCarruselPage: React.FC = () => {
             await setInfoBannerHttp(data1);
             getContenidoInformacion()
             getPisos()
-            setMensajeAlert('Exito al guardar');
+            setMensajeAlert('Éxito al guardar');
             handleisAlertOpen();
             setProcesando(false);
         } catch (error) {
