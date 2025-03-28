@@ -135,7 +135,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
   ]);
 
   /* Para el asistente */
-  const [urlInteligente,setUrlInteligente] = useState('');
+  const [urlInteligente, setUrlInteligente] = useState('');
   const [respuesta, setRespuesta] = useState('');
   const [respuestaId, setRespuestaId] = useState(null);
   const [mensajeBienvenida, setMensajeBienvenida] = useState('');
@@ -428,29 +428,29 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
     }
   }
 
-  const handleContacto = async (data:any) => {
+  const handleContacto = async (data: any) => {
     try {
       setProcesando(true);
       setRespuestaId(null);
-      const res = await AsistenteVirtualHTTP({...data,...{name:perfil?.nombre}});
+      const res = await AsistenteVirtualHTTP({ ...data, ...{ name: perfil?.nombre } });
       setMensajeBienvenida('');
       setRespuesta(res?.respuestaInteligente);
       setRespuestaId(res);
       setUrlInteligente(res?.sql?.URL || '')
-      setProcesando(false)  
+      setProcesando(false)
     } catch (error) {
       setProcesando(false);
       setRespuestaId(null);
     }
-    
+
   }
 
-  const handleRespuestaCorrecta = async(id:any) => {
+  const handleRespuestaCorrecta = async (id: any) => {
     try {
-      await setPreguntaCorrectaHTTP({pregunta:id?.pregunta, embedding:id?.embedding_pregunta, id_contenido: id?.sql?.id});
+      await setPreguntaCorrectaHTTP({ pregunta: id?.pregunta, embedding: id?.embedding_pregunta, id_contenido: id?.sql?.id });
       setMensajeAlert('exito al asignar esta respuesta como correcta');
       setRespuestaId(null);
-      handleisAlertOpen();  
+      handleisAlertOpen();
     } catch (error) {
       setMensajeAlert('Error al realizar la operación');
       handleisAlertOpen();
@@ -574,7 +574,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
       </AppBarC>
       <ToolbarC />
 
-      <SpeedDial
+      {location.pathname.includes("gac") ? <SpeedDial
         onClick={() => {
           initAsistente();
         }}
@@ -589,7 +589,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
         ariaLabel="SpeedDial basic example"
         sx={{ position: 'fixed', bottom: '30px', right: '10px', width: '100px' }}
         icon={<SmartToyTwoToneIcon fontSize="medium" />}
-      />
+      /> : null}
 
       <ModalComponent titleBoton={'MINIMIZAR'} size={'xl'} handleClose={handleisAlertAsistenteClose} isOpen={isAlertAsistente} key={'______Asistente'}>
         <AsistenteForm
