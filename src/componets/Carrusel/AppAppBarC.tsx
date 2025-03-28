@@ -1,10 +1,11 @@
 import * as React from 'react';
+import SmartToyTwoToneIcon from '@mui/icons-material/SmartToyTwoTone';
 import Box from '@mui/material/Box';
 import AppBarC from './AppBarC';
 import ToolbarC from './ToolbarC';
 import logo from "../../assets/images/sdsd.png";
 import logoArjion from "../../assets/images/arjion_b.png";
-import { Button, Divider, Drawer, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, styled } from '@mui/material';
+import { Button, Divider, Drawer, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SpeedDial, styled } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -28,6 +29,8 @@ import GacStepperForm from '../../forms/GacStepperForm/GacStepperForm';
 import AddProveedor from '../../forms/catalogos/Proveedores/AddProveedor';
 import { addBancoHttp } from '../../actions/user';
 import { getCritscoAnalisisHttp } from '../../actions/documentos';
+import AsistenteForm from '../../forms/asistente/AsistenteForm';
+import { AsistenteVirtualHTTP, setPreguntaCorrectaHTTP } from '../../actions/asistente';
 
 const CustomListItemText = styled(ListItemText)(({ theme }) => ({
   '& .MuiListItemText-primary': {
@@ -39,7 +42,7 @@ const CustomListItemText = styled(ListItemText)(({ theme }) => ({
 
 interface AppAppBarCProps {
   idUsuario?: any
-  esGastos?:boolean
+  esGastos?: boolean
 }
 
 const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
@@ -131,6 +134,20 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
     { name: 'Carga de documentos pregunta', step: 2 },
   ]);
 
+  /* Para el asistente */
+  const [urlInteligente,setUrlInteligente] = useState('');
+  const [respuesta, setRespuesta] = useState('');
+  const [respuestaId, setRespuestaId] = useState(null);
+  const [mensajeBienvenida, setMensajeBienvenida] = useState('');
+  const [isAlertAsistente, setIsAlertAsistente] = useState(false);
+  const handleisAlertAsistenteOpen = () => setIsAlertAsistente(true);
+  const handleisAlertAsistenteClose = () => {
+    setIsAlertAsistente(false);
+    setMensajeBienvenida('')
+    setRespuesta('')
+    setRespuestaId(null)
+  };
+
   const handleStep = (step: number) => {
     setActiveStep(step);
     if (step === 1) {
@@ -146,6 +163,19 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
       ])
     }
   }
+
+
+  const initAsistente = async () => {
+    try {
+      setMensajeBienvenida('Hola soy Sandra el asistente virtual de APM, ¿en que te puedo ayudar?')
+      handleisAlertAsistenteOpen();
+    } catch (error) {
+      setMensajeAlert('Error al obtener los datos');
+      handleisAlertOpen();
+    }
+
+  }
+
 
   /* Selecciona el tipo de solicitud alta */
   const handleSeleccionaTipoSolicitud = (tipo: any) => {
@@ -320,7 +350,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
           data1.append("id_solicitud", responseSolicitud?.id);
           data1.append("id_usuario", perfil?.idUsuario);
           data1.append("file", cat?.file);
-          data1.append("critsCoValidacion",  JSON.stringify(crist));
+          data1.append("critsCoValidacion", JSON.stringify(crist));
           await setDocumentoSolicitudHttp(data1);
         } catch (error: any) {
         }
@@ -383,7 +413,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
       data1.append("clabe", dataBanco?.clabe);
       data1.append("cuenta", dataBanco?.cuenta);
       data1.append("id_usuario", dataBanco?.id_usuario);
-      if(dataBanco?.file){
+      if (dataBanco?.file) {
         data1.append("file", dataBanco?.file?.[0]);
       }
       await addBancoHttp(data1);
@@ -394,6 +424,35 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
       const mensajeerror = getErrorHttpMessage(error)
       setProcesando(false);
       setMensajeAlert(mensajeerror || 'Error al guardar la información bancaria');
+      handleisAlertOpen();
+    }
+  }
+
+  const handleContacto = async (data:any) => {
+    try {
+      setProcesando(true);
+      setRespuestaId(null);
+      const res = await AsistenteVirtualHTTP({...data,...{name:perfil?.nombre}});
+      setMensajeBienvenida('');
+      setRespuesta(res?.respuestaInteligente);
+      setRespuestaId(res);
+      setUrlInteligente(res?.sql?.URL || '')
+      setProcesando(false)  
+    } catch (error) {
+      setProcesando(false);
+      setRespuestaId(null);
+    }
+    
+  }
+
+  const handleRespuestaCorrecta = async(id:any) => {
+    try {
+      await setPreguntaCorrectaHTTP({pregunta:id?.pregunta, embedding:id?.embedding_pregunta, id_contenido: id?.sql?.id});
+      setMensajeAlert('exito al asignar esta respuesta como correcta');
+      setRespuestaId(null);
+      handleisAlertOpen();  
+    } catch (error) {
+      setMensajeAlert('Error al realizar la operación');
       handleisAlertOpen();
     }
   }
@@ -514,6 +573,37 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
         </ToolbarC>
       </AppBarC>
       <ToolbarC />
+
+      <SpeedDial
+        onClick={() => {
+          initAsistente();
+        }}
+        FabProps={{
+          sx: {
+            bgcolor: '#0a58ca',
+            '&:hover': {
+              bgcolor: '#0a58ca',
+            }
+          }
+        }}
+        ariaLabel="SpeedDial basic example"
+        sx={{ position: 'fixed', bottom: '30px', right: '10px', width: '100px' }}
+        icon={<SmartToyTwoToneIcon fontSize="medium" />}
+      />
+
+      <ModalComponent titleBoton={'MINIMIZAR'} size={'xl'} handleClose={handleisAlertAsistenteClose} isOpen={isAlertAsistente} key={'______Asistente'}>
+        <AsistenteForm
+          enAccion={(data) => { handleContacto(data) }}
+          enAccionCorrecta={(data) => { handleRespuestaCorrecta(data) }}
+          mensajeBienvenida={mensajeBienvenida}
+          respuestaId={respuestaId}
+          respuesta={respuesta}
+          urlInteligente={urlInteligente}
+          procesando={procesando}
+        />
+      </ModalComponent>
+
+
       <ModalComponent handleClose={handleisAlerCloseForm} isOpen={isAlertOpenForm} key={'alertasaz'} esFullScreen={firma ? true : false}>
         <GacStepperForm
           firma={firma}
