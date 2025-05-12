@@ -178,7 +178,7 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                                                 href={`#documentos_seccion`}
                                                                                 className='pulsante'
                                                                             >
-                                                                                Aun hay documentos que tienes que revisar
+                                                                                Aun hay documentos que tienes que revisar.
                                                                             </Link> : null}
                                                                         {props?.item?.requiere_documentos === 1 && props?.item?.requiere_aprobacion_revisor === 0 && !(props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1)?.length && (props?.item?.documentos || [])?.length ? <br /> : null}
 
@@ -279,20 +279,36 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                     }
                                                     {/* El usuario revisor va a ejercer su opinion sobre la solicitud */}
 
+                                                    {/* {
+                                                        props?.esRevisor && props?.item?.id_usuario_revisor === null ? <>asadad</> : null
+                                                    } */}
+
                                                     {
-                                                        props?.estaEnMiCancha && props?.esRevisor && props?.item?.id_usuario_revisor === null ?
+                                                        props?.estaEnMiCancha && props?.esRevisor && props?.item?.id_usuario_revisor === null && props?.item?.requiere_aprobacion_revisor === 1 ?
                                                             <React.Fragment>
                                                                 <Divider />
                                                                 <ListItem
                                                                     secondaryAction={
                                                                         <div style={{ padding: 15 }}>
-                                                                            {props?.item?.requiere_documentos === 1 && !(props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1)?.length ? <Link
+
+                                                                            {props?.item?.requiere_documentos === 1 && !(props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1)?.length && (props?.item?.documentos || [])?.length ? <Link
                                                                                 style={{ fontSize: 14, backgroundColor: '#f17171', color: '#ffff', padding: 5, borderRadius: 5, fontWeight: 500 }}
                                                                                 href={`#documentos_seccion`}
                                                                                 className='pulsante'
                                                                             >
                                                                                 Aun hay documentos que tienes que revisar
                                                                             </Link> : null}
+
+                                                                            {props?.item?.requiere_documentos === 1 && !(props?.item?.documentos || [])?.length ? <Button
+                                                                                size="small"
+                                                                                variant="outlined"
+                                                                                color='error'
+                                                                                style={{ backgroundColor: '#f17171', color: '#ffff' }}
+                                                                                onClick={() => {
+                                                                                    props?.enAction(props?.item, 'solicitar_carga_documental', null)
+                                                                                }}
+                                                                            >Notificar al solicitante que cargue documentos</Button> : null}
+
                                                                             {props?.item?.requiere_documentos === 0 || (props?.item?.documentos || []).filter((r: any) => +r?.es_valido_revisor === 1)?.length ? <Button
                                                                                 size="small"
                                                                                 variant="outlined"
@@ -302,8 +318,10 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                                                     props?.enAction(props?.item, 'aprobar_revisor', null)
                                                                                 }}
                                                                             > Aprobar como revisor fiscal </Button> : null}
-                                                                            {(props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1)?.length ? <br /> : null}
-                                                                            {/*  {props?.item?.requiere_documentos === 0 || (props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1)?.length ? <Button
+
+                                                                            {/* <br />
+
+                                                                             <Button
                                                                                 size="small"
                                                                                 variant="outlined"
                                                                                 color='warning'
@@ -311,7 +329,8 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                                                 onClick={() => {
                                                                                     props?.enAction(props?.item, 'rechazar_revisor', null)
                                                                                 }}
-                                                                            > Rechazar como revisor </Button> : null}
+                                                                            > Rechazar como revisor </Button> 
+
                                                                             <br /> */}
                                                                         </div>
                                                                     }
@@ -515,13 +534,13 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                         <Box display="flex" justifyContent="space-between" alignItems="center" pt={2} px={2}>
                             {(!props?.esAutorizador && !props?.esPagador && !props?.esRevisor) ? <p style={{ fontSize: 15 }}> <strong>Tipo de solicitud: </strong>{props?.item?.tipo_solicitud} </p> : null}
 
-                            {props?.item?.id_estatus !== 1 ? <p style={{ fontSize: 15 }}> <strong>Tipo de solicitud: </strong>{props?.item?.tipo_solicitud} </p> : null}
+                            {/* {props?.item?.id_estatus !== 1 ? <p style={{ fontSize: 15 }}> <strong>Tipo de solicitud: </strong>{props?.item?.tipo_solicitud} </p> : null} */}
 
                             {(props?.esAutorizador || props?.esPagador || props?.esRevisor) && props?.item?.id_estatus === 1 && !editaTipoDeSoliitud ?
                                 <p style={{ fontSize: 15 }}> <strong>Tipo de solicitud: </strong>{props?.item?.tipo_solicitud}
-                                    <span onClick={() => {
+                                    {/* <span onClick={() => {
                                         setEditaTipoDeSoliitud(true)
-                                    }} style={{ cursor: 'pointer' }} title='Cambiar el tipo de solicitud'><EditIcon color='info' /></span>
+                                    }} style={{ cursor: 'pointer' }} title='Cambiar el tipo de solicitud'><EditIcon color='info' /></span> */}
 
                                 </p> : (props?.esAutorizador || props?.esPagador || props?.esRevisor) && props?.item?.id_estatus === 1 && editaTipoDeSoliitud ? <div style={{ width: '250px' }}>
                                     <FormikProvider value={formik}>
@@ -574,26 +593,38 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                             <p style={{ fontSize: 15 }}><strong>Tipo de cambio: </strong>{numericFormatter(props?.item?.valor_en_dolar_moneda + '', { thousandSeparator: ',', decimalScale: 2, fixedDecimalScale: true, prefix: ' $' })} </p>
                         </Box>
                         <Box display="flex" justifyContent="space-between" alignItems="center" px={2} pt={1} >
-                            <p style={{ fontSize: 15 }}> <strong>Importe en pesos MXN: </strong>{numericFormatter(props?.item?.importe_pesos + '', { thousandSeparator: ',', decimalScale: 5, fixedDecimalScale: false, prefix: ' $' })} </p>
+                            <p style={{ fontSize: 15 }}> <strong>Importe en pesos MXN: </strong>{numericFormatter(props?.item?.importe_pesos + '', { thousandSeparator: ',', decimalScale: 2, fixedDecimalScale: true, prefix: ' $' })} </p>
                         </Box>
                         {props?.item?.requiere_documentos === 1 ? <Box display="flex" justifyContent="space-between" alignItems="center" px={2} pt={1} >
-                            <p style={{ fontSize: 15 }}><strong>Importe capturado en todos los documentos: </strong>{numericFormatter(((props?.item?.documentos || []).reduce((a: any, c: any) => { return a + (+c?.importe) }, 0)) + '', { thousandSeparator: ',', decimalScale: 5, fixedDecimalScale: false, prefix: ' $' })} </p>
+                            <p style={{ fontSize: 15 }}><strong>Importe capturado en todos los documentos: </strong>{numericFormatter(((props?.item?.documentos || []).reduce((a: any, c: any) => { return a + (+c?.importe) }, 0)) + '', { thousandSeparator: ',', decimalScale: 2, fixedDecimalScale: true, prefix: ' $' })} </p>
                         </Box> : null}
                         {props?.item?.requiere_documentos === 1 ? <Box display="flex" justifyContent="space-between" alignItems="center" px={2} pt={1} >
-                            <p style={{ fontSize: 15 }}><strong>Importe capturado en los documentos validos:</strong>{numericFormatter(((props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1).reduce((a: any, c: any) => { return a + (+c?.importe) }, 0)) + '', { thousandSeparator: ',', decimalScale: 5, fixedDecimalScale: false, prefix: ' $' })} </p>
+                            <p style={{ fontSize: 15 }}><strong>Importe capturado en los documentos validos:</strong>{numericFormatter(((props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1).reduce((a: any, c: any) => { return a + (+c?.importe) }, 0)) + '', { thousandSeparator: ',', decimalScale: 2, fixedDecimalScale: true, prefix: ' $' })} </p>
                         </Box> : null}
 
 
                         {props?.item?.requiere_documentos === 1 ? <Box display="flex" justifyContent="space-between" alignItems="center" px={2} pt={1} >
-                            <p style={{ fontSize: 15}}><strong>Importe por validar:</strong> <span style={{ fontSize: 15, fontWeight:'bold', color:'red' }}>{numericFormatter( ((props?.item?.importe_pesos) - ((props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1).reduce((a: any, c: any) => { return a + (+c?.importe) }, 0))) + '', { thousandSeparator: ',', decimalScale: 5, fixedDecimalScale: false, prefix: ' $' })} </span></p>
+                            <p style={{ fontSize: 15 }}><strong>Importe por validar:</strong> <span style={{ fontSize: 15, fontWeight: 'bold', color: 'red' }}>{numericFormatter(((props?.item?.importe_pesos) - ((props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1).reduce((a: any, c: any) => { return a + (+c?.importe) }, 0))) + '', { thousandSeparator: ',', decimalScale: 2, fixedDecimalScale: true, prefix: ' $' })} </span></p>
                         </Box> : null}
 
 
 
-                        {props?.item?.id_estatus === 5 && props?.item?.requiere_documentos === 1 ? <Box display="flex" justifyContent="space-between" alignItems="center" px={2} pt={1} >
+                        {props?.item?.id_estatus === 5 && props?.item?.requiere_documentos === 1 && (props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1)?.length ? <Box display="flex" justifyContent="space-between" alignItems="center" px={2} pt={1} >
                             <p style={{ fontSize: 15, cursor: 'pointer' }} onClick={() => {
                                 props?.enAction(props?.item, 'descargaZIP', null);
                             }}><strong>Descargar zip:</strong> <FolderZipIcon fontSize='medium' color='info' /> </p>
+                        </Box> : null}
+
+                        {(props?.idUsuario === props?.item?.solicita || props?.idUsuario === props?.item?.beneficiario) && (props?.item?.id_estatus === 1 || ((props?.item?.autorizadores || []).filter((r: any) => r?.autorizo === 1)?.length === (props?.item?.autorizadores || [])?.length) && props?.item?.id_usuario_autorizador === null) ? <Box display="flex" justifyContent="space-between" alignItems="center" px={2} pt={1} >
+                            <Button
+                                size="small"
+                                variant="outlined"
+                                color='warning'
+                                style={{ backgroundColor: '#f17171', color: '#ffff' }}
+                                onClick={() => {
+                                    props?.enAction(props?.item, 'cancelar_solicitud')
+                                }}
+                            > Cancelar solicitud  </Button>
                         </Box> : null}
                     </Card>
                 </Grid>
@@ -733,7 +764,7 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                     <p style={{ fontSize: 15 }}> <strong>Forma de pago: </strong>{props?.item?.forma_pago} </p>
                                 </Grid>
                                 <Grid item xs={12} md={4} style={{ paddingLeft: 30, textAlign: 'left' }}>
-                                    <p style={{ fontSize: 15 }}> <strong>Importe: </strong>{numericFormatter(props?.item?.importe + '', { thousandSeparator: ',', decimalScale: 5, fixedDecimalScale: false, prefix: ' $' })} </p>
+                                    <p style={{ fontSize: 15 }}> <strong>Importe: </strong>{numericFormatter(props?.item?.importe + '', { thousandSeparator: ',', decimalScale: 2, fixedDecimalScale: true, prefix: ' $' })} </p>
                                 </Grid>
                             </Grid>
                         </CardContent>
@@ -775,12 +806,12 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                 </Grid> : null}
 
 
-                                {props?.item?.muestra_notificar_nomina && props?.item?.id_usuario_autorizador && props?.item?.id_usuario_revisor && (props?.esAutorizador ||  props?.esPagador) && !props?.item?.id_usuario_pagada ? <Grid item xs={12} md={4} style={{ paddingLeft: 30, textAlign: 'left' }}>
+                                {props?.item?.muestra_notificar_nomina && props?.item?.id_usuario_autorizador && props?.item?.id_usuario_revisor && (props?.esAutorizador || props?.esPagador) && !props?.item?.id_usuario_pagada ? <Grid item xs={12} md={4} style={{ paddingLeft: 30, textAlign: 'left' }}>
                                     <Button
                                         size="small"
                                         variant="outlined"
                                         color='info'
-                                        style={{ backgroundColor: '#fcbf6a', color: '#ffff', position:'relative', top:'-12px' }}
+                                        style={{ backgroundColor: '#fcbf6a', color: '#ffff', position: 'relative', top: '-12px' }}
                                         onClick={() => {
                                             props?.enAction(props?.item, 'notificar_nomina', ((props?.item?.importe_pesos) - ((props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1).reduce((a: any, c: any) => { return a + (+c?.importe) }, 0))))
                                         }}
@@ -881,7 +912,7 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                     useMemo(() => {
                                         return (
                                             <>
-                                                {(props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === null)?.length && !props?.procesando ? <Accordion>
+                                                {(props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === null)?.length && !props?.procesando && props?.item?.id_estatus !== 5 ? <Accordion>
                                                     <AccordionSummary
                                                         expandIcon={<ExpandMoreIcon />}
                                                         aria-controls="panel1-content"
@@ -905,7 +936,7 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                                     actions={(props?.idUsuario === props?.item?.solicita || props?.idUsuario === props?.item?.beneficiario)}
                                                                     esVistaSolicitante={(props?.idUsuario === props?.item?.solicita || props?.idUsuario === props?.item?.beneficiario)}
                                                                     esGastoSolicitante
-                                                                    pinned={[{ columna: 'importe', lado: 'left' },{ columna: 'fiscal_folio', lado: 'left' },{ columna: 'nombre_corto', lado: 'left' }]}
+                                                                    pinned={[{ columna: 'importe', lado: 'left' }, { columna: 'fiscal_folio', lado: 'left' }, { columna: 'nombre_corto', lado: 'left' }]}
                                                                     columnsToShow={[
                                                                         'fiscal_folio',
                                                                         'critsCoValidacion',
@@ -937,7 +968,7 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                 </Accordion> : null}
                                             </>
                                         )
-                                    }, [props?.estaEnMiCancha, props?.esRevisor, props?.esAutorizador, props?.item?.id_usuario_revisor, props?.procesando, props?.item?.documentos, props?.item?.requiere_aprobacion_revisor])
+                                    }, [props?.estaEnMiCancha, props?.esRevisor, props?.esAutorizador, props?.item?.id_usuario_revisor, props?.procesando, props?.item?.documentos, props?.item?.requiere_aprobacion_revisor,])
                                 }
 
                                 {(props?.item?.documentos || []).filter((r: any) => r?.es_valido_revisor === 1)?.length && !props?.procesando ? <Accordion>
@@ -954,7 +985,7 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                                 <DinamicTableMejorada
                                                     //flex
                                                     esGastoSolicitante
-                                                    pinned={[{ columna: 'importe', lado: 'left' },{ columna: 'fiscal_folio', lado: 'left' },{ columna: 'nombre_corto', lado: 'left' }]}
+                                                    pinned={[{ columna: 'importe', lado: 'left' }, { columna: 'fiscal_folio', lado: 'left' }, { columna: 'nombre_corto', lado: 'left' }]}
                                                     columnsToShow={[
                                                         'fiscal_folio',
                                                         'critsCoValidacion',
@@ -999,7 +1030,7 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
                                             <Grid item xs={12} md={12} style={{ paddingLeft: 30 }}>
                                                 <DinamicTableMejorada
                                                     //flex
-                                                    pinned={[{ columna: 'importe', lado: 'left' },{ columna: 'fiscal_folio', lado: 'left' },{ columna: 'nombre_corto', lado: 'left' }]}
+                                                    pinned={[{ columna: 'importe', lado: 'left' }, { columna: 'fiscal_folio', lado: 'left' }, { columna: 'nombre_corto', lado: 'left' }]}
                                                     esGastoSolicitante
                                                     columnsToShow={[
                                                         'fiscal_folio',
@@ -1034,8 +1065,9 @@ const GacSolicitudDetalle: React.FC<GacSolicitudDetalleProps> = (props: GacSolic
 
                                 {(props?.idUsuario === props?.item?.solicita || props?.idUsuario === props?.item?.beneficiario)
                                     && props?.item?.id_usuario_revisor === null
+                                    && (props?.item?.id_estatus !== 4)
                                     && !props?.procesando
-                                    && ((props?.item?.autorizadores || []).filter((r: any) => r?.autorizo === null)?.length === (props?.item?.autorizadores || [])?.length || (props?.item?.id_estatus === 2) || (props?.item?.id_estatus === 6) || (props?.item?.id_estatus === 1))
+                                    && ((props?.item?.autorizadores || []).filter((r: any) => r?.autorizo === null)?.length === (props?.item?.autorizadores || [])?.length || (props?.item?.id_estatus === 2) || (props?.item?.id_estatus === 9) || (props?.item?.id_estatus === 6) || (props?.item?.id_estatus === 7) || (props?.item?.id_estatus === 1))
                                     && props?.item?.requiere_documentos === 1 ?
                                     <Accordion>
                                         <AccordionSummary

@@ -167,7 +167,7 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
 
   const initAsistente = async () => {
     try {
-      setMensajeBienvenida('Hola soy Sandra el asistente virtual de APM, ¿en que te puedo ayudar?')
+      setMensajeBienvenida('Hola soy Sandra el asistente virtual, ¿en que te puedo ayudar?')
       handleisAlertAsistenteOpen();
     } catch (error) {
       setMensajeAlert('Error al obtener los datos');
@@ -617,14 +617,21 @@ const AppAppBarC: React.FC<AppAppBarCProps> = (props: AppAppBarCProps) => {
           procesando={procesando}
           solicitudForm={solicitudForm}
           handleGuardaFormulario={handleGuardaFormulario}
-          handleRefreshMonedas={handleRefreshMonedas}
-          handleRefreshTipoCambio={handleRefreshTipoCambio}
+          handleRefreshMonedas={(form) => {
+            setSolicitudForm(form)
+            handleRefreshMonedas()
+          }}
+          handleRefreshTipoCambio={(form) => {
+            setSolicitudForm(form)
+            handleRefreshTipoCambio()
+          }}
           handlePregunta={handlePregunta}
           handleGuardaDocumentos={handleGuardaDocumentos}
           setFirma={(firma: any) => {
             handleFirma(firma)
           }}
-          handleAddProveedor={() => {
+          handleAddProveedor={(form) => {
+            setSolicitudForm(form)
             handleisAlertOpenProveedor()
           }}
           handleAddBancoUsuario={(d) => {

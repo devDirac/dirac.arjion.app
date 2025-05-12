@@ -22,22 +22,26 @@ const InputField: React.FC<InputFieldProps> = (props: InputFieldProps) => {
     esError,
     newPros
   } = useInputField(props);
- 
+
   return (
     <div
       className={`${showFeedback ? isValid : ""}`}
     >
       {props?.type !== "textArea" && (
         <div>
-          {props?.label && <Form.Label style={darkMode ? { color: 'white',fontSize:15 } : {fontSize:15}}>{props?.label}</Form.Label>}
+          {props?.label && <Form.Label style={darkMode ? { color: 'white', fontSize: 15 } : { fontSize: 15 }}>{props?.label}</Form.Label>}
           <InputGroup className="mb-3" size="sm" style={esError ? { border: 'solid 1px red', borderRadius: '8px' } : formik?.touched || (!formik?.error && !_.isEmpty(formik?.value)) ? { border: 'solid 1px #01db01', borderRadius: '8px' } : { borderRadius: '8px' }}>
             <Form.Control
               placeholder={props?.placeholder || ""}
               onFocus={handleFocus}
               {...newPros}
               {...field}
-              onBlur={()=>{
+              /* onBlur={()=>{
                 newPros?.onBlur &&  newPros?.onBlur()
+              }} */
+              onBlur={(e) => {
+                field.onBlur(e);
+                newPros?.onBlur?.();
               }}
               style={darkMode ? { borderRight: 'none', backgroundColor: 'transparent', color: 'white' } : { borderRight: 'none' }}
             />
@@ -69,9 +73,10 @@ const InputField: React.FC<InputFieldProps> = (props: InputFieldProps) => {
           </InputGroup>
         </div>
       )}
+
       {props?.type === "textArea" && (
         <div>
-          {props?.label && <Form.Label style={darkMode ? { color: 'white', fontSize:14 } : {fontSize:14}}>{props?.label}</Form.Label>}
+          {props?.label && <Form.Label style={darkMode ? { color: 'white', fontSize: 14 } : { fontSize: 14 }}>{props?.label}</Form.Label>}
           <InputGroup size="sm" className="mb-3" style={esError ? { border: 'solid 1px red', borderRadius: '8px' } : formik?.touched && !formik?.error && !_.isEmpty(formik?.value) ? { border: 'solid 1px green', borderRadius: '8px' } : { borderRadius: '8px' }}>
             <Form.Control
               placeholder={props?.placeholder || ""}

@@ -210,3 +210,16 @@ export const notificaNominaHttp = async (data: any): Promise<any> => {
     }
 };
 
+export const cancelaSolicitudHttp = async (data: any): Promise<any> => {
+    try {
+        const response: any = await axios.post(
+            `${env.API_URL}${"/cancelaSolicitud"}`, data
+        );
+        return response?.data || [];
+    } catch (error) {
+        const promise = new Promise((_, reject) => reject(error));
+        return promise;
+    }
+};
+
+

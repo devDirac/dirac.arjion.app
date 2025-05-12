@@ -25,6 +25,14 @@ import RevisionAdministrarSolicitudesPage from "./pages/RevisionAdministrarSolic
 import RevisionCrudFormaPagoPage from "./pages/RevisionCrudFormaPagoPage";
 import { ProviderContextUserComponent } from "./context/GacUserQueryParamsContexto";
 import GacDetalleSolicitudPage from "./pages/GacDetalleSolicitudPage";
+import InicioGenralProveedoresPage from "./pages/proveedores/InicioGenralProveedoresPage";
+import RegistroRequisitosPage from "./pages/proveedores/RegistroRequisitosPage";
+import RegistroFormularioPage from "./pages/proveedores/RegistroFormularioPage";
+import ValidacionRegistroAdminsPage from "./pages/proveedores/ValidacionRegistroAdminsPage";
+import CorreccionDatosProveedorPage from "./pages/proveedores/CorreccionDatosProveedorPage";
+import DashboardProveedorPage from "./pages/proveedores/DashboardProveedorPage";
+import AdministracionProveedoresPage from "./pages/proveedores/AdministracionProveedoresPage";
+import LoginProveedorPage from "./pages/proveedores/LoginProveedorPage";
 
 export default function App() {
 
@@ -79,25 +87,24 @@ export default function App() {
             <Route path="/info-dirac" element={<CarruselPage />} />
           </Route>
 
+          {/* INICIO MODULO DE GASTOS A COMPROBAR  */}
+
+          {/* DASHBOARD GENERAL GAC */}
           <Route path="/gac-home" element={<PublicRouter />}>
             <Route path="/gac-home" element={ <ProviderContextUserComponent> <SolicitantePage /> </ProviderContextUserComponent>} />
           </Route>
-
           {/* CRUD CATALOGO DE CONCEPTOS */}
           <Route path="/gac-revisor-catalogo-conceptos-crud" element={<PublicRouter />}>
             <Route path="/gac-revisor-catalogo-conceptos-crud" element={<ProviderContextUserComponent> <RevisionCrudConceptosPage /> </ProviderContextUserComponent>} />
           </Route>
-          
           {/* CRUD TIPOS DE SOLICITUD */}
           <Route path="/gac-revisor-catalogo-tipo-solicitud-crud" element={<PublicRouter />}>
             <Route path="/gac-revisor-catalogo-tipo-solicitud-crud" element={<ProviderContextUserComponent> <RevisionCrudTipoSolicitudPage /> </ProviderContextUserComponent>} />
           </Route>
-
           {/* CRUD FORMAS DE PAGO  */}
           <Route path="/gac-revisor-catalogo-forma-pago-crud" element={<PublicRouter />}>
             <Route path="/gac-revisor-catalogo-forma-pago-crud" element={<ProviderContextUserComponent> <RevisionCrudFormaPagoPage /> </ProviderContextUserComponent>} />
           </Route>
-
           {/* EDICION DE PERFILES */}
           <Route path="/gac-revisor-ediion-perfiles" element={<PublicRouter />}>
             <Route path="/gac-revisor-ediion-perfiles" element={<ProviderContextUserComponent> <RevisionEdicionPerfilesPage /> </ProviderContextUserComponent>} />
@@ -106,11 +113,52 @@ export default function App() {
           <Route path="/gac-administrar-solicitudes" element={<PublicRouter />}>
             <Route path="/gac-administrar-solicitudes" element={<ProviderContextUserComponent> <RevisionAdministrarSolicitudesPage /> </ProviderContextUserComponent>} />
           </Route>
-
           {/* Detalle de la solicitud */}
           <Route path="/gac-detalle-solicitud" element={<PublicRouter />}>
             <Route path="/gac-detalle-solicitud" element={<ProviderContextUserComponent> <GacDetalleSolicitudPage /> </ProviderContextUserComponent>} />
           </Route>
+          {/* FIN MODULO DE GASTOS A COMPROBAR */}
+
+          {/* inicia Modulo proveedores */}
+          {/* pantalla bienvenida proveedor general  */}
+          <Route path="/login-proveedores" element={<PublicRouter />}>
+            <Route path="/login-proveedores" element={<> <LoginProveedorPage /> </>} />
+          </Route>
+          {/* pantalla bienvenida proveedor general  */}
+          <Route path="/inicio-proveedores" element={<PublicRouter />}>
+            <Route path="/inicio-proveedores" element={<> <InicioGenralProveedoresPage /> </>} />
+          </Route>
+          {/* pantalla bienvenida proveedor general  */}
+          <Route path="/registro-requisitos-proveedores" element={<PublicRouter />}>
+            <Route path="/registro-requisitos-proveedores" element={<> <RegistroRequisitosPage /> </>} />
+          </Route>
+          {/* pantalla bienvenida proveedor general  */}
+          <Route path="/registro-formulario-proveedores" element={<PublicRouter />}>
+            <Route path="/registro-formulario-proveedores" element={<> <RegistroFormularioPage /> </>} />
+          </Route>
+          {/* pantalla bienvenida proveedor general  */}
+          <Route path="/valdidacion-info-admins-proveedores" element={<PublicRouter />}>
+            <Route path="/valdidacion-info-admins-proveedores" element={<> <ValidacionRegistroAdminsPage /> </>} />
+          </Route>
+
+          {/* pantalla bienvenida proveedor general  */}
+          <Route path="/correccion-registro-proveedores" element={<PublicRouter />}>
+            <Route path="/correccion-registro-proveedores" element={<> <CorreccionDatosProveedorPage /> </>} />
+          </Route>
+
+          {/* pantalla bienvenida proveedor general  */}
+          <Route path="/dashboard-proveedores" element={<PublicRouter />}>
+            <Route path="/dashboard-proveedores" element={<> <DashboardProveedorPage /> </>} />
+          </Route>
+
+          {/* pantalla bienvenida proveedor general  */}
+          <Route path="/administracion-proveedores" element={<PublicRouter />}>
+            <Route path="/administracion-proveedores" element={<> <AdministracionProveedoresPage /> </>} />
+          </Route>
+
+         
+
+          {/* finaliza Modulo proveedores */}
 
           {/* fin rutas publicas */}
           <Route path="*" element={<NotFoundPage />} />

@@ -792,7 +792,7 @@ const SolicitanteScreen: React.FC = () => {
                                             id: r?.id,
                                             tipo_solicitud: r?.tipo_solicitud,
                                             estatus: r?.estatus,
-                                            importe_pesos: numericFormatter(r?.importe_pesos + '', { thousandSeparator: ',', decimalScale: 5, fixedDecimalScale: false, prefix: ' $' }),
+                                            importe_pesos: numericFormatter(r?.importe_pesos + '', { thousandSeparator: ',', decimalScale: 2, fixedDecimalScale: true, prefix: ' $' }),
                                             pais_moneda: r?.pais_moneda,
                                             descripcion: r?.descripcion,
                                             esMiTurno: esMiTurno_
