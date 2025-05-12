@@ -42,10 +42,10 @@ const SeleccionTipoSolicitudApple: React.FC<SeleccionTipoSolicitudAppleProps> = 
                                         }}
                                     />
                                     <CardContent sx={{ position: "absolute", bottom: 10, left: 10, color: "white" }}>
-                                        <Typography variant="h6" fontWeight="bold">
+                                        <Typography variant="h6" fontWeight="bold" style={{fontSize:15}}>
                                             {type.title}
                                         </Typography>
-                                        <Typography variant="body2">{type.description}</Typography>
+                                        <Typography variant="body2" style={{fontSize:13}}>{type.description}</Typography>
                                     </CardContent>
                                 </CardActionArea>
                             </Card>

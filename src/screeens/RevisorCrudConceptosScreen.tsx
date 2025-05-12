@@ -131,7 +131,7 @@ const RevisorCrudConceptosScreen: React.FC = () => {
                         <Grid item xs={12} md={12} style={{ textAlign: 'center' }}>
                             {data?.length ?
                                 <DinamicTableMejorada
-                                    //flex
+                                    flex
                                     actions
                                     esInfoCarrusel
                                     data={data.map((r: any) => {
@@ -143,7 +143,7 @@ const RevisorCrudConceptosScreen: React.FC = () => {
                                         }
                                     })}
                                     columnsToShow={['clave','nombre','descripcion','estatus','fecha_registro']}
-                                    pinned={[{ columna: 'clave', lado: 'left' },{ columna: 'nombre', lado: 'left' },{ columna: 'descripcion', lado: 'left' }]}
+                                    pinned={[{ columna: 'clave', lado: 'left' },{ columna: 'nombre', lado: 'left' }]}
                                     enAccion={(accion, row) => {
                                         setItem(row);
                                         if (accion === 'editar') {

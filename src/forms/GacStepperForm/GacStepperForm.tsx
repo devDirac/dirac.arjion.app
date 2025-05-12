@@ -20,12 +20,12 @@ interface GacStepperFormProps {
     procesando: any
     solicitudForm: any
     handleGuardaFormulario: any
-    handleRefreshMonedas: any
-    handleRefreshTipoCambio: any
+    handleRefreshMonedas: (form:any) => void
+    handleRefreshTipoCambio: (form:any) => void
     handlePregunta: any
     handleGuardaDocumentos: any
     setFirma: (data: any) => void
-    handleAddProveedor: () => void
+    handleAddProveedor: (form:any) => void
     handleAddBancoUsuario: (d: any) => void
 }
 
@@ -117,10 +117,10 @@ const GacStepperForm: React.FC<GacStepperFormProps> = ({
                                 procesando={procesando}
                                 item={solicitudForm}
                                 enAction={(f) => handleGuardaFormulario(f)}
-                                handleRefreshMonedas={() => handleRefreshMonedas()}
-                                handleRefreshTipoCambio={() => handleRefreshTipoCambio()}
-                                handleAddProveedor={() => {
-                                    handleAddProveedor()
+                                handleRefreshMonedas={(form) => handleRefreshMonedas(form)}
+                                handleRefreshTipoCambio={(form) => handleRefreshTipoCambio(form)}
+                                handleAddProveedor={(form) => {
+                                    handleAddProveedor(form)
                                 }}
                             />
                             : null
@@ -201,7 +201,7 @@ const GacStepperForm: React.FC<GacStepperFormProps> = ({
                     setOpenModalConfirmPlay(false);
                 }} onCancel={() => {
                     setOpenModalConfirmPlay(false);
-                }} open={openModalConfirmPlay} text={`¿Desea guardar su información bancaria para proximos procesos ?, su información sera custodiada por arjion y no sera expuesta ni compartida a terceros, en los comentarios indique que alias desea asignar a esta información, gracias`} title={''} />
+                }} open={openModalConfirmPlay} text={`¿Desea guardar su información bancaria para proximos procesos?, su información sera custodiada por arjion y no sera expuesta ni compartida a terceros, en los comentarios indique que alias desea asignar a esta información, recuerde que esta información esta asociada solo a la persona que crea la solicitud, gracias`} title={''} />
         </div>
     )
 }

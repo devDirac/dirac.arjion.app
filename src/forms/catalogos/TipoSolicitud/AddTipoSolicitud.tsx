@@ -27,6 +27,7 @@ const AddTipoSolicitud: React.FC<AddTipoSolicitudProps> = (props: AddTipoSolicit
     const [mostrar_pago_quincenas, setMostrar_pago_quincenas] = useState(false);
     const [requiereAprobacionRevisor, setRequiereAprobacionRevisor] = useState(true);
     const [requiereFechaPago, setRequiereFechaPago] = useState(false);
+    const [revisor_antes_pagador, setRevisor_antes_pagador] = useState(true);
     const [muestra_notificar_nomina, setMuestra_notificar_nomina] = useState(false);
     const [dias_notifica_pago, setDias_notifica_pago] = useState('0');
 
@@ -35,7 +36,7 @@ const AddTipoSolicitud: React.FC<AddTipoSolicitudProps> = (props: AddTipoSolicit
             clave: "",
             nombre: "",
             descripcion: "",
-            dias_notifica_pago:"0"
+            dias_notifica_pago: "0"
         },
         onSubmit: async (values) => { },
         validationSchema: Yup.object({
@@ -55,12 +56,12 @@ const AddTipoSolicitud: React.FC<AddTipoSolicitudProps> = (props: AddTipoSolicit
     }
 
     useEffect(() => {
-        
+
         if (props?.item && props?.item?.clave) {
             formik.setFieldValue("clave", props?.item?.clave || '');
             setClave(props?.item?.clave || '');
         }
-        
+
         if (props?.item && props?.item?.nombre) {
             formik.setFieldValue("nombre", props?.item?.nombre || '');
             setNombre(props?.item?.nombre || '');
@@ -88,9 +89,22 @@ const AddTipoSolicitud: React.FC<AddTipoSolicitudProps> = (props: AddTipoSolicit
             setMostrar_pago_quincenas(props?.item?.mostrar_pago_quincenas === "Si" ? true : false);
         }
 
+        if(props?.item && props?.item?.requiere_aprobacion_revisor){
+            setRequiereAprobacionRevisor(props?.item?.mostrar_pago_quincenas === "Si" ? true : false)
+        }
+
+        if(props?.item && props?.item?.requiere_fecha_pago){
+            setRequiereFechaPago(props?.item?.requiere_fecha_pago === "Si" ? true : false)
+        }
+
         if (props?.item && props?.item?.muestra_notificar_nomina) {
             setMuestra_notificar_nomina(props?.item?.muestra_notificar_nomina === "Si" ? true : false);
-        }        
+        }
+
+        
+        if (props?.item && props?.item?.revisor_antes_pagador) {
+            setRevisor_antes_pagador(props?.item?.revisor_antes_pagador === "Si" ? true : false);
+        }
 
         if (props?.item) {
             validate();
@@ -173,7 +187,13 @@ const AddTipoSolicitud: React.FC<AddTipoSolicitudProps> = (props: AddTipoSolicit
                             <CampoSwitch
                                 label={'Requiere documentos'}
                                 value={requiere_documentos}
-                                onAction={(v) => setRequiere_documentos(v)}
+                                onAction={(v) => {
+                                    console.log(v)
+                                    setRequiere_documentos(v)
+                                    if(v){
+                                        setRequiereAprobacionRevisor(true)
+                                    }
+                                }}
                             />
                         </Grid>
 
@@ -187,6 +207,7 @@ const AddTipoSolicitud: React.FC<AddTipoSolicitudProps> = (props: AddTipoSolicit
 
                         <Grid item xs={12} md={6}>
                             <CampoSwitch
+                                disabled={requiere_documentos}
                                 label={'Requiere aprobación del revisor fiscal'}
                                 value={requiereAprobacionRevisor}
                                 onAction={(v) => setRequiereAprobacionRevisor(v)}
@@ -208,7 +229,13 @@ const AddTipoSolicitud: React.FC<AddTipoSolicitudProps> = (props: AddTipoSolicit
                                 onAction={(v) => setMuestra_notificar_nomina(v)}
                             />
                         </Grid>
-
+                        <Grid item xs={12} md={12}>
+                            <CampoSwitch
+                                label={'El pagador va antes que el revisor en el flujo'}
+                                value={revisor_antes_pagador}
+                                onAction={(v) => setRevisor_antes_pagador(v)}
+                            />
+                        </Grid>
                         <Grid item xs={12} md={12}>
                             <InputField
                                 required
@@ -241,14 +268,15 @@ const AddTipoSolicitud: React.FC<AddTipoSolicitudProps> = (props: AddTipoSolicit
                                         clave,
                                         nombre,
                                         descripcion,
-                                        requiere_fechaPago:requiereFechaPago ? 1 : 0,
+                                        requiere_fechaPago: requiereFechaPago ? 1 : 0,
                                         requiere_beneficiario: requiere_beneficiario ? 1 : 0,
                                         requiere_documentos: requiere_documentos ? 1 : 0,
                                         requiere_concepto: 1,
                                         mostrar_pago_quincenas: mostrar_pago_quincenas ? 1 : 0,
                                         requiere_aprobacion_revisor: requiereAprobacionRevisor ? 1 : 0,
-                                        muestra_notificar_nomina:muestra_notificar_nomina ? 1 : 0,
-                                        dias_notifica_pago:dias_notifica_pago === '' ? '0' : dias_notifica_pago 
+                                        muestra_notificar_nomina: muestra_notificar_nomina ? 1 : 0,
+                                        revisor_antes_pagador: revisor_antes_pagador ? 1 : 0,
+                                        dias_notifica_pago: dias_notifica_pago === '' ? '0' : dias_notifica_pago
                                     });
                                 }}
                             >

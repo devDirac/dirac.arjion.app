@@ -140,7 +140,10 @@ const RevisorCrudTipoSolicitudScreen: React.FC = () => {
                                                 requiere_documentos: r?.requiere_documentos === 1 ? 'Si' : 'No',
                                                 requiere_concepto: r?.requiere_concepto === 1 ? 'Si' : 'No',
                                                 mostrar_pago_quincenas: r?.mostrar_pago_quincenas === 1 ? 'Si' : 'No',
+                                                requiere_aprobacion_revisor:r?.requiere_aprobacion_revisor === 1 ? 'Si' : 'No',
                                                 muestra_notificar_nomina: r?.muestra_notificar_nomina === 1 ? 'Si' : 'No',
+                                                requiere_fecha_pago:r?.requiere_fechaPago  ===  1 ? 'Si' : 'No',
+                                                revisor_antes_pagador:r?.revisor_antes_pagador  ===  1 ? 'Si' : 'No',
                                                 estatus: r?.estatus === 1 ? 'Activo' : 'Inactivo',
                                             }
                                         }
@@ -155,9 +158,11 @@ const RevisorCrudTipoSolicitudScreen: React.FC = () => {
                                         'requiere_documentos',
                                         'requiere_concepto',
                                         'mostrar_pago_quincenas',
-                                        'muestra_notificar_nomina'
+                                        'muestra_notificar_nomina',
+                                        'requiere_aprobacion_revisor',
+                                        'requiere_fecha_pago'
                                     ]}
-                                    pinned={[{ columna: 'clave', lado: 'left' },{ columna: 'nombre', lado: 'left' },{ columna: 'descripcion', lado: 'left' }]}
+                                    pinned={[{ columna: 'clave', lado: 'left' },{ columna: 'nombre', lado: 'left' }]}
                                     enAccion={(accion, row) => {
                                         setItem(row);
                                         if (accion === 'editar') {
@@ -189,7 +194,7 @@ const RevisorCrudTipoSolicitudScreen: React.FC = () => {
                 {/* Modal alta de tipo de solicitud */}
                 <ModalComponent handleClose={handleisAlerCloseForm} isOpen={isAlertOpenForm} key={'alertaForm'}>
                     <>
-                        <AddTipoSolicitud procesando={procesando} enAction={(d) => handleAddTipoSolicitud(d)} />
+                        <AddTipoSolicitud key={'add_1'} procesando={procesando} enAction={(d) => handleAddTipoSolicitud(d)} />
                         <Backdrop className='BackdropClass' open={procesando}>
                             <CircularProgress color="inherit" />
                         </Backdrop>
@@ -198,7 +203,7 @@ const RevisorCrudTipoSolicitudScreen: React.FC = () => {
                 {/* Modal edita tipo de solicitud */}
                 <ModalComponent handleClose={handleisAlerCloseFormEdita} isOpen={isAlertOpenFormEdita} key={'alertaFormEdita'}>
                     <>
-                        <AddTipoSolicitud procesando={procesando} enAction={(d) => handleEditaTipoSolicitud(d)} item={item} />
+                        <AddTipoSolicitud key={'add_2'} procesando={procesando} enAction={(d) => handleEditaTipoSolicitud(d)} item={item} />
                         <Backdrop className='BackdropClass' open={procesando}>
                             <CircularProgress color="inherit" />
                         </Backdrop>

@@ -4,7 +4,7 @@ import ModalComponent from '../componets/Modal';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import GacSolicitudDetalle from '../componets/GacSolicitudDetalle/GacSolicitudDetalle';
 import { useSearchParams } from 'react-router-dom';
-import { actualizaIdConceptoHttp, apruebaSolicitudJefeDirectoHttp, atualizaTipoSolicitudHttp, cambioEnSolicitudAutorizadorHttp, cambioEnSolicitudPagadorHttp, cambioEnSolicitudRevisorHttp, generarZipSolicitudHttp, getDetalleSolicitudHttp, handleDocumentosRevisorRevisaHttp, notificaNominaHttp, notificaRevisoresFiscalesAutorizadorHttp, notificaRevisoresFiscalesHttp, setDocumentoSolicitudHttp, solicitaAprobacionDireccionGeneralHttp, solicitaCargaDocumentalHttp } from '../actions/solicitud';
+import { actualizaIdConceptoHttp, apruebaSolicitudJefeDirectoHttp, atualizaTipoSolicitudHttp, cambioEnSolicitudAutorizadorHttp, cambioEnSolicitudPagadorHttp, cambioEnSolicitudRevisorHttp, cancelaSolicitudHttp, generarZipSolicitudHttp, getDetalleSolicitudHttp, handleDocumentosRevisorRevisaHttp, notificaNominaHttp, notificaRevisoresFiscalesAutorizadorHttp, notificaRevisoresFiscalesHttp, setDocumentoSolicitudHttp, solicitaAprobacionDireccionGeneralHttp, solicitaCargaDocumentalHttp } from '../actions/solicitud';
 import { GacUserQueryParamsContext } from '../context/GacUserQueryParamsContexto';
 import env from "react-dotenv";
 import ModalConfirm from '../componets/ModalConfirm/ModalConfirm';
@@ -29,6 +29,9 @@ const GacSolicitudDetalleScreen: React.FC = () => {
     /* para la modal de la pregunta si desea eliminar el archivo  */
     const [openPreguntaDocumentoDelete, setOpenPreguntaDocumentoDelete] = useState<any>(false);
     const [documentoDelete, setDoocumentoDelete] = useState<any>(null);
+
+    /* pARA LA CANCELACION DE LA SOLICITUD */
+    const [openPreguntaCancela, setOpenPreguntaCancela] = useState<any>(false);
 
     const [muestraConfirmAprobarJefe, setMuestraConfirmAprobarJefe] = useState<any>(false);
     const [txtAprobarJefe, setTxtAprobarJefe] = useState<any>(false);
@@ -56,7 +59,8 @@ const GacSolicitudDetalleScreen: React.FC = () => {
         if (documentosCargadosMuestra && !solicitudDocumentos?.length) {
             handleNotificaJefes()
             setDocumentosCargados(false);
-        }};
+        }
+    };
 
     const esMiTurno = (arr: any, idUsuario: any) => {
         for (const item of arr) {
@@ -139,31 +143,59 @@ const GacSolicitudDetalleScreen: React.FC = () => {
             const esPagador = (perfil?.usuariosPerfil || []).filter((r: any) => r?.id_usuario === perfil?.idUsuario && r?.id_perfil === 3)
             setEsPagador(esPagador?.length && sol?.[0]?.id_usuario_pagada === null && sol?.[0]?.id_usuario_autorizador !== null ? true : false);
             /* si los autorizadores ya terminaron de autorizar*/
+            console.log('1_', )
             if (!faltanAutorizadores?.length) {
                 /* Turno autorizador */
                 if (esAutorizador?.length && sol?.[0]?.id_usuario_autorizador === null) {
+                    //console.log('2_', )
                     setEstaEnMiCancha(true)
                     return false;
                 }
                 if (esAutorizador?.length && sol?.[0]?.id_usuario_autorizador !== null) {
                     /* Turno pagador */
-                    if ((esPagador?.length && sol?.[0]?.id_usuario_pagada === null) && (sol?.[0]?.id_usuario_revisor !== null && sol?.[0]?.id_usuario_autorizador !== null)) {
-                        setEstaEnMiCancha(true)
-                        return false;
+                    //console.log('3_', solicitud?.[0]?.revisor_antes_pagador)
+                    if (solicitud?.[0]?.revisor_antes_pagador === 1) {
+                        //console.log('4_', )
+                        if ((esPagador?.length && sol?.[0]?.id_usuario_pagada === null) && ((sol?.[0]?.id_usuario_revisor === null) && sol?.[0]?.id_usuario_autorizador !== null)) {
+                           // console.log('5_', )
+                            setEstaEnMiCancha(true)
+                            return false;
+                        }
+                    } else {
+                       // console.log('6_', )
+                        if ((esPagador?.length && sol?.[0]?.id_usuario_pagada === null) && ((sol?.[0]?.id_usuario_revisor !== null) && sol?.[0]?.id_usuario_autorizador !== null)) {
+                           // console.log('7_', )
+                            setEstaEnMiCancha(true)
+                            return false;
+                        }
                     }
                     if (esPagador?.length && sol?.[0]?.id_usuario_pagada !== null) {
+                        //console.log('8_', )
                         setEstaEnMiCancha(false)
                         return false;
                     }
+                   // console.log('9_', )
                     setEstaEnMiCancha(false)
                     return false;
                 }
                 /* Turno revisores */
-                if (esRevisor?.length && sol?.[0]?.id_usuario_revisor === null && sol?.[0]?.id_usuario_autorizador !== null) {
-                    setEstaEnMiCancha(true)
-                    return false;
+                if(solicitud?.[0]?.revisor_antes_pagador === 1){
+                    console.log('2_', esRevisor, sol?.[0]?.id_usuario_revisor === null, sol?.[0]?.id_usuario_autorizador !== null, esPagador?.length)
+                    if (esRevisor?.length && sol?.[0]?.id_usuario_revisor === null && sol?.[0]?.id_usuario_autorizador !== null &&  sol?.[0]?.id_usuario_pagada !== null) {
+                        console.log('3_', )
+                        setEstaEnMiCancha(true)
+                        return false;
+                    }
+                }else{
+                    console.log('4_', )
+                    if (esRevisor?.length && sol?.[0]?.id_usuario_revisor === null && sol?.[0]?.id_usuario_autorizador !== null && sol?.[0]?.id_usuario_pagada === null) {
+                        console.log('5_', )
+                        setEstaEnMiCancha(true)
+                        return false;
+                    }
                 }
                 if (esRevisor?.length && sol?.[0]?.id_usuario_revisor !== null || (esRevisor?.length && sol?.[0]?.id_usuario_revisor === null && sol?.[0]?.id_usuario_autorizador === null)) {
+                    console.log('6_', )
                     setEstaEnMiCancha(false)
                     return false;
                 }
@@ -176,7 +208,7 @@ const GacSolicitudDetalleScreen: React.FC = () => {
                 handleisAlertOpen();
             }
         }
-    }, [idSolicitud, perfil, perfil?.idHash]);
+    }, [idSolicitud, perfil, perfil?.idHash, solicitud?.[0]?.revisor_antes_pagador]);
 
     useEffect(() => {
         getData()
@@ -321,8 +353,11 @@ const GacSolicitudDetalleScreen: React.FC = () => {
                 comentarios: coments,
                 requiere_doumentos: solicitud?.[0]?.requiere_documentos,
                 requiere_aprobacion_revisor: solicitud?.[0]?.requiere_aprobacion_revisor,
+                revisor_antes_pagador: solicitud?.[0]?.revisor_antes_pagador,
             }
+            console.log(body, solicitud)
             await cambioEnSolicitudAutorizadorHttp(body);
+            //await sleep(1000)
             getData();
             setSolicitudDetalle(null)
             setJefe(null);
@@ -422,8 +457,11 @@ const GacSolicitudDetalleScreen: React.FC = () => {
                 id_usuario: perfil?.idUsuario,
                 aprueba: true,
                 usuario_nombre: perfil?.nombre,
-                comentarios
+                comentarios,
+                revisor_antes_pagador: solicitud?.[0]?.revisor_antes_pagador,
             }
+            await sleep(1000)
+            console.log(body)
             await cambioEnSolicitudRevisorHttp(body)
             setProcesando(false);
             setMensajeAlert('Éxito al aprobar la solicitud');
@@ -471,8 +509,13 @@ const GacSolicitudDetalleScreen: React.FC = () => {
                 id_usuario: perfil?.idUsuario,
                 usuario_nombre: perfil?.nombre,
                 id_solicitud: d?.id,
-                comentarios: 'El pagador marco la solicitud como pagada'
+                comentarios: 'El pagador marco la solicitud como pagada',
+                revisor_antes_pagador: solicitud?.[0]?.revisor_antes_pagador,
+                requiere_doumentos: solicitud?.[0]?.requiere_documentos,
+                requiere_aprobacion_revisor:solicitud?.[0]?.requiere_aprobacion_revisor
             }
+            //await sleep(2000)
+            console.log(body)
             await cambioEnSolicitudPagadorHttp(body)
             setProcesando(false);
             setMensajeAlert('Éxito al realizar la operación');
@@ -584,10 +627,10 @@ const GacSolicitudDetalleScreen: React.FC = () => {
 
     /* para notificar a nomina que hay que hacer un descuento  */
 
-    const handleNotificaNomina = async (d:any,c:any) => {
+    const handleNotificaNomina = async (d: any, c: any) => {
         try {
             setProcesando(true);
-            await notificaNominaHttp({id_solicitud:d?.id, id_usuario_notifica:perfil?.idUsuario, importe:c});
+            await notificaNominaHttp({ id_solicitud: d?.id, id_usuario_notifica: perfil?.idUsuario, importe: c });
             setProcesando(false);
             setMensajeAlert('Éxito al notificar a nomina')
             handleisAlertOpen()
@@ -595,6 +638,23 @@ const GacSolicitudDetalleScreen: React.FC = () => {
             setProcesando(false);
             setMensajeAlert('Error al notificar a nomina')
             handleisAlertOpen()
+        }
+    }
+
+    /* Cancela la solicitud */
+    const handelDeleteSolicitud = async () => {
+        try {
+            setProcesando(true);
+            await cancelaSolicitudHttp({ id_solicitud: solicitudDetalle?.id});
+            console.log(solicitudDetalle, { id_solicitud: solicitudDetalle?.id})
+            getData();
+            setProcesando(false);
+            setMensajeAlert('Éxito al canelar la solicitud');
+            handleisAlertOpen();
+        } catch (error) {
+            setProcesando(false);
+            setMensajeAlert('Error al canelar la solicitud');
+            handleisAlertOpen();
         }
     }
 
@@ -620,9 +680,9 @@ const GacSolicitudDetalleScreen: React.FC = () => {
                                 item={solicitud?.[0]}
                                 procesando={procesando}
                                 enAction={(d, a, c) => {
-                                    console.log(d,a,c)
+                                    console.log(d, a, c)
 
-                                    if(a === 'notificar_nomina'){
+                                    if (a === 'notificar_nomina') {
                                         handleNotificaNomina(d, c)
                                     }
 
@@ -664,7 +724,7 @@ const GacSolicitudDetalleScreen: React.FC = () => {
                                         setConfirmDocumentosRevisorRevisa(true)
                                         setTxtConfirmDocumentosRevisorRevisa('¿Desea aprobar los documentos seleccionados?')
                                     }
-                                    
+
                                     if (a === 'rechazar_documentos_revisor') {
                                         setDocumentosSolicitudDetalle(c)
                                         setSolicitudDetalle(d)
@@ -689,6 +749,11 @@ const GacSolicitudDetalleScreen: React.FC = () => {
                                     }
                                     if (a === 'descargaZIP') {
                                         handleDescargaZip(d);
+                                    }
+
+                                    if(a === 'cancelar_solicitud'){
+                                        setSolicitudDetalle(d)
+                                        setOpenPreguntaCancela(true);
                                     }
 
                                     if (a === 'solicitar_carga_documental') {
@@ -768,6 +833,16 @@ const GacSolicitudDetalleScreen: React.FC = () => {
                         setOpenPreguntaDocumentoDelete(false);
                         setDoocumentoDelete(null)
                     }} open={openPreguntaDocumentoDelete} text={'¿Desea eliminar el documentos seleccionado?'} title={''} />
+
+
+                <ModalConfirm
+                    onAcept={() => {
+                        handelDeleteSolicitud();
+                        setOpenPreguntaCancela(false);
+                    }} onCancel={() => {
+                        setOpenPreguntaCancela(false);
+                        setDoocumentoDelete(null)
+                    }} open={openPreguntaCancela} text={'¿Desea cancelar la solicitud?'} title={''} />
 
             </Grid >
         </>
